@@ -18,7 +18,7 @@ This library will help you authenticate users and provide a straight foreward wa
 
 npm:
 ```bash
-npm install --save @elrondnetwork/dapp
+npm install @elrondnetwork/dapp
 ```
 
 ## Usage
