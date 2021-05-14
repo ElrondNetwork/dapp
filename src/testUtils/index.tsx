@@ -26,4 +26,27 @@ const renderWithRouter = ({
   };
 };
 
-export { renderWithRouter, routeNames };
+const sessionStorageMock = (customStore = {}) => {
+  let store: any = {
+    ...customStore,
+  };
+  return {
+    getItem: function getItem(key: string) {
+      return store[key];
+    },
+    setItem: function setItem(key: string, value: string) {
+      store[key] = value;
+    },
+    clear: function clear() {
+      store = {};
+    },
+    removeItem: function removeItem(key: string) {
+      delete store[key];
+    },
+  };
+};
+
+const testAddress =
+  "erd1x5vaatpqp27v32ku9xk8rdkxxlnvp2nrltngq22z8ll30l894jwqhdzng8";
+
+export { renderWithRouter, routeNames, sessionStorageMock, testAddress };

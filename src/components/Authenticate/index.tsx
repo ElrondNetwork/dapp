@@ -63,7 +63,7 @@ const Authenticate = ({
     }
   }, [dapp.provider, dapp.proxy]);
 
-  const routeNeedsAuthentication = autehnitcatedRoutes.some(
+  const privateRoute = autehnitcatedRoutes.some(
     ({ path }) =>
       matchPath(pathname, {
         path,
@@ -72,11 +72,10 @@ const Authenticate = ({
       }) !== null
   );
 
-  const redirect =
-    routeNeedsAuthentication && !loggedIn && !getItem("walletLogin");
+  const redirect = privateRoute && !loggedIn && !getItem("walletLogin");
 
   React.useEffect(() => {
-    if (!redirect && routeNeedsAuthentication) {
+    if (!redirect && privateRoute) {
       getNetworkConfig()
         .then((networkConfig) => {
           dispatch({
@@ -89,7 +88,7 @@ const Authenticate = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [address]);
 
   const fetchAccount = () => {
     if (address && loggedIn) {
@@ -124,7 +123,9 @@ const Authenticate = ({
     return <Redirect to={unlockRoute} />;
   }
 
-  if (loading && getItem("walletLogin")) return <Loader />;
+  if (loading && getItem("walletLogin")) {
+    return <Loader />;
+  }
 
   return <React.Fragment>{children}</React.Fragment>;
 };

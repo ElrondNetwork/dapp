@@ -1,7 +1,13 @@
 import { NetworkConfig } from "@elrondnetwork/erdjs";
 import { waitFor } from "@testing-library/dom";
 import { act, waitForElementToBeRemoved } from "@testing-library/react";
-import { renderWithRouter, routeNames } from "testUtils";
+import moment from "moment";
+import {
+  renderWithRouter,
+  routeNames,
+  sessionStorageMock,
+  testAddress,
+} from "testUtils";
 
 jest.mock("../helpers", () => {
   return {
@@ -44,5 +50,24 @@ describe("Authenticate Component", () => {
   it("redirects to unlock if not logged in", async () => {
     const screen = renderWithRouter({ route: routeNames.dashboard });
     expect(screen.history.location.pathname).toBe(routeNames.unlock);
+  });
+  it("allows access to private routes", async () => {
+    Object.defineProperty(window, "sessionStorage", {
+      value: sessionStorageMock({
+        walletLogin: JSON.stringify({
+          data: {},
+          expires: moment().add(60, "seconds").unix(),
+        }),
+      }),
+    });
+
+    const screen = renderWithRouter({
+      route: `${routeNames.dashboard}?address=${testAddress}`,
+    });
+
+    const loader = await screen.findByTestId("loader");
+    expect(loader).toBeDefined();
+
+    expect(screen.history.location.pathname).toBe(routeNames.dashboard);
   });
 });
