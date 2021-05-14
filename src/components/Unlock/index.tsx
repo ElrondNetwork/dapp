@@ -49,7 +49,7 @@ const Unlock = ({
       ) : loggedIn ? (
         <Redirect to={callbackRoute} />
       ) : (
-        <div className="m-auto">
+        <div className="m-auto" data-testid="unlockPage">
           <div className="card my-4 text-center">
             <div className="card-body py-4 px-2 px-sm-2 mx-lg-4">
               <React.Fragment>
@@ -59,6 +59,7 @@ const Unlock = ({
               <div>
                 <Link
                   className="btn btn-primary px-sm-4 m-1 mx-sm-3"
+                  data-testid="ledgerLink"
                   to={ledgerRoute}
                 >
                   {ledgerButtonLabel}
@@ -70,6 +71,7 @@ const Unlock = ({
                 <Link
                   className="btn btn-primary px-sm-4 m-1 mx-sm-3"
                   to={walletConnectRoute}
+                  data-testid="walletConnectLink"
                 >
                   {walletConnectButtonLabel}
                 </Link>

@@ -38,6 +38,7 @@ const WalletLogin = ({
     <button
       onClick={handleOnClick}
       className="btn btn-primary px-sm-4 m-1 mx-sm-3"
+      data-testid="walletLink"
     >
       {webWalletButtonLabel}
     </button>
