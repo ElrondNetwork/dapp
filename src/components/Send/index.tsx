@@ -105,6 +105,10 @@ export default function Send() {
                   if (e.statusCode in ledgerErrorCodes) {
                     const { message } = (ledgerErrorCodes as any)[e.statusCode];
                     showError(message);
+                  } else if (
+                    e.message === "HWApp not initialised, call init() first"
+                  ) {
+                    showError("Your session has expired. Please login again");
                   } else {
                     showError(e.message);
                   }
