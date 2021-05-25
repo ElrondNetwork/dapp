@@ -40,23 +40,25 @@ const Authenticate = ({
           .then((address) => {
             removeItem("walletLogin");
             dispatch({ type: "login", address });
-          })
-          .then(() => {
-            const address = getItem("address");
-            return getAccount().then((account) => {
-              dispatch({
-                type: "setAccount",
-                account: {
-                  balance: account.balance.toString(),
-                  address,
-                  nonce: account.nonce,
-                },
+            getAccount(address)
+              .then((account) => {
+                dispatch({
+                  type: "setAccount",
+                  account: {
+                    balance: account.balance.toString(),
+                    address,
+                    nonce: account.nonce,
+                  },
+                });
+                setLoading(false);
+              })
+              .catch((e) => {
+                console.error("Failed getting account ", e);
+                setLoading(false);
               });
-              setLoading(false);
-            });
           })
           .catch((e) => {
-            console.error(e);
+            console.error("Failed getting address ", e);
             setLoading(false);
           });
       });
