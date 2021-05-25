@@ -77,11 +77,13 @@ const WalletConnect = ({
   const walletConnectInit = () => {
     const walletConnect = new WalletConnectProvider(
       dapp.proxy,
-      walletConnectBridge
+      walletConnectBridge,
+      {
+        onClientLogin: handleOnLogin,
+        onClientLogout: handleOnLogout,
+      }
     );
     dapp.provider = walletConnect;
-    walletConnect.addEventListener("onWalletConnectLogin", handleOnLogin);
-    walletConnect.addEventListener("onWalletConnectDisconect", handleOnLogout);
 
     walletConnect.login().then((walletConectUri) => {
       if (ref.current !== null) {
