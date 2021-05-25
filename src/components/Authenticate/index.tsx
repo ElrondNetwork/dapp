@@ -5,6 +5,7 @@ import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
 import Loader from "components/Loader";
+import { useGetAccount, useGetAddress, useGetNetworkConfig } from "./helpers";
 
 const Authenticate = ({
   children,
@@ -16,12 +17,15 @@ const Authenticate = ({
   unlockRoute: string;
 }) => {
   const dispatch = useDispatch();
-  const { loggedIn, dapp, address, ledgerAccount } = useContext();
+  const { loggedIn, dapp, address, ledgerAccount, chainId } = useContext();
   const [autehnitcatedRoutes] = React.useState(
     routes.filter((route) => Boolean(route.authenticatedRoute))
   );
   const { pathname } = useLocation();
   const [loading, setLoading] = React.useState(false);
+  const getAccount = useGetAccount();
+  const getAddress = useGetAddress();
+  const getNetworkConfig = useGetNetworkConfig();
 
   React.useMemo(() => {
     if (getItem("walletLogin")) {
@@ -32,37 +36,34 @@ const Authenticate = ({
           return;
         }
 
-        dapp.provider
-          .getAddress()
+        getAddress()
           .then((address) => {
             removeItem("walletLogin");
             dispatch({ type: "login", address });
           })
           .then(() => {
             const address = getItem("address");
-
-            return dapp.proxy
-              .getAccount(new Address(address))
-              .then((account) => {
-                dispatch({
-                  type: "setAccount",
-                  account: {
-                    balance: account.balance.toString(),
-                    address,
-                    nonce: account.nonce,
-                  },
-                });
-                setLoading(false);
+            return getAccount().then((account) => {
+              dispatch({
+                type: "setAccount",
+                account: {
+                  balance: account.balance.toString(),
+                  address,
+                  nonce: account.nonce,
+                },
               });
+              setLoading(false);
+            });
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error(e);
             setLoading(false);
           });
       });
     }
   }, [dapp.provider, dapp.proxy]);
 
-  const routeNeedsAuthentication = autehnitcatedRoutes.find(
+  const privateRoute = autehnitcatedRoutes.some(
     ({ path }) =>
       matchPath(pathname, {
         path,
@@ -71,19 +72,23 @@ const Authenticate = ({
       }) !== null
   );
 
+  const redirect = privateRoute && !loggedIn && !getItem("walletLogin");
+
   React.useEffect(() => {
-    Promise.all([dapp.proxy.getNetworkConfig()])
-      .then(([networkConfig]) => {
-        dispatch({
-          type: "setChainId",
-          chainId: networkConfig.ChainID,
+    if (!redirect && privateRoute) {
+      getNetworkConfig()
+        .then((networkConfig) => {
+          dispatch({
+            type: "setChainId",
+            chainId: networkConfig.ChainID,
+          });
+        })
+        .catch((e) => {
+          console.error("To do ", e);
         });
-      })
-      .catch((e) => {
-        console.error("To do ", e);
-      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [address]);
 
   const fetchAccount = () => {
     if (address && loggedIn) {
@@ -114,11 +119,13 @@ const Authenticate = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(fetchAccount, [address]);
 
-  if (routeNeedsAuthentication && !loggedIn && !getItem("walletLogin")) {
+  if (redirect) {
     return <Redirect to={unlockRoute} />;
   }
 
-  if (loading && getItem("walletLogin")) return <Loader />;
+  if (loading && getItem("walletLogin")) {
+    return <Loader />;
+  }
 
   return <React.Fragment>{children}</React.Fragment>;
 };

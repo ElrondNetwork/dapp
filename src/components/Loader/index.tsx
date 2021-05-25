@@ -13,7 +13,7 @@ const Loader = ({
     <PageState
       title={noText ? "" : "Loading..."}
       iconClass="text-primary fa-spin"
-      data-testid={dataTestId}
+      dataTestId={dataTestId}
       icon={faCircleNotch}
     />
   );

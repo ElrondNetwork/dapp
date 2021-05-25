@@ -11,6 +11,7 @@ const PageState = ({
   title,
   description,
   action,
+  dataTestId,
 }: {
   icon?: IconProp;
   iconClass?: string;
@@ -19,8 +20,9 @@ const PageState = ({
   title?: string;
   description?: string | React.ReactNode;
   action?: React.ReactNode;
+  dataTestId?: string;
 }) => (
-  <div className="state m-auto p-4 text-center">
+  <div className="state m-auto p-4 text-center" data-testid={dataTestId}>
     {icon && (
       <span
         className={`${styles.iconState} mx-auto ${
