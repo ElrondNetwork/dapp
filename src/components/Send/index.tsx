@@ -9,6 +9,7 @@ import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext, useDispatch } from "context";
 import SendModal from "./SendModal";
 import { getProviderType } from "./helpers";
+import { useRefreshAccount } from "helpers/accountMethods";
 
 interface SendTransactionType {
   transaction: Transaction;
@@ -24,13 +25,9 @@ export default function Send() {
   const [newTransaction, setNewTransaction] = React.useState<Transaction>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
-  const {
-    dapp,
-    address,
-    walletConnectLogin,
-    newTransaction: contextTransaction,
-  } = useContext();
+  const { dapp, address, newTransaction: contextTransaction } = useContext();
   const dispatch = useDispatch();
+  const refreshAccount = useRefreshAccount();
 
   const provider: IDappProvider = dapp.provider;
 
@@ -97,6 +94,7 @@ export default function Send() {
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {
+                  refreshAccount();
                   setTxHash(transaction.getHash());
                   setNewCallbackRoute(callbackRoute);
                   setShowStatus(true);
@@ -129,6 +127,7 @@ export default function Send() {
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {
+                  refreshAccount();
                   setTxHash(transaction.getHash());
                   setNewCallbackRoute(callbackRoute);
                   setShowStatus(true);
