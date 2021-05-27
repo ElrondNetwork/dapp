@@ -1,6 +1,3 @@
-import { NetworkConfig } from "@elrondnetwork/erdjs";
-import { waitFor } from "@testing-library/dom";
-import { act, waitForElementToBeRemoved } from "@testing-library/react";
 import moment from "moment";
 import {
   renderWithRouter,
@@ -10,6 +7,17 @@ import {
 } from "testUtils";
 
 jest.mock("../helpers", () => {
+  return {
+    __esModule: true,
+    useGetNetworkConfig: () => {
+      const { NetworkConfig } = require("@elrondnetwork/erdjs");
+      const networkConfig = new NetworkConfig();
+      return () => Promise.resolve(networkConfig);
+    },
+  };
+});
+
+jest.mock("../../../helpers/accountMethods", () => {
   return {
     __esModule: true,
     useGetAccount: () => {
@@ -33,11 +41,6 @@ jest.mock("../helpers", () => {
     },
     useGetAddress: () => () =>
       "erd1x5vaatpqp27v32ku9xk8rdkxxlnvp2nrltngq22z8ll30l894jwqhdzng8",
-    useGetNetworkConfig: () => {
-      const { NetworkConfig } = require("@elrondnetwork/erdjs");
-      const networkConfig = new NetworkConfig();
-      return () => Promise.resolve(networkConfig);
-    },
   };
 });
 
