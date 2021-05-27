@@ -5,7 +5,8 @@ import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
 import Loader from "components/Loader";
-import { useGetAccount, useGetAddress, useGetNetworkConfig } from "./helpers";
+import { useGetNetworkConfig } from "./helpers";
+import { useGetAccount, useGetAddress } from "helpers/accountMethods";
 
 const Authenticate = ({
   children,
@@ -30,38 +31,44 @@ const Authenticate = ({
   React.useMemo(() => {
     if (getItem("walletLogin")) {
       setLoading(true);
-      dapp.provider.init().then((initialised) => {
-        if (!initialised) {
-          setLoading(false);
-          return;
-        }
-
-        getAddress()
-          .then((address) => {
-            removeItem("walletLogin");
-            dispatch({ type: "login", address });
-            getAccount(address)
-              .then((account) => {
-                dispatch({
-                  type: "setAccount",
-                  account: {
-                    balance: account.balance.toString(),
-                    address,
-                    nonce: account.nonce,
-                  },
-                });
-                setLoading(false);
-              })
-              .catch((e) => {
-                console.error("Failed getting account ", e);
-                setLoading(false);
-              });
-          })
-          .catch((e) => {
-            console.error("Failed getting address ", e);
+      dapp.provider
+        .init()
+        .then((initialised) => {
+          if (!initialised) {
             setLoading(false);
-          });
-      });
+            return;
+          }
+
+          getAddress()
+            .then((address) => {
+              removeItem("walletLogin");
+              dispatch({ type: "login", address });
+              getAccount(address)
+                .then((account) => {
+                  dispatch({
+                    type: "setAccount",
+                    account: {
+                      balance: account.balance.toString(),
+                      address,
+                      nonce: account.nonce,
+                    },
+                  });
+                  setLoading(false);
+                })
+                .catch((e) => {
+                  console.error("Failed getting account ", e);
+                  setLoading(false);
+                });
+            })
+            .catch((e) => {
+              console.error("Failed getting address ", e);
+              setLoading(false);
+            });
+        })
+        .catch((e) => {
+          console.error("Failed initializing provider ", e);
+          setLoading(false);
+        });
     }
   }, [dapp.provider, dapp.proxy]);
 
@@ -77,7 +84,7 @@ const Authenticate = ({
   const redirect = privateRoute && !loggedIn && !getItem("walletLogin");
 
   React.useEffect(() => {
-    if (!redirect && privateRoute) {
+    if (!redirect && privateRoute && chainId.valueOf() === "-1") {
       getNetworkConfig()
         .then((networkConfig) => {
           dispatch({
@@ -90,20 +97,26 @@ const Authenticate = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, [pathname, chainId.valueOf()]);
 
   const fetchAccount = () => {
     if (address && loggedIn) {
-      dapp.proxy.getAccount(new Address(address)).then((account) => {
-        dispatch({
-          type: "setAccount",
-          account: {
-            balance: account.balance.toString(),
-            address,
-            nonce: account.nonce,
-          },
+      dapp.proxy
+        .getAccount(new Address(address))
+        .then((account) => {
+          dispatch({
+            type: "setAccount",
+            account: {
+              balance: account.balance.toString(),
+              address,
+              nonce: account.nonce,
+            },
+          });
+        })
+        .catch((e) => {
+          console.error("Failed getting account ", e);
+          setLoading(false);
         });
-      });
 
       if (getItem("ledgerLogin") && !ledgerAccount) {
         const ledgerLogin = getItem("ledgerLogin");
