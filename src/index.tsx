@@ -4,12 +4,9 @@ import Send from "./components/Send";
 import AuthenticateComponent from "./components/Authenticate";
 import Ledger from "./components/Ledger";
 import WalletConnect from "./components/WalletConnect";
-import useSend from "./helpers/useSend";
-import {
-  ContextProvider,
-  useContext as useDappContext,
-  useDispatch as useDappDispatch,
-} from "./context";
+import { ContextProvider as Context, useContext, useDispatch } from "./context";
+import useSendTransaction from "./helpers/useSend";
+import { useRefreshAccount } from "./helpers/accountMethods";
 import {
   RouteType as RouteInterface,
   NetworkType as NetworkInterface,
@@ -17,12 +14,8 @@ import {
 
 export type NetworkType = NetworkInterface;
 export type RouteType = RouteInterface;
-export const Context = ContextProvider;
-export const useContext = useDappContext;
-export const useDispatch = useDappDispatch;
-export const useSendTransaction = useSend;
 
-export const Authenticate = ({
+const Authenticate = ({
   children,
   routes,
   unlockRoute,
@@ -39,4 +32,14 @@ export const Authenticate = ({
   );
 };
 
-export const Pages = { Unlock, Ledger, WalletConnect };
+const Pages = { Unlock, Ledger, WalletConnect };
+
+export {
+  Authenticate,
+  Pages,
+  useRefreshAccount,
+  useSendTransaction,
+  Context,
+  useContext,
+  useDispatch,
+};
