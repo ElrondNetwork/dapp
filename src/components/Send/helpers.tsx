@@ -2,6 +2,7 @@ import {
   WalletProvider,
   IDappProvider,
   HWProvider,
+  WalletConnectProvider,
 } from "@elrondnetwork/erdjs";
 
 export type ProviderType = "wallet" | "ledger" | "walletconnect" | "";
@@ -14,6 +15,11 @@ export const getProviderType = (
   providerType =
     provider && provider.constructor === WalletProvider
       ? "wallet"
+      : providerType;
+
+  providerType =
+    provider && provider.constructor === WalletConnectProvider
+      ? "walletconnect"
       : providerType;
 
   providerType =
