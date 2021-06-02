@@ -2,15 +2,9 @@ import React from "react";
 import { useContext } from "context";
 import { setItem } from "helpers/session";
 
-const WalletLogin = ({
-  callbackRoute,
-  webWalletButtonLabel,
-}: {
-  callbackRoute: string;
-  webWalletButtonLabel: string;
-}) => {
+export const useWebWalletLogin = ({callbackRoute}:{callbackRoute: string}) => {
   const { dapp } = useContext();
-  const handleOnClick = () => {
+  return () => {
     dapp.provider
       .init()
       .then((initialised) => {
@@ -33,10 +27,20 @@ const WalletLogin = ({
         console.warn(err);
       });
   };
+};
+
+const WalletLogin = ({
+  callbackRoute,
+  webWalletButtonLabel,
+}: {
+  callbackRoute: string;
+  webWalletButtonLabel: string;
+}) => {
+  const webWalletLogin = useWebWalletLogin({callbackRoute});
 
   return (
     <button
-      onClick={handleOnClick}
+      onClick={webWalletLogin}
       className="btn btn-primary px-sm-4 m-1 mx-sm-3"
       data-testid="walletLink"
     >
