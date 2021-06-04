@@ -1,10 +1,16 @@
 import React from "react";
 import { useContext } from "context";
+import { WalletProvider } from "@elrondnetwork/erdjs";
 import { setItem } from "helpers/session";
 
-export const useWebWalletLogin = ({callbackRoute}:{callbackRoute: string}) => {
-  const { dapp } = useContext();
+export const useWebWalletLogin = ({
+  callbackRoute,
+}: {
+  callbackRoute: string;
+}) => {
+  const { dapp, network } = useContext();
   return () => {
+    dapp.provider = new WalletProvider(network.walletAddress);
     dapp.provider
       .init()
       .then((initialised) => {
@@ -36,7 +42,7 @@ const WalletLogin = ({
   callbackRoute: string;
   webWalletButtonLabel: string;
 }) => {
-  const webWalletLogin = useWebWalletLogin({callbackRoute});
+  const webWalletLogin = useWebWalletLogin({ callbackRoute });
 
   return (
     <button

@@ -34,6 +34,7 @@ export interface DappState {
 export interface StateType {
   walletConnectBridge: string;
   walletConnectDeepLink: string;
+  network: NetworkType;
   chainId: ChainID;
   dapp: DappState;
   error: string;
@@ -92,6 +93,7 @@ export const createInitialState = ({
   const state: StateType = {
     walletConnectBridge,
     walletConnectDeepLink,
+    network: sessionNetwork,
     chainId: new ChainID("-1"),
     dapp: {
       provider: getItem("ledgerLogin")
