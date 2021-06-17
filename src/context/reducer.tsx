@@ -10,7 +10,6 @@ export type ActionType =
   | { type: "setProvider"; provider: StateType["dapp"]["provider"] }
   | { type: "setAccount"; account: StateType["account"] }
   | { type: "setChainId"; chainId: StateType["chainId"] }
-  | { type: "setNewTransaction"; newTransaction: StateType["newTransaction"] }
   | { type: "setLedgerAccount"; ledgerAccount: StateType["ledgerAccount"] }
   | {
       type: "setWalletConnectLogin";
@@ -53,10 +52,6 @@ export function createReducer(initialState: StateType) {
 
       case "setLedgerAccount": {
         return { ...state, ledgerAccount: action.ledgerAccount };
-      }
-
-      case "setNewTransaction": {
-        return { ...state, newTransaction: action.newTransaction };
       }
 
       case "setWalletConnectLogin": {

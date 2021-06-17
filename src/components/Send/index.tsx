@@ -25,7 +25,7 @@ export default function Send() {
   const [newTransaction, setNewTransaction] = React.useState<Transaction>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
-  const { dapp, address, newTransaction: contextTransaction } = useContext();
+  const { dapp, address } = useContext();
   const dispatch = useDispatch();
   const refreshAccount = useRefreshAccount();
 
@@ -41,16 +41,19 @@ export default function Send() {
     setShowSendModal(false);
   };
 
-  React.useEffect(() => {
-    if (contextTransaction) {
-      const { transaction, callbackRoute } = contextTransaction;
+  const send = (e: CustomEvent) => {
+    if (e.detail && "transaction" in e.detail && "callbackRoute" in e.detail) {
+      const { transaction, callbackRoute } = e.detail;
       sendTransaction({ transaction, callbackRoute });
-      dispatch({
-        type: "setNewTransaction",
-        newTransaction: undefined,
-      });
     }
-  }, [contextTransaction]);
+  };
+
+  React.useEffect(() => {
+    document.addEventListener("transaction", send);
+    return () => {
+      document.removeEventListener("transaction", send);
+    };
+  }, []);
 
   const sendTransaction = ({
     transaction,

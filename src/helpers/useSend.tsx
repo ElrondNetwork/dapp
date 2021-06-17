@@ -1,9 +1,6 @@
 import { Transaction } from "@elrondnetwork/erdjs";
-import { useDispatch } from "context";
 
 export default function useSend() {
-  const dispatch = useDispatch();
-
   return ({
     transaction,
     callbackRoute,
@@ -11,12 +8,9 @@ export default function useSend() {
     transaction: Transaction;
     callbackRoute: string;
   }) => {
-    dispatch({
-      type: "setNewTransaction",
-      newTransaction: {
-        transaction,
-        callbackRoute,
-      },
+    const customEvent = new CustomEvent("transaction", {
+      detail: { transaction, callbackRoute },
     });
+    document.dispatchEvent(customEvent);
   };
 }
