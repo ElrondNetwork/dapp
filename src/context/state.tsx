@@ -39,11 +39,11 @@ export interface StateType {
   dapp: DappState;
   error: string;
   loggedIn: boolean;
-  ledgerLogin: {
+  ledgerLogin?: {
     index: number;
     loginType: string;
   };
-  walletConnectLogin: {
+  walletConnectLogin?: {
     loginType: string;
   };
   address: string;
@@ -56,12 +56,6 @@ export interface StateType {
   };
   walletConnectAccount?: string;
   apiAddress: string;
-  newTransaction:
-    | {
-        transaction: Transaction;
-        callbackRoute: string;
-      }
-    | undefined;
 }
 export const emptyAccount: AccountType = {
   balance: "...",
@@ -122,7 +116,6 @@ export const createInitialState = ({
         : undefined,
     walletConnectAccount: getItem("address"),
     apiAddress,
-    newTransaction: undefined,
   };
 
   return state;
