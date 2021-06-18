@@ -73,7 +73,9 @@ export function createReducer(initialState: StateType) {
       }
 
       default: {
-        throw new Error(`Unhandled action type: ${action!.type}`);
+        throw new Error(
+          `Unhandled action type: ${action ? (action as any).type : ""}`
+        );
       }
     }
   };
