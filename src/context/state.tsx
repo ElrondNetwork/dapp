@@ -39,11 +39,11 @@ export interface StateType {
   dapp: DappState;
   error: string;
   loggedIn: boolean;
-  ledgerLogin: {
+  ledgerLogin?: {
     index: number;
     loginType: string;
   };
-  walletConnectLogin: {
+  walletConnectLogin?: {
     loginType: string;
   };
   address: string;
