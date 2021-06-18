@@ -6,7 +6,7 @@ import {
   TransactionHash,
 } from "@elrondnetwork/erdjs";
 import ledgerErrorCodes from "helpers/ledgerErrorCodes";
-import { useContext, useDispatch } from "context";
+import { useContext } from "context";
 import SendModal from "./SendModal";
 import { getProviderType } from "./helpers";
 import { useRefreshAccount } from "helpers/accountMethods";
@@ -25,8 +25,8 @@ export default function Send() {
   const [newTransaction, setNewTransaction] = React.useState<Transaction>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
-  const { dapp, address } = useContext();
-  const dispatch = useDispatch();
+  const context = useContext();
+  const { dapp, address } = context;
   const refreshAccount = useRefreshAccount();
 
   const provider: IDappProvider = dapp.provider;
@@ -53,7 +53,7 @@ export default function Send() {
     return () => {
       document.removeEventListener("transaction", send);
     };
-  }, []);
+  }, [context]);
 
   const sendTransaction = ({
     transaction,
