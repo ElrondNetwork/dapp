@@ -1,6 +1,6 @@
 import React from "react";
 import { StateType, createInitialState } from "./state";
-import { DispatchType, createReducer } from "./reducer";
+import { DispatchType, reducer } from "./reducer";
 import { NetworkType } from "../helpers/types";
 
 export interface ContextType {
@@ -17,7 +17,6 @@ const Dispatch = React.createContext<DispatchType | undefined>(undefined);
 
 function ContextProvider({ children, config }: ContextType) {
   const initialState = createInitialState(config);
-  const reducer = createReducer(initialState);
   const [state, dispatch] = React.useReducer(reducer, initialState);
   return (
     <Context.Provider value={state}>
