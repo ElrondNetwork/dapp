@@ -6,7 +6,6 @@ import {
   Nonce,
   ChainID,
   HWProvider,
-  Transaction,
 } from "@elrondnetwork/erdjs";
 import { AccountType, NetworkType } from "helpers/types";
 import { getItem } from "helpers/session";

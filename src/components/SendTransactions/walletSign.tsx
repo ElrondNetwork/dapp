@@ -8,27 +8,38 @@ interface SignTransactionsType {
   callbackRoute: string;
 }
 
-const buildSearchString = (transactions: Transaction[]) => {
+const buildSearchString = (plainTransactions: Object[]) => {
   const response = {};
 
-  const keys = transactions
-    .map((tx) => tx.toPlainObject())
+  const keys = plainTransactions
     .map((transaction) => Object.keys(transaction))
     .reduce((accumulator, current) => [...accumulator, ...current], [])
     .filter((value, index, array) => array.indexOf(value) === index);
 
   keys.forEach((key) => {
-    response[key] = transactions.map((transaction) => transaction[key]);
+    response[key] = plainTransactions.map((transaction) => transaction[key]);
   });
 
-  return qs.stringify(response);
+  return response;
 };
 
 export default function walletSign({
   transactions,
   callbackRoute,
 }: SignTransactionsType) {
-  ls.setItem(moment().valueOf(), JSON.stringify(transactions));
-  const url = buildSearchString(transactions);
-  console.log(url, callbackRoute);
+  const plainTransactions = transactions
+    .map((tx) => tx.toPlainObject())
+    .map((tx) => ({
+      ...tx,
+      data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
+      token: "",
+    }));
+
+  ls.setItem(moment().valueOf(), JSON.stringify(plainTransactions));
+  const parsedTransactions = buildSearchString(plainTransactions);
+  const search = qs.stringify({
+    ...parsedTransactions,
+    callbackUrl: `${window.location.origin}${callbackRoute}`,
+  });
+  window.location.href = `https://localhost:3000/hook/sign?${search}`;
 }

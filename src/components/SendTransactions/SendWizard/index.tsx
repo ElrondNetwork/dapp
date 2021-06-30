@@ -24,6 +24,10 @@ const SendWizard = ({
   callbackRoute,
 }: SendWizardType) => {
   const { walletConnectLogin } = useContext();
+  const fake: any = false;
+  if (fake) {
+    console.log(error, transactions, providerType, callbackRoute);
+  }
   return (
     <Modal
       show={show}

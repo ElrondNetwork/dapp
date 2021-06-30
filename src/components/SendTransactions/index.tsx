@@ -51,9 +51,9 @@ export default function Send() {
   };
 
   React.useEffect(() => {
-    document.addEventListener("transaction", send);
+    document.addEventListener("transactions", send);
     return () => {
-      document.removeEventListener("transaction", send);
+      document.removeEventListener("transactions", send);
     };
   }, [context]);
 
