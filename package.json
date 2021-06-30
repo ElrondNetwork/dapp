@@ -69,9 +69,11 @@
     "@fortawesome/fontawesome-svg-core": "1.2.35",
     "@fortawesome/free-solid-svg-icons": "5.15.3",
     "@fortawesome/react-fontawesome": "0.1.14",
+    "@types/qs": "6.9.6",
     "axios": "0.21.1",
     "platform": "1.3.6",
     "qrcode": "1.4.4",
+    "qs": "6.10.1",
     "react-bootstrap": "1.5.2",
     "react-router-dom": "5.2.0"
   }
