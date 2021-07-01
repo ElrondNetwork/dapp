@@ -72,7 +72,7 @@ const SignStep = ({
   const isFirst = currentStep === 0;
 
   const close = (e: React.MouseEvent) => {
-    e.preventDefault;
+    e.preventDefault();
     if (isFirst) {
       handleClose();
     } else {

@@ -34,8 +34,6 @@ const SignWithLedgerModal = ({
       (signedTransactions &&
         Object.keys(signedTransactions).length !== transactions.length);
     if (!signingDisabled && signedTransactions) {
-      console.log("here");
-
       submitTransactions(Object.values(signedTransactions));
     }
   }, [signedTransactions, transactions]);
@@ -52,7 +50,7 @@ const SignWithLedgerModal = ({
         <div className="card-body">
           {transactions.map((transaction, index) => (
             <SignStep
-              key={JSON.stringify(transaction) + index}
+              key={transaction.getData().toString() + index}
               {...{
                 index,
                 transaction,

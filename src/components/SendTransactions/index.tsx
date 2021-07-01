@@ -12,6 +12,8 @@ import SignWithLedgerModal from "./SignWithLedgerModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import { useRefreshAccount } from "helpers/accountMethods";
 import { RawTransactionType } from "helpers/types";
+import { useHistory } from "react-router-dom";
+import { updateSendStatus } from "helpers/useSendTransactions";
 
 interface SignTransactionsType {
   transactions: Transaction[];
@@ -19,6 +21,7 @@ interface SignTransactionsType {
 }
 
 export default function SendTransactions() {
+  const history = useHistory();
   const [showSignModal, setShowSignModal] = React.useState(false);
   const [txHash, setTxHash] = React.useState<TransactionHash>(
     new TransactionHash("")
@@ -37,10 +40,12 @@ export default function SendTransactions() {
   const providerType = getProviderType(provider);
 
   const handleClose = () => {
+    const callbackRoute = newCallbackRoute;
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setError("");
     setShowSignModal(false);
+    updateSendStatus({ loading: false, status: "cancelled" });
   };
 
   const send = (e: CustomEvent) => {
@@ -65,32 +70,33 @@ export default function SendTransactions() {
       setShowSignModal(true);
       setError(e);
     };
-
+    setNewCallbackRoute(callbackRoute);
+    updateSendStatus({ loading: true });
     if (provider) {
-      switch (providerType) {
-        case "wallet":
-          dapp.proxy
-            .getAccount(new Address(address))
-            .then((account) => {
-              transactions.forEach((tx, i) => {
-                tx.setNonce(new Nonce(account.nonce.valueOf() + i));
-              });
-
+      dapp.proxy
+        .getAccount(new Address(address))
+        .then((account) => {
+          transactions.forEach((tx, i) => {
+            tx.setNonce(new Nonce(account.nonce.valueOf() + i));
+          });
+          switch (providerType) {
+            case "wallet":
               walletSign({
                 transactions,
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
               });
-            })
-            .catch((e) => {
-              showError(e);
-            });
-          break;
-        case "ledger":
-          setNewTransactions(transactions);
-          setShowSignModal(true);
-          break;
-      }
+              break;
+            case "ledger":
+              setNewTransactions(transactions);
+              setShowSignModal(true);
+              break;
+          }
+        })
+        .catch((e) => {
+          updateSendStatus({ loading: false, status: "cancelled" });
+          showError(e);
+        });
     } else {
       setShowSignModal(true);
       setError(

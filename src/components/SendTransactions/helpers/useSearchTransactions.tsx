@@ -7,10 +7,11 @@ import * as ls from "helpers/localStorage";
 import { useContext } from "context";
 import newTransaction from "helpers/newTransaction";
 import useSubmitTransactions from "./useSubmitTransactions";
+import { updateSendStatus } from "helpers/useSendTransactions";
 
 export default function useSearchTransactions() {
   const { search } = useLocation();
-  const { dapp, address } = useContext();
+  const { address } = useContext();
   const submitTransactions = useSubmitTransactions();
 
   React.useEffect(() => {
@@ -51,6 +52,7 @@ export default function useSearchTransactions() {
 
             submitTransactions(signedTransactions);
           } catch (err) {
+            updateSendStatus({ loading: false, status: "failed" });
             console.log("Unable to parse session transactions");
           }
         }
