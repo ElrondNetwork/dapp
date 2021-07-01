@@ -3,8 +3,6 @@ import { Transaction } from "@elrondnetwork/erdjs";
 import * as ls from "helpers/localStorage";
 import { RawTransactionType } from "helpers/types";
 
-export const signSession = "signSession";
-
 interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
@@ -82,7 +80,7 @@ export default function walletSign({
 
   const callbackUrl = replyUrl({
     callbackUrl: `${window.location.origin}${callbackRoute}`,
-    urlParams: { [signSession]: signSessionId.toString() },
+    urlParams: { [ls.signSession]: signSessionId.toString() },
   });
 
   const search = qs.stringify({ ...parsedTransactions, callbackUrl });

@@ -42,3 +42,5 @@ export const getItem = (key: LocalKeyType): any => {
 
 export const removeItem = (key: LocalKeyType) =>
   localStorage.removeItem(String(key));
+
+export const signSession = "signSession";

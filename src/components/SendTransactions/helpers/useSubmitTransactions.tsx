@@ -1,17 +1,16 @@
 import * as React from "react";
 import qs from "qs";
 import { Signature } from "@elrondnetwork/erdjs/out/signature";
-import { Address, Balance, Nonce } from "@elrondnetwork/erdjs";
+import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
 import * as ls from "helpers/localStorage";
-import { signSession } from "./walletSign";
 import { useContext } from "context";
 import newTransaction from "helpers/newTransaction";
 
 export default function useSubmitTransactions() {
   const { search } = useLocation();
   const context = useContext();
-  const { dapp, address, network } = context;
+  const { dapp, address } = context;
 
   React.useEffect(() => {
     if (search) {
@@ -19,11 +18,11 @@ export default function useSubmitTransactions() {
 
       if (
         searchData &&
-        signSession in searchData &&
+        ls.signSession in searchData &&
         "signature" in searchData &&
         Array.isArray(searchData.signature)
       ) {
-        const signSessionId: number = (searchData as any)[signSession];
+        const signSessionId: number = (searchData as any)[ls.signSession];
         const sessionTransactions = ls.getItem(signSessionId);
 
         if (sessionTransactions) {
