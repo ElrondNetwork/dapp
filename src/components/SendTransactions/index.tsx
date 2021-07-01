@@ -14,7 +14,7 @@ import { useRefreshAccount } from "helpers/accountMethods";
 import { RawTransactionType } from "helpers/types";
 
 interface SignTransactionsType {
-  transactions: RawTransactionType[];
+  transactions: Transaction[];
   callbackRoute: string;
 }
 
@@ -74,11 +74,12 @@ export default function SendTransactions() {
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
+              transactions.forEach((tx, i) => {
+                tx.setNonce(new Nonce(account.nonce.valueOf() + i));
+              });
+
               walletSign({
-                transactions: transactions.map((tx, i) => ({
-                  ...tx,
-                  nonce: account.nonce.valueOf() + i,
-                })),
+                transactions,
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
               });

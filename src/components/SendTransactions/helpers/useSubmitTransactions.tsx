@@ -41,8 +41,6 @@ export default function useSubmitTransactions() {
               })
             );
 
-            console.log(transactions);
-
             transactions.forEach((tx) => {
               const transaction = newTransaction(tx);
               transaction.applySignature(
@@ -51,15 +49,24 @@ export default function useSubmitTransactions() {
               );
 
               console.log(transaction);
-
-              dapp.proxy
-                .sendTransaction(transaction)
-                .then((result) => {
-                  console.log(result);
-                })
-                .catch((err) => {
-                  console.error("Failed seding transaction", err);
-                });
+              fetch(`${network.apiAddress}/transactions`, {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(tx),
+              }).then((result) => {
+                console.log({ result });
+              });
+              //   dapp.proxy
+              //     .sendTransaction(transaction)
+              //     .then((result) => {
+              //       console.log(result);
+              //     })
+              //     .catch((err) => {
+              //       console.error("Failed seding transaction", err);
+              //     });
             });
           } catch (err) {
             console.log("Unable to parse session transactions");

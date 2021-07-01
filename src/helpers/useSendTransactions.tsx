@@ -6,7 +6,7 @@ export default function useSendTransactions() {
     transactions,
     callbackRoute,
   }: {
-    transactions: RawTransactionType[];
+    transactions: Transaction[];
     callbackRoute: string;
   }) => {
     const customEvent = new CustomEvent("transactions", {

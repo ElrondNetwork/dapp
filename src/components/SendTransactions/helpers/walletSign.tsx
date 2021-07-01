@@ -6,7 +6,7 @@ import { RawTransactionType } from "helpers/types";
 export const signSession = "signSession";
 
 interface SignTransactionsType {
-  transactions: RawTransactionType[];
+  transactions: Transaction[];
   callbackRoute: string;
   walletAddress: string;
 }
@@ -63,12 +63,15 @@ export default function walletSign({
   transactions,
   callbackRoute,
 }: SignTransactionsType) {
+  const plainTransactions = transactions.map((tx) => tx.toPlainObject());
+
   const signSessionId = Date.now();
 
-  ls.setItem(signSessionId, JSON.stringify(transactions));
+  ls.setItem(signSessionId, JSON.stringify(plainTransactions));
   const parsedTransactions = buildSearchString(
-    transactions.map((tx) => ({
+    plainTransactions.map((tx) => ({
       ...tx,
+      data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
       token: "",
     }))
   );
