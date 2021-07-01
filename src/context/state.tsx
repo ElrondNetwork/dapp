@@ -62,6 +62,9 @@ export const emptyAccount: AccountType = {
   nonce: new Nonce(0),
 };
 
+export const newWalletProvider = (network: NetworkType) =>
+  new WalletProvider(`${network.walletAddress}/dapp/init`);
+
 export const createInitialState = ({
   network,
   walletConnectBridge,
@@ -94,7 +97,7 @@ export const createInitialState = ({
             new ProxyProvider(gatewayAddress, 4000),
             getItem("ledgerLogin").index
           )
-        : new WalletProvider(sessionNetwork.walletAddress),
+        : newWalletProvider(sessionNetwork),
       proxy: new ProxyProvider(gatewayAddress, 4000),
       apiProvider: new ApiProvider(apiAddress, 4000),
     },

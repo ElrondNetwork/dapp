@@ -9,16 +9,16 @@ import {
 import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext } from "context";
 import SendWizard from "./SendWizard";
-import { getProviderType } from "./helpers";
+import { getProviderType, walletSign, useSubmitTransactions } from "./helpers";
 import { useRefreshAccount } from "helpers/accountMethods";
-import walletSign from "./walletSign";
+import { RawTransactionType } from "helpers/types";
 
 interface SignTransactionsType {
-  transactions: Transaction[];
+  transactions: RawTransactionType[];
   callbackRoute: string;
 }
 
-export default function Send() {
+export default function SendTransactions() {
   const [showSendModal, setShowSendModal] = React.useState(false);
   const [showStatus, setShowStatus] = React.useState(false);
   const [txHash, setTxHash] = React.useState<TransactionHash>(
@@ -28,8 +28,10 @@ export default function Send() {
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
   const context = useContext();
-  const { dapp, address } = context;
+  const { dapp, address, network } = context;
   const refreshAccount = useRefreshAccount();
+
+  useSubmitTransactions();
 
   const provider: IDappProvider = dapp.provider;
 
@@ -72,11 +74,14 @@ export default function Send() {
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
-              transactions.forEach((tx, i) => {
-                tx.setNonce(new Nonce(account.nonce.valueOf() + i));
+              walletSign({
+                transactions: transactions.map((tx, i) => ({
+                  ...tx,
+                  nonce: account.nonce.valueOf() + i,
+                })),
+                callbackRoute,
+                walletAddress: `${network.walletAddress}`,
               });
-
-              walletSign({ transactions, callbackRoute });
             })
             .catch((e) => {
               showError(e);

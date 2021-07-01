@@ -4,14 +4,12 @@ import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
 import { useContext } from "context";
-import { ProviderType } from "./../helpers";
 
 export interface SendWizardType {
   show: boolean;
   handleClose: () => void;
   error: string;
   transactions: Transaction[];
-  providerType: ProviderType;
   callbackRoute: string;
 }
 
@@ -20,13 +18,13 @@ const SendWizard = ({
   handleClose,
   error,
   transactions,
-  providerType,
+
   callbackRoute,
 }: SendWizardType) => {
   const { walletConnectLogin } = useContext();
   const fake: any = false;
   if (fake) {
-    console.log(error, transactions, providerType, callbackRoute);
+    console.log(error, transactions, callbackRoute);
   }
   return (
     <Modal

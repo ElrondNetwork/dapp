@@ -1,11 +1,12 @@
 import { Transaction } from "@elrondnetwork/erdjs";
+import { RawTransactionType } from "./types";
 
 export default function useSendTransactions() {
   return ({
     transactions,
     callbackRoute,
   }: {
-    transactions: Transaction[];
+    transactions: RawTransactionType[];
     callbackRoute: string;
   }) => {
     const customEvent = new CustomEvent("transactions", {
