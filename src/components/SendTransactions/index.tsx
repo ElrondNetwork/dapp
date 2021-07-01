@@ -8,8 +8,8 @@ import {
 } from "@elrondnetwork/erdjs";
 import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext } from "context";
-import SendWizard from "./SendWizard";
-import { getProviderType, walletSign, useSubmitTransactions } from "./helpers";
+import SignWithLedgerModal from "./SignWithLedgerModal";
+import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import { useRefreshAccount } from "helpers/accountMethods";
 import { RawTransactionType } from "helpers/types";
 
@@ -19,8 +19,7 @@ interface SignTransactionsType {
 }
 
 export default function SendTransactions() {
-  const [showSendModal, setShowSendModal] = React.useState(false);
-  const [showStatus, setShowStatus] = React.useState(false);
+  const [showSignModal, setShowSignModal] = React.useState(false);
   const [txHash, setTxHash] = React.useState<TransactionHash>(
     new TransactionHash("")
   );
@@ -31,7 +30,7 @@ export default function SendTransactions() {
   const { dapp, address, network } = context;
   const refreshAccount = useRefreshAccount();
 
-  useSubmitTransactions();
+  useSearchTransactions();
 
   const provider: IDappProvider = dapp.provider;
 
@@ -40,9 +39,8 @@ export default function SendTransactions() {
   const handleClose = () => {
     setNewTransactions(undefined);
     setNewCallbackRoute("");
-    setShowStatus(false);
     setError("");
-    setShowSendModal(false);
+    setShowSignModal(false);
   };
 
   const send = (e: CustomEvent) => {
@@ -64,7 +62,7 @@ export default function SendTransactions() {
     callbackRoute,
   }: SignTransactionsType) => {
     const showError = (e: string) => {
-      setShowSendModal(true);
+      setShowSignModal(true);
       setError(e);
     };
 
@@ -88,9 +86,13 @@ export default function SendTransactions() {
               showError(e);
             });
           break;
+        case "ledger":
+          setNewTransactions(transactions);
+          setShowSignModal(true);
+          break;
       }
     } else {
-      setShowSendModal(true);
+      setShowSignModal(true);
       setError(
         "You need a singer/valid signer to send a transaction, use either WalletProvider, LedgerProvider or WalletConnect"
       );
@@ -100,11 +102,12 @@ export default function SendTransactions() {
   const sendProps = {
     handleClose,
     error,
-    show: showSendModal,
+    setError,
+    show: showSignModal,
     transactions: newTransactions || [],
     providerType,
     callbackRoute: newCallbackRoute,
   };
 
-  return <SendWizard {...sendProps} />;
+  return <SignWithLedgerModal {...sendProps} />;
 }
