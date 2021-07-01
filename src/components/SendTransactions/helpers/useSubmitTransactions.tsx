@@ -1,7 +1,7 @@
 import * as React from "react";
 import qs from "qs";
 import { Signature } from "@elrondnetwork/erdjs/out/signature";
-import { Address } from "@elrondnetwork/erdjs";
+import { Address, Balance, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
 import * as ls from "helpers/localStorage";
 import { signSession } from "./walletSign";
@@ -41,32 +41,26 @@ export default function useSubmitTransactions() {
               })
             );
 
-            transactions.forEach((tx) => {
+            transactions.forEach((tx, index) => {
               const transaction = newTransaction(tx);
-              transaction.applySignature(
-                new Signature(tx.signature),
-                new Address(address)
+
+              console.log(
+                tx.signature,
+                searchData.signature ? searchData.signature[index] : "missing"
               );
 
-              console.log(transaction);
-              fetch(`${network.apiAddress}/transactions`, {
-                method: "POST",
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(tx),
-              }).then((result) => {
-                console.log({ result });
-              });
-              //   dapp.proxy
-              //     .sendTransaction(transaction)
-              //     .then((result) => {
-              //       console.log(result);
-              //     })
-              //     .catch((err) => {
-              //       console.error("Failed seding transaction", err);
-              //     });
+              const signature = new Signature(tx.signature);
+              transaction.setNonce(new Nonce(tx.nonce));
+              transaction.applySignature(signature, new Address(address));
+
+              dapp.proxy
+                .sendTransaction(transaction)
+                .then((result) => {
+                  console.log(result);
+                })
+                .catch((err) => {
+                  console.error("Failed seding transaction", err);
+                });
             });
           } catch (err) {
             console.log("Unable to parse session transactions");

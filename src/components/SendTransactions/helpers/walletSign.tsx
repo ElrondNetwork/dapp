@@ -63,7 +63,12 @@ export default function walletSign({
   transactions,
   callbackRoute,
 }: SignTransactionsType) {
-  const plainTransactions = transactions.map((tx) => tx.toPlainObject());
+  const plainTransactions = transactions
+    .map((tx) => tx.toPlainObject())
+    .map((tx) => ({
+      ...tx,
+      data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
+    }));
 
   const signSessionId = Date.now();
 
@@ -71,7 +76,6 @@ export default function walletSign({
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
       ...tx,
-      data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
       token: "",
     }))
   );

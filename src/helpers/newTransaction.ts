@@ -12,7 +12,7 @@ import { RawTransactionType } from "./types";
 
 export default function newTransaction(rawTransaction: RawTransactionType) {
   return new Transaction({
-    value: Balance.egld(rawTransaction.value),
+    value: Balance.fromString(rawTransaction.value),
     data: new TransactionPayload(rawTransaction.data),
     receiver: new Address(rawTransaction.receiver),
     gasLimit: new GasLimit(rawTransaction.gasLimit),
