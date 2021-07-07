@@ -53,6 +53,8 @@ const SignStep = ({
           );
           if (!isLast) {
             setCurrentStep((exising) => exising + 1);
+          } else {
+            handleClose();
           }
         });
       })
