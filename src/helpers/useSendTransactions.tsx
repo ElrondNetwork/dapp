@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Transaction } from "@elrondnetwork/erdjs";
+import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 
 interface StateType {
   loading?: boolean;
   error?: string;
-  hashes?: string[];
+  hashes?: TransactionHash[];
   status?: "success" | "failed" | "cancelled";
 }
 
@@ -12,7 +12,7 @@ export function updateSendStatus(sendStatus: StateType) {
   const customEvent = new CustomEvent("updateSendStatus", {
     detail: { sendStatus },
   });
-  console.log("updateing with", sendStatus);
+  console.log("updating with", sendStatus);
 
   document.dispatchEvent(customEvent);
 }

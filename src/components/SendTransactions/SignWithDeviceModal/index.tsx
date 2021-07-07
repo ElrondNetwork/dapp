@@ -13,7 +13,7 @@ export interface SignModalType {
   callbackRoute: string;
 }
 
-const SignWithLedgerModal = ({
+const SignWithDeviceModal = ({
   show,
   handleClose,
   error,
@@ -71,4 +71,4 @@ const SignWithLedgerModal = ({
   );
 };
 
-export default SignWithLedgerModal;
+export default SignWithDeviceModal;

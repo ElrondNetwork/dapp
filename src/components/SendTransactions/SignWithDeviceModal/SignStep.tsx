@@ -1,6 +1,10 @@
 import * as React from "react";
-import { Modal } from "react-bootstrap";
-import { Address, Nonce, Transaction } from "@elrondnetwork/erdjs";
+import {
+  Address,
+  Nonce,
+  Transaction,
+  IDappProvider,
+} from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
 import { useContext } from "context";
@@ -20,15 +24,6 @@ export interface SignModalType {
   setError: (value: React.SetStateAction<string>) => void;
 }
 
-const provider = {
-  signTransaction: (tx: Transaction): Promise<Transaction> =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(tx);
-      }, 1000);
-    }),
-};
-
 const SignStep = ({
   handleClose,
   error,
@@ -40,15 +35,17 @@ const SignStep = ({
   currentStep,
   setCurrentStep,
 }: SignModalType) => {
-  const { dapp, address } = useContext();
-  const [waitingForLedger, setWaitingForLedger] = React.useState(false);
+  const { dapp, address, walletConnectLogin } = useContext();
+  const [waitingForDevice, setWaitingForDevice] = React.useState(false);
+
+  const provider: IDappProvider = dapp.provider;
 
   const sign = () => {
     dapp.proxy
       .getAccount(new Address(address))
       .then((account) => {
         transaction.setNonce(new Nonce(account.nonce.valueOf() + index));
-        setWaitingForLedger(true);
+        setWaitingForDevice(true);
         provider.signTransaction(transaction).then((tx) => {
           const newSignedTx = { [index]: tx };
           setSignedTransactions((existing) =>
@@ -60,14 +57,18 @@ const SignStep = ({
         });
       })
       .catch((e) => {
-        setWaitingForLedger(false);
+        setWaitingForDevice(false);
         setError(e.message);
       });
   };
 
   let signBtnLabel = "Sign & Continue";
-  signBtnLabel = waitingForLedger ? "Check your Ledger" : signBtnLabel;
-  signBtnLabel = isLast && !waitingForLedger ? "Sign & Submit" : signBtnLabel;
+  signBtnLabel = waitingForDevice
+    ? walletConnectLogin
+      ? "Confirm on Maiar"
+      : "Check your Ledger"
+    : signBtnLabel;
+  signBtnLabel = isLast && !waitingForDevice ? "Sign & Submit" : signBtnLabel;
 
   const isFirst = currentStep === 0;
 
@@ -88,7 +89,7 @@ const SignStep = ({
       iconClass="text-white"
       iconBgClass={error ? "bg-danger" : "bg-warning"}
       iconSize="3x"
-      title="Confirm on Ledger"
+      title={walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"}
       description={
         <React.Fragment>
           {transaction && (
@@ -122,7 +123,7 @@ const SignStep = ({
                   id="signBtn"
                   data-testid="signBtn"
                   onClick={sign}
-                  disabled={waitingForLedger}
+                  disabled={waitingForDevice}
                 >
                   {signBtnLabel}
                 </button>

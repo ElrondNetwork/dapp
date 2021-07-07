@@ -6,13 +6,9 @@ import {
   TransactionHash,
   Nonce,
 } from "@elrondnetwork/erdjs";
-import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext } from "context";
-import SignWithLedgerModal from "./SignWithLedgerModal";
+import SignWithDeviceModal from "./SignWithDeviceModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
-import { useRefreshAccount } from "helpers/accountMethods";
-import { RawTransactionType } from "helpers/types";
-import { useHistory } from "react-router-dom";
 import { updateSendStatus } from "helpers/useSendTransactions";
 
 interface SignTransactionsType {
@@ -21,17 +17,12 @@ interface SignTransactionsType {
 }
 
 export default function SendTransactions() {
-  const history = useHistory();
   const [showSignModal, setShowSignModal] = React.useState(false);
-  const [txHash, setTxHash] = React.useState<TransactionHash>(
-    new TransactionHash("")
-  );
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
   const context = useContext();
   const { dapp, address, network } = context;
-  const refreshAccount = useRefreshAccount();
 
   useSearchTransactions();
 
@@ -91,6 +82,10 @@ export default function SendTransactions() {
               setNewTransactions(transactions);
               setShowSignModal(true);
               break;
+            case "walletconnect":
+              setNewTransactions(transactions);
+              setShowSignModal(true);
+              break;
           }
         })
         .catch((e) => {
@@ -115,5 +110,5 @@ export default function SendTransactions() {
     callbackRoute: newCallbackRoute,
   };
 
-  return <SignWithLedgerModal {...sendProps} />;
+  return <SignWithDeviceModal {...sendProps} />;
 }

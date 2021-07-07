@@ -94,12 +94,12 @@ export const createInitialState = ({
     dapp: {
       provider: getItem("ledgerLogin")
         ? new HWProvider(
-            new ProxyProvider(gatewayAddress, 4000),
+            new ProxyProvider(gatewayAddress, { timeout: 4000 }),
             getItem("ledgerLogin").index
           )
         : newWalletProvider(sessionNetwork),
-      proxy: new ProxyProvider(gatewayAddress, 4000),
-      apiProvider: new ApiProvider(apiAddress, 4000),
+      proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
+      apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
     error: "",
     loggedIn: !!getItem("loggedIn"),
