@@ -6,6 +6,7 @@ import {
   IDappProvider,
 } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
 
@@ -34,7 +35,9 @@ const SignStep = ({
   setSignedTransactions,
   currentStep,
   setCurrentStep,
+  callbackRoute,
 }: SignModalType) => {
+  const history = useHistory();
   const { dapp, address, walletConnectLogin } = useContext();
   const [waitingForDevice, setWaitingForDevice] = React.useState(false);
 
@@ -55,6 +58,7 @@ const SignStep = ({
             setCurrentStep((exising) => exising + 1);
           } else {
             handleClose();
+            history.push(callbackRoute);
           }
         });
       })
