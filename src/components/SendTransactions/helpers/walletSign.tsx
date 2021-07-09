@@ -7,6 +7,7 @@ interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
   walletAddress: string;
+  successDescription?: string;
 }
 
 const buildSearchString = (plainTransactions: Object[]) => {
@@ -60,6 +61,7 @@ export default function walletSign({
   walletAddress,
   transactions,
   callbackRoute,
+  successDescription,
 }: SignTransactionsType) {
   const plainTransactions = transactions
     .map((tx) => tx.toPlainObject())
@@ -83,7 +85,11 @@ export default function walletSign({
     urlParams: { [ls.signSession]: signSessionId.toString() },
   });
 
-  const search = qs.stringify({ ...parsedTransactions, callbackUrl });
+  const search = qs.stringify({
+    ...parsedTransactions,
+    successDescription,
+    callbackUrl,
+  });
 
   window.location.href = `${walletAddress}/hook/sign?${search}`;
 }

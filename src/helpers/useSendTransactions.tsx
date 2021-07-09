@@ -6,14 +6,13 @@ interface StateType {
   error?: string;
   hashes?: TransactionHash[];
   status?: "success" | "failed" | "cancelled";
+  successDescription?: string;
 }
 
 export function updateSendStatus(sendStatus: StateType) {
   const customEvent = new CustomEvent("updateSendStatus", {
     detail: { sendStatus },
   });
-  console.log("updating with", sendStatus);
-
   document.dispatchEvent(customEvent);
 }
 
@@ -26,15 +25,6 @@ export default function useSendTransactions() {
   });
 
   const updateState = (e: CustomEvent) => {
-    console.log(
-      "receiving",
-      e.detail,
-      e.detail &&
-        "sendStatus" in e.detail &&
-        typeof e.detail.sendStatus === "object" &&
-        e.detail.sendStatus !== null
-    );
-
     if (
       e.detail &&
       "sendStatus" in e.detail &&
@@ -58,12 +48,14 @@ export default function useSendTransactions() {
   const sendTransactions = ({
     transactions,
     callbackRoute,
+    successDescription,
   }: {
     transactions: Transaction[];
     callbackRoute: string;
+    successDescription?: string;
   }) => {
     const customEvent = new CustomEvent("transactions", {
-      detail: { transactions, callbackRoute },
+      detail: { transactions, callbackRoute, successDescription },
     });
     document.dispatchEvent(customEvent);
   };

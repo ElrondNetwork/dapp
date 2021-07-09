@@ -26,6 +26,7 @@ export default function useSearchTransactions() {
       ) {
         const signSessionId: number = (searchData as any)[ls.signSession];
         const sessionTransactions = ls.getItem(signSessionId);
+        const successDescription = searchData.successDescription?.toString();
 
         if (sessionTransactions) {
           try {
@@ -50,10 +51,9 @@ export default function useSearchTransactions() {
               return transaction;
             });
 
-            submitTransactions(signedTransactions);
+            submitTransactions(signedTransactions, successDescription);
           } catch (err) {
             updateSendStatus({ loading: false, status: "failed" });
-            console.log("Unable to parse session transactions");
           }
         }
       }

@@ -14,12 +14,16 @@ import { updateSendStatus } from "helpers/useSendTransactions";
 interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
+  successDescription?: string;
 }
 
 export default function SendTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
+  const [newsuccessDescription, setNewSuccessDescription] = React.useState<
+    string | undefined
+  >();
   const [error, setError] = React.useState("");
   const context = useContext();
   const { dapp, address, network } = context;
@@ -34,6 +38,7 @@ export default function SendTransactions() {
     const callbackRoute = newCallbackRoute;
     setNewTransactions(undefined);
     setNewCallbackRoute("");
+    setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
     updateSendStatus({ loading: false, status: "cancelled" });
@@ -41,8 +46,8 @@ export default function SendTransactions() {
 
   const send = (e: CustomEvent) => {
     if (e.detail && "transactions" in e.detail && "callbackRoute" in e.detail) {
-      const { transactions, callbackRoute } = e.detail;
-      signTransactions({ transactions, callbackRoute });
+      const { transactions, callbackRoute, successDescription } = e.detail;
+      signTransactions({ transactions, callbackRoute, successDescription });
     }
   };
 
@@ -56,6 +61,7 @@ export default function SendTransactions() {
   const signTransactions = ({
     transactions,
     callbackRoute,
+    successDescription,
   }: SignTransactionsType) => {
     const showError = (e: string) => {
       setShowSignModal(true);
@@ -76,14 +82,17 @@ export default function SendTransactions() {
                 transactions,
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
+                successDescription,
               });
               break;
             case "ledger":
               setNewTransactions(transactions);
+              setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
               setNewTransactions(transactions);
+              setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
           }
@@ -108,6 +117,7 @@ export default function SendTransactions() {
     transactions: newTransactions || [],
     providerType,
     callbackRoute: newCallbackRoute,
+    successDescription: newsuccessDescription || "",
   };
 
   return <SignWithDeviceModal {...sendProps} />;
