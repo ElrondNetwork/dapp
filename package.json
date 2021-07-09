@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/dapp",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Elrond Dapp core components",
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",

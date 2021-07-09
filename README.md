@@ -1,30 +1,36 @@
 # @elrondnetwork/dapp
-The npm package of the __Elrond Dapp__ core components, built using [React.js](https://reactjs.org/) and [Typescript](https://www.typescriptlang.org/).
+
+The npm package of the **Elrond Dapp** core components, built using [React.js](https://reactjs.org/) and [Typescript](https://www.typescriptlang.org/).
 This library will help you authenticate users and provide a straight foreward way to execute transactions on the Elrond blockchain.
 
 See [Dapp template](https://dapp-template.elrond.com/) for live demo or checkout usage in the [Github repo](https://github.com/ElrondNetwork/dapp-template)
 
 ## Requirements
-* Node.js version 12.16.2+
-* Npm version 6.14.4+
+
+- Node.js version 12.16.2+
+- Npm version 6.14.4+
 
 ## Dependencies
-* [@elrondnetwork/erdjs](https://www.npmjs.com/package/@elrondnetwork/erdjs) version 4.2.2+
-* [react](https://reactjs.org/) version 17.0.2+
-* [react-router-dom](https://www.npmjs.com/package/react-router-dom) version 5.2.0+
-* [react-bootstrap](https://www.npmjs.com/package/react-bootstrap) version 1.5.2+
-* [axios](https://www.npmjs.com/package/axios) version 0.21.1+
-* [moment](https://www.npmjs.com/package/moment) version 2.29.1+
+
+- [@elrondnetwork/erdjs](https://www.npmjs.com/package/@elrondnetwork/erdjs) version 6.1.0+
+- [react](https://reactjs.org/) version 17.0.2+
+- [react-router-dom](https://www.npmjs.com/package/react-router-dom) version 5.2.0+
+- [react-bootstrap](https://www.npmjs.com/package/react-bootstrap) version 1.5.2+
+- [axios](https://www.npmjs.com/package/axios) version 0.21.1+
+- [moment](https://www.npmjs.com/package/moment) version 2.29.1+
 
 ## Installation
 
 npm:
+
 ```bash
 npm install @elrondnetwork/dapp
 ```
 
 ## Usage
-The main component that has to wrap your application is the  `Dapp.Context`. Use it like:
+
+The main component that has to wrap your application is the `Dapp.Context`. Use it like:
+
 ```javascript
 import * as Dapp from "@elrondnetwork/dapp";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -92,15 +98,15 @@ function App() {
   );
 }
 ```
+
 #### Config sample
+
 ```typescript
 import * as Dapp from "@elrondnetwork/dapp";
 
-export const walletConnectBridge: string =
-  "https://bridge.walletconnect.org";
+export const walletConnectBridge: string = "https://bridge.walletconnect.org";
 export const walletConnectDeepLink: string =
   "https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://maiar.com/";
-
 
 export const network: Dapp.NetworkType = {
   id: "testnet",
@@ -112,33 +118,39 @@ export const network: Dapp.NetworkType = {
   explorerAddress: "http://testnet-explorer.elrond.com/",
 };
 ```
+
 #### Authenticating your app
+
 Wrap your routes inside `Dapp.Authenticate`. Example usage inside `Layout`:
+
 ```javascript
-        <>
-          <Navbar />
-          <main>
-            <Dapp.Authenticate 
-              routes={routes} 
-              unlockRoute="/unlock" /* redirect here if user is not authenticated */>
-              {children}
-            </Dapp.Authenticate>
-          </main>
-          <Footer />
-        </>
+<>
+  <Navbar />
+  <main>
+    <Dapp.Authenticate
+      routes={routes}
+      unlockRoute="/unlock" /* redirect here if user is not authenticated */
+    >
+      {children}
+    </Dapp.Authenticate>
+  </main>
+  <Footer />
+</>
 ```
 
 #### Logging out from the Dapp
+
 ```javascript
-  const { loggedIn, address } = Dapp.useContext();
-  const dappDispatch = Dapp.useDispatch();
-  const logOut = () => {
-    dappDispatch({ type: "logout" });
-    history.push("/home");
-  };
+const { loggedIn, address } = Dapp.useContext();
+const dappDispatch = Dapp.useDispatch();
+const logOut = () => {
+  dappDispatch({ type: "logout" });
+  history.push("/home");
+};
 ```
 
 #### Sending a transaction
+
 ```javascript
 import {
   Transaction,
@@ -151,17 +163,15 @@ import {
   TransactionVersion,
 } from "@elrondnetwork/erdjs";
 
-function createTransactionFromRaw(
-  rawTransaction: {
-    value: string;
-    receiver: string;
-    gasPrice: number;
-    gasLimit: number;
-    data: string;
-    chainID: string;
-    version: number;
-  }
-) {
+function createTransactionFromRaw(rawTransaction: {
+  value: string,
+  receiver: string,
+  gasPrice: number,
+  gasLimit: number,
+  data: string,
+  chainID: string,
+  version: number,
+}) {
   return new Transaction({
     value: Balance.egld(rawTransaction.value),
     data: TransactionPayload.fromEncoded(rawTransaction.data),
@@ -172,14 +182,13 @@ function createTransactionFromRaw(
     version: new TransactionVersion(rawTransaction.version),
   });
 }
-    // then, inside the component
-    const sendTransaction = Dapp.useSendTransaction();
-    const transaction = createTransactionFromRaw(rawTransaction);
-    const onClick = () => {
-        sendTransaction({
-          transaction,
-          callbackRoute: "/outcome",
-        });
-    }
-
+// then, inside the component
+const sendTransaction = Dapp.useSendTransaction();
+const transaction = createTransactionFromRaw(rawTransaction);
+const onClick = () => {
+  sendTransaction({
+    transaction,
+    callbackRoute: "/outcome",
+  });
+};
 ```
