@@ -6,7 +6,6 @@ import {
   Nonce,
   ChainID,
   HWProvider,
-  Transaction,
 } from "@elrondnetwork/erdjs";
 import { AccountType, NetworkType } from "helpers/types";
 import { getItem } from "helpers/session";
@@ -34,15 +33,16 @@ export interface DappState {
 export interface StateType {
   walletConnectBridge: string;
   walletConnectDeepLink: string;
+  network: NetworkType;
   chainId: ChainID;
   dapp: DappState;
   error: string;
   loggedIn: boolean;
-  ledgerLogin: {
+  ledgerLogin?: {
     index: number;
     loginType: string;
   };
-  walletConnectLogin: {
+  walletConnectLogin?: {
     loginType: string;
   };
   address: string;
@@ -55,18 +55,15 @@ export interface StateType {
   };
   walletConnectAccount?: string;
   apiAddress: string;
-  newTransaction:
-    | {
-        transaction: Transaction;
-        callbackRoute: string;
-      }
-    | undefined;
 }
 export const emptyAccount: AccountType = {
   balance: "...",
   address: "...",
   nonce: new Nonce(0),
 };
+
+export const newWalletProvider = (network: NetworkType) =>
+  new WalletProvider(`${network.walletAddress}/dapp/init`);
 
 export const createInitialState = ({
   network,
@@ -92,16 +89,17 @@ export const createInitialState = ({
   const state: StateType = {
     walletConnectBridge,
     walletConnectDeepLink,
+    network: sessionNetwork,
     chainId: new ChainID("-1"),
     dapp: {
       provider: getItem("ledgerLogin")
         ? new HWProvider(
-            new ProxyProvider(gatewayAddress, 4000),
+            new ProxyProvider(gatewayAddress, { timeout: 4000 }),
             getItem("ledgerLogin").index
           )
-        : new WalletProvider(sessionNetwork.walletAddress),
-      proxy: new ProxyProvider(gatewayAddress, 4000),
-      apiProvider: new ApiProvider(apiAddress, 4000),
+        : newWalletProvider(sessionNetwork),
+      proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
+      apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
     error: "",
     loggedIn: !!getItem("loggedIn"),
@@ -120,7 +118,6 @@ export const createInitialState = ({
         : undefined,
     walletConnectAccount: getItem("address"),
     apiAddress,
-    newTransaction: undefined,
   };
 
   return state;

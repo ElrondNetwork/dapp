@@ -5,11 +5,9 @@ import {
   WalletConnectProvider,
 } from "@elrondnetwork/erdjs";
 
-export type ProviderType = "wallet" | "ledger" | "walletconnect" | "";
+type ProviderType = "wallet" | "ledger" | "walletconnect" | "";
 
-export const getProviderType = (
-  provider: IDappProvider | undefined
-): ProviderType => {
+const getProviderType = (provider: IDappProvider | undefined): ProviderType => {
   let providerType: ProviderType = "";
 
   providerType =
@@ -27,3 +25,5 @@ export const getProviderType = (
 
   return providerType;
 };
+
+export default getProviderType;

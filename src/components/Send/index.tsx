@@ -6,9 +6,10 @@ import {
   TransactionHash,
 } from "@elrondnetwork/erdjs";
 import ledgerErrorCodes from "helpers/ledgerErrorCodes";
-import { useContext, useDispatch } from "context";
+import { useContext } from "context";
 import SendModal from "./SendModal";
 import { getProviderType } from "./helpers";
+import { useRefreshAccount } from "helpers/accountMethods";
 
 interface SendTransactionType {
   transaction: Transaction;
@@ -24,13 +25,9 @@ export default function Send() {
   const [newTransaction, setNewTransaction] = React.useState<Transaction>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [error, setError] = React.useState("");
-  const {
-    dapp,
-    address,
-    walletConnectLogin,
-    newTransaction: contextTransaction,
-  } = useContext();
-  const dispatch = useDispatch();
+  const context = useContext();
+  const { dapp, address } = context;
+  const refreshAccount = useRefreshAccount();
 
   const provider: IDappProvider = dapp.provider;
 
@@ -44,16 +41,19 @@ export default function Send() {
     setShowSendModal(false);
   };
 
-  React.useEffect(() => {
-    if (contextTransaction) {
-      const { transaction, callbackRoute } = contextTransaction;
+  const send = (e: CustomEvent) => {
+    if (e.detail && "transaction" in e.detail && "callbackRoute" in e.detail) {
+      const { transaction, callbackRoute } = e.detail;
       sendTransaction({ transaction, callbackRoute });
-      dispatch({
-        type: "setNewTransaction",
-        newTransaction: undefined,
-      });
     }
-  }, [contextTransaction]);
+  };
+
+  React.useEffect(() => {
+    document.addEventListener("transaction", send);
+    return () => {
+      document.removeEventListener("transaction", send);
+    };
+  }, [context]);
 
   const sendTransaction = ({
     transaction,
@@ -97,6 +97,7 @@ export default function Send() {
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {
+                  refreshAccount();
                   setTxHash(transaction.getHash());
                   setNewCallbackRoute(callbackRoute);
                   setShowStatus(true);
@@ -105,6 +106,10 @@ export default function Send() {
                   if (e.statusCode in ledgerErrorCodes) {
                     const { message } = (ledgerErrorCodes as any)[e.statusCode];
                     showError(message);
+                  } else if (
+                    e.message === "HWApp not initialised, call init() first"
+                  ) {
+                    showError("Your session has expired. Please login again");
                   } else {
                     showError(e.message);
                   }
@@ -125,6 +130,7 @@ export default function Send() {
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {
+                  refreshAccount();
                   setTxHash(transaction.getHash());
                   setNewCallbackRoute(callbackRoute);
                   setShowStatus(true);
