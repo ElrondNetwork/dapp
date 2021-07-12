@@ -1,7 +1,6 @@
 import qs from "qs";
 import { Transaction } from "@elrondnetwork/erdjs";
 import * as ls from "helpers/localStorage";
-import { RawTransactionType } from "helpers/types";
 
 interface SignTransactionsType {
   transactions: Transaction[];

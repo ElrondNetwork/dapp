@@ -5,9 +5,9 @@ import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
 import * as ls from "helpers/localStorage";
 import { useContext } from "context";
-import newTransaction from "helpers/newTransaction";
-import useSubmitTransactions from "./useSubmitTransactions";
 import { updateSendStatus } from "helpers/useSendTransactions";
+import useSubmitTransactions from "./useSubmitTransactions";
+import newTransaction from "./newTransaction";
 
 export default function useSearchTransactions() {
   const { search } = useLocation();
