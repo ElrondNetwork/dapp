@@ -1,7 +1,7 @@
 import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import { setItem, removeItem } from "helpers/session";
-import * as localStorage from "helpers/localStorage";
+import * as ls from "helpers/localStorage";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -22,6 +22,7 @@ export type ActionType =
 export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "login": {
+      ls.removeItem("nonce");
       const { address } = action;
       let loggedIn = address || address !== "" ? true : false;
       setItem("loggedIn", loggedIn);
@@ -33,6 +34,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
       };
     }
     case "ledgerLogin": {
+      ls.removeItem("nonce");
       setItem("ledgerLogin", action.ledgerLogin);
       return { ...state, ledgerLogin: action.ledgerLogin };
     }
@@ -81,7 +83,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
       removeItem("address");
       removeItem("ledgerLogin");
       removeItem("walletConnectLogin");
-      localStorage.removeItem("nonce");
+      ls.removeItem("nonce");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,
