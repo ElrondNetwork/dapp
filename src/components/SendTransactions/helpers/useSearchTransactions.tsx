@@ -26,7 +26,9 @@ export default function useSearchTransactions() {
       ) {
         const signSessionId: number = (searchData as any)[ls.signSession];
         const sessionTransactions = ls.getItem(signSessionId);
-        const successDescription = searchData.successDescription?.toString();
+        const successDescription = ls.getItem(
+          `${signSessionId}-successDescription`
+        );
 
         if (sessionTransactions) {
           try {

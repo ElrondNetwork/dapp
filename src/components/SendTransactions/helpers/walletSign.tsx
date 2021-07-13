@@ -73,6 +73,10 @@ export default function walletSign({
   const signSessionId = Date.now();
 
   ls.setItem(signSessionId, JSON.stringify(plainTransactions));
+  ls.setItem(
+    `${signSessionId.toString()}-successDescription`,
+    successDescription
+  );
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
       ...tx,
@@ -87,7 +91,6 @@ export default function walletSign({
 
   const search = qs.stringify({
     ...parsedTransactions,
-    successDescription,
     callbackUrl,
   });
 
