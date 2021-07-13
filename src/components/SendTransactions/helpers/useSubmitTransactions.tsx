@@ -7,6 +7,7 @@ import {
 import { useContext, useDispatch } from "context";
 import useSendTransactions, {
   updateSendStatus,
+  SendStatusType,
 } from "helpers/useSendTransactions";
 import { setItem } from "helpers/localStorage";
 
@@ -18,7 +19,9 @@ export default function useSubmitTransactions() {
   const { sendStatus } = useSendTransactions();
   const ref = React.useRef<any>();
 
-  const getStatus = (hash: TransactionHash): Promise<TransactionStatus> =>
+  const getStatus = (
+    hash: TransactionHash
+  ): Promise<{ status: TransactionStatus; hash: TransactionHash }> =>
     new Promise((resolve, reject) => {
       ref.current = setInterval(() => {
         if (!document.hidden) {
@@ -27,7 +30,7 @@ export default function useSubmitTransactions() {
             .then(({ status }) => {
               if (!status.isPending()) {
                 clearInterval(ref.current);
-                resolve(status);
+                resolve({ status, hash });
               }
             })
             .catch(() => {
@@ -47,20 +50,23 @@ export default function useSubmitTransactions() {
     sequential: boolean;
   }) => {
     if (sequential) {
-      for (const transaction of transactions) {
+      const txEntries: any = transactions.entries();
+      for (let [index, transaction] of txEntries) {
         try {
           const hash = await dapp.proxy.sendTransaction(transaction);
-          const status = await getStatus(hash);
+          const { status } = await getStatus(hash);
 
           if (!status.isPending()) {
             updateSendStatus({
               loading: false,
               status:
-                sendStatus.hashes &&
-                sendStatus.hashes.length + 1 === transactions.length
+                sendStatus.transactions && index === transactions.length - 1
                   ? "success"
                   : "pending",
-              hashes: sendStatus.hashes ? [...sendStatus.hashes, hash] : [hash],
+              transactions:
+                sendStatus.transactions && sendStatus.transactions.length > 0
+                  ? [...sendStatus.transactions, { hash, status }]
+                  : [{ hash, status }],
               successDescription,
             });
           }
@@ -77,11 +83,26 @@ export default function useSubmitTransactions() {
           )
         );
         const hashes = txHashes.map((entry) => new TransactionHash(`${entry}`));
+
         updateSendStatus({
           loading: false,
-          status: "success",
-          hashes,
+          status: "pending",
+          transactions: hashes.map((hash) => ({
+            hash,
+            status: new TransactionStatus("pending"),
+          })),
           successDescription,
+        });
+
+        Promise.all(hashes.map((hash) => getStatus(hash))).then((statuses) => {
+          updateSendStatus({
+            loading: false,
+            status: statuses.every(({ status }) => status.isSuccessful())
+              ? "success"
+              : "failed",
+            transactions: statuses,
+            successDescription,
+          });
         });
 
         const nonce = account.nonce.valueOf() + transactions.length;

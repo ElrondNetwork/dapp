@@ -1,15 +1,19 @@
 import * as React from "react";
-import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
+import {
+  Transaction,
+  TransactionHash,
+  TransactionStatus,
+} from "@elrondnetwork/erdjs";
 
-interface StateType {
+export interface SendStatusType {
   loading?: boolean;
   error?: string;
-  hashes?: TransactionHash[];
+  transactions?: { hash: TransactionHash; status: TransactionStatus }[];
   status?: "success" | "failed" | "cancelled" | "pending";
   successDescription?: string;
 }
 
-export function updateSendStatus(sendStatus: StateType) {
+export function updateSendStatus(sendStatus: SendStatusType) {
   const customEvent = new CustomEvent("updateSendStatus", {
     detail: { sendStatus },
   });
@@ -17,10 +21,10 @@ export function updateSendStatus(sendStatus: StateType) {
 }
 
 export default function useSendTransactions() {
-  const [sendStatus, setSendStatus] = React.useState<StateType>({
+  const [sendStatus, setSendStatus] = React.useState<SendStatusType>({
     loading: undefined,
     error: "",
-    hashes: [],
+    transactions: [],
     status: undefined,
   });
 
