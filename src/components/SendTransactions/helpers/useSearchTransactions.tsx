@@ -26,7 +26,7 @@ export default function useSearchTransactions() {
       ) {
         const signSessionId: number = (searchData as any)[ls.signSession];
         const sessionData = ls.getItem(signSessionId);
-        const successDescription = searchData.successDescription?.toString();
+        const sessionTransactions = ls.getItem(signSessionId);
 
         if (sessionData) {
           try {
@@ -40,6 +40,10 @@ export default function useSearchTransactions() {
               : [];
 
             const sequential = "sequential" in sessionObject ? true : false;
+            const successDescription =
+              "successDescription" in sessionObject
+                ? sessionObject.sessionObject
+                : "";
 
             const transactions = parsedTansactions.map(
               (transaction, index) => ({

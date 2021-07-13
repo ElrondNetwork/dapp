@@ -78,8 +78,10 @@ export default function walletSign({
     JSON.stringify({
       transactions: plainTransactions,
       ...(sequential ? { sequential } : {}),
+      ...(successDescription ? { successDescription } : {}),
     })
   );
+
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
       ...tx,
@@ -94,7 +96,6 @@ export default function walletSign({
 
   const search = qs.stringify({
     ...parsedTransactions,
-    successDescription,
     callbackUrl,
   });
 
