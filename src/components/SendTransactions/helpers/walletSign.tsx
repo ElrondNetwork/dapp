@@ -7,6 +7,7 @@ interface SignTransactionsType {
   callbackRoute: string;
   walletAddress: string;
   successDescription?: string;
+  sequential?: boolean;
 }
 
 const buildSearchString = (plainTransactions: Object[]) => {
@@ -61,6 +62,7 @@ export default function walletSign({
   transactions,
   callbackRoute,
   successDescription,
+  sequential,
 }: SignTransactionsType) {
   const plainTransactions = transactions
     .map((tx) => tx.toPlainObject())
@@ -71,7 +73,13 @@ export default function walletSign({
 
   const signSessionId = Date.now();
 
-  ls.setItem(signSessionId, JSON.stringify(plainTransactions));
+  ls.setItem(
+    signSessionId,
+    JSON.stringify({
+      transactions: plainTransactions,
+      ...(sequential ? { sequential } : {}),
+    })
+  );
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
       ...tx,

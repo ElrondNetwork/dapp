@@ -25,13 +25,21 @@ export default function useSearchTransactions() {
         Array.isArray(searchData.signature)
       ) {
         const signSessionId: number = (searchData as any)[ls.signSession];
-        const sessionTransactions = ls.getItem(signSessionId);
+        const sessionData = ls.getItem(signSessionId);
         const successDescription = searchData.successDescription?.toString();
 
-        if (sessionTransactions) {
+        if (sessionData) {
           try {
-            const parsedTansactions: any[] = JSON.parse(sessionTransactions);
+            const sessionObject = JSON.parse(sessionData);
             ls.removeItem(signSessionId);
+
+            const parsedTansactions: any[] = Array.isArray(
+              sessionObject.transactions
+            )
+              ? sessionObject.transactions
+              : [];
+
+            const sequential = "sequential" in sessionObject ? true : false;
 
             const transactions = parsedTansactions.map(
               (transaction, index) => ({
@@ -51,7 +59,11 @@ export default function useSearchTransactions() {
               return transaction;
             });
 
-            submitTransactions(signedTransactions, successDescription);
+            submitTransactions({
+              transactions: signedTransactions,
+              successDescription,
+              sequential,
+            });
           } catch (err) {
             updateSendStatus({ loading: false, status: "failed" });
           }

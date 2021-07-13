@@ -5,7 +5,7 @@ interface StateType {
   loading?: boolean;
   error?: string;
   hashes?: TransactionHash[];
-  status?: "success" | "failed" | "cancelled";
+  status?: "success" | "failed" | "cancelled" | "pending";
   successDescription?: string;
 }
 
@@ -49,13 +49,15 @@ export default function useSendTransactions() {
     transactions,
     callbackRoute,
     successDescription,
+    sequential,
   }: {
     transactions: Transaction[];
     callbackRoute: string;
     successDescription?: string;
+    sequential?: boolean;
   }) => {
     const customEvent = new CustomEvent("transactions", {
-      detail: { transactions, callbackRoute, successDescription },
+      detail: { transactions, callbackRoute, successDescription, sequential },
     });
     document.dispatchEvent(customEvent);
   };

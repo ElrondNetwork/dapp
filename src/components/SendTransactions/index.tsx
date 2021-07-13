@@ -16,12 +16,14 @@ interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
   successDescription?: string;
+  sequential?: boolean;
 }
 
 export default function SendTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
+  const [newSequential, setNewSequential] = React.useState<boolean>();
   const [newsuccessDescription, setNewSuccessDescription] = React.useState<
     string | undefined
   >();
@@ -47,8 +49,18 @@ export default function SendTransactions() {
 
   const send = (e: CustomEvent) => {
     if (e.detail && "transactions" in e.detail && "callbackRoute" in e.detail) {
-      const { transactions, callbackRoute, successDescription } = e.detail;
-      signTransactions({ transactions, callbackRoute, successDescription });
+      const {
+        transactions,
+        callbackRoute,
+        successDescription,
+        sequential,
+      } = e.detail;
+      signTransactions({
+        transactions,
+        callbackRoute,
+        successDescription,
+        sequential,
+      });
     }
   };
 
@@ -63,6 +75,7 @@ export default function SendTransactions() {
     transactions,
     callbackRoute,
     successDescription,
+    sequential,
   }: SignTransactionsType) => {
     const showError = (e: string) => {
       setShowSignModal(true);
@@ -86,14 +99,17 @@ export default function SendTransactions() {
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
                 successDescription,
+                sequential,
               });
               break;
             case "ledger":
+              setNewSequential(sequential);
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
+              setNewSequential(sequential);
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
@@ -121,6 +137,7 @@ export default function SendTransactions() {
     providerType,
     callbackRoute: newCallbackRoute,
     successDescription: newsuccessDescription || "",
+    sequential: newSequential,
   };
 
   return <SignWithDeviceModal {...sendProps} />;

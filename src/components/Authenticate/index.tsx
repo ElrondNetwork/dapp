@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { getItem, removeItem } from "helpers/session";
-import * as localStorage from "helpers/localStorage";
 import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
