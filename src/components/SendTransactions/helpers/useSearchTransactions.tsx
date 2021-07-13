@@ -5,9 +5,9 @@ import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
 import * as ls from "helpers/localStorage";
 import { useContext } from "context";
-import newTransaction from "helpers/newTransaction";
-import useSubmitTransactions from "./useSubmitTransactions";
 import { updateSendStatus } from "helpers/useSendTransactions";
+import useSubmitTransactions from "./useSubmitTransactions";
+import newTransaction from "./newTransaction";
 
 export default function useSearchTransactions() {
   const { search } = useLocation();
@@ -25,13 +25,25 @@ export default function useSearchTransactions() {
         Array.isArray(searchData.signature)
       ) {
         const signSessionId: number = (searchData as any)[ls.signSession];
+        const sessionData = ls.getItem(signSessionId);
         const sessionTransactions = ls.getItem(signSessionId);
-        const successDescription = searchData.successDescription?.toString();
 
-        if (sessionTransactions) {
+        if (sessionData) {
           try {
-            const parsedTansactions: any[] = JSON.parse(sessionTransactions);
+            const sessionObject = JSON.parse(sessionData);
             ls.removeItem(signSessionId);
+
+            const parsedTansactions: any[] = Array.isArray(
+              sessionObject.transactions
+            )
+              ? sessionObject.transactions
+              : [];
+
+            const sequential = "sequential" in sessionObject ? true : false;
+            const successDescription =
+              "successDescription" in sessionObject
+                ? sessionObject.sessionObject
+                : "";
 
             const transactions = parsedTansactions.map(
               (transaction, index) => ({
@@ -51,7 +63,12 @@ export default function useSearchTransactions() {
               return transaction;
             });
 
-            submitTransactions(signedTransactions, successDescription);
+            submitTransactions({
+              transactions: signedTransactions,
+              successDescription,
+              sequential,
+              sessionId: signSessionId.toString(),
+            });
           } catch (err) {
             updateSendStatus({ loading: false, status: "failed" });
           }

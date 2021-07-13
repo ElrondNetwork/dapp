@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export type LocalKeyType = number;
+export type LocalKeyType = number | "nonce";
 
 export const setItem = (key: LocalKeyType, item: any, ttl: number = 120000) => {
   const expires = moment().unix() + ttl;
@@ -44,3 +44,5 @@ export const removeItem = (key: LocalKeyType) =>
   localStorage.removeItem(String(key));
 
 export const signSession = "signSession";
+
+export const successDescription = "successDescription";

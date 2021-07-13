@@ -12,6 +12,8 @@ export interface SignModalType {
   setError: (value: React.SetStateAction<string>) => void;
   callbackRoute: string;
   successDescription?: string;
+  sequential?: boolean;
+  sessionId: string;
 }
 
 const SignWithDeviceModal = ({
@@ -22,6 +24,8 @@ const SignWithDeviceModal = ({
   transactions,
   callbackRoute,
   successDescription,
+  sequential = false,
+  sessionId,
 }: SignModalType) => {
   const submitTransactions = useSubmitTransactions();
 
@@ -36,7 +40,12 @@ const SignWithDeviceModal = ({
       (signedTransactions &&
         Object.keys(signedTransactions).length !== transactions.length);
     if (!signingDisabled && signedTransactions) {
-      submitTransactions(Object.values(signedTransactions), successDescription);
+      submitTransactions({
+        transactions: Object.values(signedTransactions),
+        successDescription,
+        sequential,
+        sessionId,
+      });
     }
   }, [signedTransactions, transactions]);
 

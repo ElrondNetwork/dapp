@@ -1,5 +1,7 @@
+import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import { setItem, removeItem } from "helpers/session";
+import * as ls from "helpers/localStorage";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -9,6 +11,7 @@ export type ActionType =
   | { type: "logout" }
   | { type: "setProvider"; provider: StateType["dapp"]["provider"] }
   | { type: "setAccount"; account: StateType["account"] }
+  | { type: "setAccountNonce"; nonce: StateType["nonce"] }
   | { type: "setChainId"; chainId: StateType["chainId"] }
   | { type: "setLedgerAccount"; ledgerAccount: StateType["ledgerAccount"] }
   | {
@@ -19,6 +22,7 @@ export type ActionType =
 export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "login": {
+      ls.removeItem("nonce");
       const { address } = action;
       let loggedIn = address || address !== "" ? true : false;
       setItem("loggedIn", loggedIn);
@@ -30,6 +34,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
       };
     }
     case "ledgerLogin": {
+      ls.removeItem("nonce");
       setItem("ledgerLogin", action.ledgerLogin);
       return { ...state, ledgerLogin: action.ledgerLogin };
     }
@@ -43,6 +48,16 @@ export function reducer(state: StateType, action: ActionType): StateType {
 
     case "setAccount": {
       return { ...state, account: action.account };
+    }
+
+    case "setAccountNonce": {
+      return {
+        ...state,
+        account: {
+          ...state.account,
+          nonce: new Nonce(action.nonce),
+        },
+      };
     }
 
     case "setChainId": {
@@ -68,6 +83,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
       removeItem("address");
       removeItem("ledgerLogin");
       removeItem("walletConnectLogin");
+      ls.removeItem("nonce");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,

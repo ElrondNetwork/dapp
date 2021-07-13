@@ -1,13 +1,13 @@
 import qs from "qs";
 import { Transaction } from "@elrondnetwork/erdjs";
 import * as ls from "helpers/localStorage";
-import { RawTransactionType } from "helpers/types";
 
 interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
   walletAddress: string;
   successDescription?: string;
+  sequential?: boolean;
 }
 
 const buildSearchString = (plainTransactions: Object[]) => {
@@ -62,6 +62,7 @@ export default function walletSign({
   transactions,
   callbackRoute,
   successDescription,
+  sequential,
 }: SignTransactionsType) {
   const plainTransactions = transactions
     .map((tx) => tx.toPlainObject())
@@ -72,7 +73,15 @@ export default function walletSign({
 
   const signSessionId = Date.now();
 
-  ls.setItem(signSessionId, JSON.stringify(plainTransactions));
+  ls.setItem(
+    signSessionId,
+    JSON.stringify({
+      transactions: plainTransactions,
+      ...(sequential ? { sequential } : {}),
+      ...(successDescription ? { successDescription } : {}),
+    })
+  );
+
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
       ...tx,
@@ -87,7 +96,6 @@ export default function walletSign({
 
   const search = qs.stringify({
     ...parsedTransactions,
-    successDescription,
     callbackUrl,
   });
 

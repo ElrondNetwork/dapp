@@ -10,17 +10,21 @@ import { useContext } from "context";
 import SignWithDeviceModal from "./SignWithDeviceModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import { updateSendStatus } from "helpers/useSendTransactions";
+import { getLatestNonce } from "helpers/accountMethods";
 
 interface SignTransactionsType {
   transactions: Transaction[];
   callbackRoute: string;
   successDescription?: string;
+  sequential?: boolean;
 }
 
 export default function SendTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
+  const [newSequential, setNewSequential] = React.useState<boolean>();
+  const [newSessionId, setNewSessionId] = React.useState("");
   const [newsuccessDescription, setNewSuccessDescription] = React.useState<
     string | undefined
   >();
@@ -41,13 +45,27 @@ export default function SendTransactions() {
     setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
-    updateSendStatus({ loading: false, status: "cancelled" });
+    updateSendStatus({
+      loading: false,
+      status: "cancelled",
+      sessionId: newSessionId,
+    });
   };
 
   const send = (e: CustomEvent) => {
     if (e.detail && "transactions" in e.detail && "callbackRoute" in e.detail) {
-      const { transactions, callbackRoute, successDescription } = e.detail;
-      signTransactions({ transactions, callbackRoute, successDescription });
+      const {
+        transactions,
+        callbackRoute,
+        successDescription,
+        sequential,
+      } = e.detail;
+      signTransactions({
+        transactions,
+        callbackRoute,
+        successDescription,
+        sequential,
+      });
     }
   };
 
@@ -62,6 +80,7 @@ export default function SendTransactions() {
     transactions,
     callbackRoute,
     successDescription,
+    sequential,
   }: SignTransactionsType) => {
     const showError = (e: string) => {
       setShowSignModal(true);
@@ -73,8 +92,10 @@ export default function SendTransactions() {
       dapp.proxy
         .getAccount(new Address(address))
         .then((account) => {
+          const nonce = getLatestNonce(account);
+
           transactions.forEach((tx, i) => {
-            tx.setNonce(new Nonce(account.nonce.valueOf() + i));
+            tx.setNonce(new Nonce(nonce.valueOf() + i));
           });
           switch (providerType) {
             case "wallet":
@@ -83,14 +104,19 @@ export default function SendTransactions() {
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
                 successDescription,
+                sequential,
               });
               break;
             case "ledger":
+              setNewSequential(sequential);
+              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
+              setNewSequential(sequential);
+              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
@@ -118,6 +144,8 @@ export default function SendTransactions() {
     providerType,
     callbackRoute: newCallbackRoute,
     successDescription: newsuccessDescription || "",
+    sequential: newSequential,
+    sessionId: newSessionId,
   };
 
   return <SignWithDeviceModal {...sendProps} />;

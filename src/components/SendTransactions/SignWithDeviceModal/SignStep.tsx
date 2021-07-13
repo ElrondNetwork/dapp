@@ -9,6 +9,7 @@ import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
+import { getLatestNonce } from "helpers/accountMethods";
 
 export interface SignModalType {
   handleClose: () => void;
@@ -47,7 +48,8 @@ const SignStep = ({
     dapp.proxy
       .getAccount(new Address(address))
       .then((account) => {
-        transaction.setNonce(new Nonce(account.nonce.valueOf() + index));
+        const nonce = getLatestNonce(account);
+        transaction.setNonce(new Nonce(nonce.valueOf() + index));
         setWaitingForDevice(true);
         provider.signTransaction(transaction).then((tx) => {
           const newSignedTx = { [index]: tx };

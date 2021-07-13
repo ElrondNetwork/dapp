@@ -8,7 +8,16 @@ import {
   ChainID,
   TransactionVersion,
 } from "@elrondnetwork/erdjs";
-import { RawTransactionType } from "./types";
+
+interface RawTransactionType {
+  value: string;
+  receiver: string;
+  gasPrice: number;
+  gasLimit: number;
+  data: string;
+  chainID: string;
+  version: number;
+}
 
 export default function newTransaction(rawTransaction: RawTransactionType) {
   return new Transaction({
