@@ -6,7 +6,6 @@ import {
   Nonce,
   ChainID,
   HWProvider,
-  Transaction,
 } from "@elrondnetwork/erdjs";
 import { AccountType, NetworkType } from "helpers/types";
 import { getItem } from "helpers/session";
@@ -63,6 +62,9 @@ export const emptyAccount: AccountType = {
   nonce: new Nonce(0),
 };
 
+export const newWalletProvider = (network: NetworkType) =>
+  new WalletProvider(`${network.walletAddress}/dapp/init`);
+
 export const createInitialState = ({
   network,
   walletConnectBridge,
@@ -92,12 +94,12 @@ export const createInitialState = ({
     dapp: {
       provider: getItem("ledgerLogin")
         ? new HWProvider(
-            new ProxyProvider(gatewayAddress, 4000),
+            new ProxyProvider(gatewayAddress, { timeout: 4000 }),
             getItem("ledgerLogin").index
           )
-        : new WalletProvider(sessionNetwork.walletAddress),
-      proxy: new ProxyProvider(gatewayAddress, 4000),
-      apiProvider: new ApiProvider(apiAddress, 4000),
+        : newWalletProvider(sessionNetwork),
+      proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
+      apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
     error: "",
     loggedIn: !!getItem("loggedIn"),

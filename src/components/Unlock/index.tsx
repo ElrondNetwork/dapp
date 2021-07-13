@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Link, Redirect } from "react-router-dom";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
