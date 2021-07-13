@@ -8,7 +8,12 @@ import {
 export interface SendStatusType {
   loading?: boolean;
   error?: string;
-  transactions?: { hash: TransactionHash; status: TransactionStatus }[];
+  transactions?: {
+    hash: TransactionHash;
+    status: TransactionStatus;
+    sessionId: string;
+  }[];
+  sessionId?: string;
   status?: "success" | "failed" | "cancelled" | "pending";
   successDescription?: string;
 }
@@ -24,6 +29,7 @@ export default function useSendTransactions() {
   const [sendStatus, setSendStatus] = React.useState<SendStatusType>({
     loading: undefined,
     error: "",
+    sessionId: "",
     transactions: [],
     status: undefined,
   });
@@ -35,10 +41,37 @@ export default function useSendTransactions() {
       typeof e.detail.sendStatus === "object" &&
       e.detail.sendStatus !== null
     ) {
-      setSendStatus((existing) => ({
-        ...existing,
-        ...e.detail.sendStatus,
-      }));
+      setSendStatus((existing) => {
+        const updatedTransactions: SendStatusType["transactions"] =
+          e.detail.sendStatus.transactions &&
+          e.detail.sendStatus.transactions.length > 0
+            ? e.detail.sendStatus.transactions
+            : [];
+        const updatedTransactionHashes = updatedTransactions
+          ? updatedTransactions.map((tx) => tx.hash.toString())
+          : [];
+
+        const newTxs =
+          existing.transactions && existing.transactions.length > 0
+            ? existing.transactions.map((existingTx) => {
+                if (
+                  updatedTransactionHashes.includes(existingTx.hash.toString())
+                ) {
+                  return updatedTransactions?.find(
+                    (tx) => tx.hash.toString() === existingTx.hash.toString()
+                  );
+                } else {
+                  return existingTx;
+                }
+              })
+            : updatedTransactions;
+
+        return {
+          ...existing,
+          ...e.detail.sendStatus,
+          transactions: newTxs,
+        };
+      });
     }
   };
 

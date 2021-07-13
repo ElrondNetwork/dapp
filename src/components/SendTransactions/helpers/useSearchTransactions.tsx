@@ -63,6 +63,7 @@ export default function useSearchTransactions() {
               transactions: signedTransactions,
               successDescription,
               sequential,
+              sessionId: signSessionId.toString(),
             });
           } catch (err) {
             updateSendStatus({ loading: false, status: "failed" });

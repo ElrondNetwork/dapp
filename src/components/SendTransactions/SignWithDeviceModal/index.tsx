@@ -13,6 +13,7 @@ export interface SignModalType {
   callbackRoute: string;
   successDescription?: string;
   sequential?: boolean;
+  sessionId: string;
 }
 
 const SignWithDeviceModal = ({
@@ -24,6 +25,7 @@ const SignWithDeviceModal = ({
   callbackRoute,
   successDescription,
   sequential = false,
+  sessionId,
 }: SignModalType) => {
   const submitTransactions = useSubmitTransactions();
 
@@ -42,6 +44,7 @@ const SignWithDeviceModal = ({
         transactions: Object.values(signedTransactions),
         successDescription,
         sequential,
+        sessionId,
       });
     }
   }, [signedTransactions, transactions]);

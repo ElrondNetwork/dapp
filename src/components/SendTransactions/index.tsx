@@ -24,6 +24,7 @@ export default function SendTransactions() {
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [newSequential, setNewSequential] = React.useState<boolean>();
+  const [newSessionId, setNewSessionId] = React.useState("");
   const [newsuccessDescription, setNewSuccessDescription] = React.useState<
     string | undefined
   >();
@@ -44,7 +45,11 @@ export default function SendTransactions() {
     setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
-    updateSendStatus({ loading: false, status: "cancelled" });
+    updateSendStatus({
+      loading: false,
+      status: "cancelled",
+      sessionId: newSessionId,
+    });
   };
 
   const send = (e: CustomEvent) => {
@@ -104,12 +109,14 @@ export default function SendTransactions() {
               break;
             case "ledger":
               setNewSequential(sequential);
+              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
               setNewSequential(sequential);
+              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
@@ -138,6 +145,7 @@ export default function SendTransactions() {
     callbackRoute: newCallbackRoute,
     successDescription: newsuccessDescription || "",
     sequential: newSequential,
+    sessionId: newSessionId,
   };
 
   return <SignWithDeviceModal {...sendProps} />;

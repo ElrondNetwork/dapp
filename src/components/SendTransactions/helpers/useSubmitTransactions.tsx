@@ -44,13 +44,38 @@ export default function useSubmitTransactions() {
     transactions,
     successDescription,
     sequential,
+    sessionId,
   }: {
     transactions: Transaction[];
     successDescription?: string;
     sequential: boolean;
+    sessionId: string;
   }) => {
     if (sequential) {
       const txEntries: any = transactions.entries();
+      updateSendStatus({
+        loading: false,
+        status: "pending",
+        transactions:
+          sendStatus.transactions && sendStatus.transactions.length > 0
+            ? [
+                ...sendStatus.transactions,
+                ...transactions.map((tx) => ({
+                  hash: tx.getHash(),
+                  status: new TransactionStatus("pending"),
+                  sessionId,
+                })),
+              ]
+            : [
+                ...transactions.map((tx) => ({
+                  hash: tx.getHash(),
+                  status: new TransactionStatus("pending"),
+                  sessionId,
+                })),
+              ],
+        sessionId,
+        successDescription,
+      });
       for (let [index, transaction] of txEntries) {
         try {
           const hash = await dapp.proxy.sendTransaction(transaction);
@@ -59,14 +84,9 @@ export default function useSubmitTransactions() {
           if (!status.isPending()) {
             updateSendStatus({
               loading: false,
-              status:
-                sendStatus.transactions && index === transactions.length - 1
-                  ? "success"
-                  : "pending",
-              transactions:
-                sendStatus.transactions && sendStatus.transactions.length > 0
-                  ? [...sendStatus.transactions, { hash, status }]
-                  : [{ hash, status }],
+              status: index === transactions.length - 1 ? "success" : "pending",
+              transactions: [{ hash, status, sessionId }],
+              sessionId,
               successDescription,
             });
           }
@@ -90,7 +110,9 @@ export default function useSubmitTransactions() {
           transactions: hashes.map((hash) => ({
             hash,
             status: new TransactionStatus("pending"),
+            sessionId,
           })),
+          sessionId,
           successDescription,
         });
 
@@ -100,7 +122,7 @@ export default function useSubmitTransactions() {
             status: statuses.every(({ status }) => status.isSuccessful())
               ? "success"
               : "failed",
-            transactions: statuses,
+            transactions: statuses.map((status) => ({ ...status, sessionId })),
             successDescription,
           });
         });
