@@ -1,9 +1,11 @@
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
-import { useContext } from "context";
+import { useContext, useDispatch } from "context";
 import { updateSendStatus } from "helpers/useSendTransactions";
+import { setItem } from "helpers/localStorage";
 
 export default function useSubmitTransactions() {
-  const { dapp } = useContext();
+  const { dapp, account } = useContext();
+  const dispatch = useDispatch();
 
   return (transactions: Transaction[], successDescription?: string) => {
     Promise.all(
@@ -17,6 +19,14 @@ export default function useSubmitTransactions() {
           hashes,
           successDescription,
         });
+
+        const nonce = account.nonce.valueOf() + transactions.length;
+
+        const oneHour = 3600000;
+
+        setItem("nonce", nonce, oneHour);
+
+        dispatch({ type: "setAccountNonce", nonce });
       })
       .catch((err) => {
         updateSendStatus({ loading: false, status: "failed" });

@@ -9,7 +9,7 @@ import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext } from "context";
 import SendModal from "./SendModal";
 import { getProviderType } from "./helpers";
-import { useRefreshAccount } from "helpers/accountMethods";
+import { getLatestNonce, useRefreshAccount } from "helpers/accountMethods";
 
 interface SendTransactionType {
   transaction: Transaction;
@@ -70,7 +70,7 @@ export default function Send() {
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
-              transaction.setNonce(account.nonce);
+              transaction.setNonce(getLatestNonce(account));
 
               provider
                 .sendTransaction(transaction, {
@@ -93,7 +93,7 @@ export default function Send() {
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
-              transaction.setNonce(account.nonce);
+              transaction.setNonce(getLatestNonce(account));
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {
@@ -126,7 +126,7 @@ export default function Send() {
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
-              transaction.setNonce(account.nonce);
+              transaction.setNonce(getLatestNonce(account));
               provider
                 .sendTransaction(transaction)
                 .then((transaction) => {

@@ -46,6 +46,7 @@ export interface StateType {
     loginType: string;
   };
   address: string;
+  nonce: number;
   account: AccountType;
   explorerAddress: string;
   egldLabel: string;
@@ -106,6 +107,7 @@ export const createInitialState = ({
     ledgerLogin: getItem("ledgerLogin"),
     walletConnectLogin: getItem("walletConnectLogin"),
     address: getItem("address"),
+    nonce: 0,
     account: emptyAccount,
     explorerAddress: sessionNetwork.explorerAddress || defaultExplorerAddress,
     egldLabel: network ? network.egldLabel : defaultNetwork.egldLabel,

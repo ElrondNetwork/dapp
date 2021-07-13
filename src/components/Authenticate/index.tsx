@@ -1,12 +1,17 @@
 import * as React from "react";
-import { Address } from "@elrondnetwork/erdjs";
+import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { getItem, removeItem } from "helpers/session";
+import * as localStorage from "helpers/localStorage";
 import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
 import Loader from "components/Loader";
 import { useGetNetworkConfig } from "./helpers";
-import { useGetAccount, useGetAddress } from "helpers/accountMethods";
+import {
+  useGetAccount,
+  useGetAddress,
+  getLatestNonce,
+} from "helpers/accountMethods";
 
 const Authenticate = ({
   children,
@@ -50,7 +55,7 @@ const Authenticate = ({
                     account: {
                       balance: account.balance.toString(),
                       address,
-                      nonce: account.nonce,
+                      nonce: getLatestNonce(account),
                     },
                   });
                   setLoading(false);
@@ -109,7 +114,7 @@ const Authenticate = ({
             account: {
               balance: account.balance.toString(),
               address,
-              nonce: account.nonce,
+              nonce: getLatestNonce(account),
             },
           });
         })

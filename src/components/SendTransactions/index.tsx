@@ -10,6 +10,7 @@ import { useContext } from "context";
 import SignWithDeviceModal from "./SignWithDeviceModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import { updateSendStatus } from "helpers/useSendTransactions";
+import { getLatestNonce } from "helpers/accountMethods";
 
 interface SignTransactionsType {
   transactions: Transaction[];
@@ -73,8 +74,10 @@ export default function SendTransactions() {
       dapp.proxy
         .getAccount(new Address(address))
         .then((account) => {
+          const nonce = getLatestNonce(account);
+
           transactions.forEach((tx, i) => {
-            tx.setNonce(new Nonce(account.nonce.valueOf() + i));
+            tx.setNonce(new Nonce(nonce.valueOf() + i));
           });
           switch (providerType) {
             case "wallet":
