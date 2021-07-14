@@ -10,7 +10,7 @@ import PageState from "components/PageState";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: (showToast: boolean) => void;
+  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -49,7 +49,7 @@ const SignWithWalletConnectModal = ({
 
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleClose(true);
+    handleClose({ updateBatchStatus: true });
     history.push(callbackRoute);
   };
 
@@ -131,7 +131,7 @@ const SignWithWalletConnectModal = ({
         sequential,
         sessionId,
       });
-      handleClose(false);
+      handleClose({ updateBatchStatus: false });
       history.push(callbackRoute);
     }
   }, [signedTransactions, transactions]);
@@ -140,7 +140,7 @@ const SignWithWalletConnectModal = ({
     <Modal
       show={show}
       onHide={() => {
-        handleClose(true);
+        handleClose({ updateBatchStatus: true });
       }}
       className="modal-container"
       animation={false}

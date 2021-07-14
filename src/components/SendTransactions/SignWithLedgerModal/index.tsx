@@ -6,7 +6,7 @@ import { useSubmitTransactions } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: (showToast: boolean) => void;
+  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -53,7 +53,7 @@ const SignWithLedgerModal = ({
     <Modal
       show={show}
       onHide={() => {
-        handleClose(true);
+        handleClose({ updateBatchStatus: true });
       }}
       className="modal-container"
       animation={false}
