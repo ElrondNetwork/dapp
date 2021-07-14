@@ -2,11 +2,11 @@ import * as React from "react";
 import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import SignStep from "./SignStep";
-import { useSubmitTransactions } from "../helpers";
+import { useSubmitTransactions, HandleCloseType } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: () => void;
+  handleClose: (props?: HandleCloseType) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -16,7 +16,7 @@ export interface SignModalType {
   sessionId: string;
 }
 
-const SignWithDeviceModal = ({
+const SignWithLedgerModal = ({
   show,
   handleClose,
   error,
@@ -57,7 +57,7 @@ const SignWithDeviceModal = ({
       animation={false}
       centered
     >
-      <div className="card">
+      <div className="card container">
         <div className="card-body">
           {transactions.map((transaction, index) => (
             <SignStep
@@ -82,4 +82,4 @@ const SignWithDeviceModal = ({
   );
 };
 
-export default SignWithDeviceModal;
+export default SignWithLedgerModal;

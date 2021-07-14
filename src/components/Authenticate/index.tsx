@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Address, Nonce } from "@elrondnetwork/erdjs";
+import { Address } from "@elrondnetwork/erdjs";
 import { getItem, removeItem } from "helpers/session";
 import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
@@ -11,6 +11,7 @@ import {
   useGetAddress,
   getLatestNonce,
 } from "helpers/accountMethods";
+import useSetProvider from "./useSetProvider";
 
 const Authenticate = ({
   children,
@@ -31,6 +32,7 @@ const Authenticate = ({
   const getAccount = useGetAccount();
   const getAddress = useGetAddress();
   const getNetworkConfig = useGetNetworkConfig();
+  useSetProvider();
 
   React.useMemo(() => {
     if (getItem("walletLogin")) {

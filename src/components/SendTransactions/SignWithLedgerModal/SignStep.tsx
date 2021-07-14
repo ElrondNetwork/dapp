@@ -10,9 +10,10 @@ import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
+import { HandleCloseType } from "../helpers";
 
 export interface SignModalType {
-  handleClose: () => void;
+  handleClose: (props?: HandleCloseType) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
@@ -39,7 +40,7 @@ const SignStep = ({
   callbackRoute,
 }: SignModalType) => {
   const history = useHistory();
-  const { dapp, address, walletConnectLogin } = useContext();
+  const { dapp, address } = useContext();
   const [waitingForDevice, setWaitingForDevice] = React.useState(false);
 
   const provider: IDappProvider = dapp.provider;
@@ -51,18 +52,24 @@ const SignStep = ({
         const nonce = getLatestNonce(account);
         transaction.setNonce(new Nonce(nonce.valueOf() + index));
         setWaitingForDevice(true);
-        provider.signTransaction(transaction).then((tx) => {
-          const newSignedTx = { [index]: tx };
-          setSignedTransactions((existing) =>
-            existing ? { ...existing, ...newSignedTx } : newSignedTx
-          );
-          if (!isLast) {
-            setCurrentStep((exising) => exising + 1);
-          } else {
-            handleClose();
-            history.push(callbackRoute);
-          }
-        });
+        provider
+          .signTransaction(transaction)
+          .then((tx) => {
+            const newSignedTx = { [index]: tx };
+            setSignedTransactions((existing) =>
+              existing ? { ...existing, ...newSignedTx } : newSignedTx
+            );
+            if (!isLast) {
+              setCurrentStep((exising) => exising + 1);
+            } else {
+              handleClose({ updateBatchStatus: false });
+              history.push(callbackRoute);
+            }
+          })
+          .catch(() => {
+            setWaitingForDevice(false);
+            handleClose({ updateBatchStatus: false });
+          });
       })
       .catch((e) => {
         setWaitingForDevice(false);
@@ -71,11 +78,7 @@ const SignStep = ({
   };
 
   let signBtnLabel = "Sign & Continue";
-  signBtnLabel = waitingForDevice
-    ? walletConnectLogin
-      ? "Confirm on Maiar"
-      : "Check your Ledger"
-    : signBtnLabel;
+  signBtnLabel = waitingForDevice ? "Check your Ledger" : signBtnLabel;
   signBtnLabel = isLast && !waitingForDevice ? "Sign & Submit" : signBtnLabel;
 
   const isFirst = currentStep === 0;
@@ -84,6 +87,7 @@ const SignStep = ({
     e.preventDefault();
     if (isFirst) {
       handleClose();
+      history.push(callbackRoute);
     } else {
       setCurrentStep((existing) => existing - 1);
     }
@@ -97,7 +101,7 @@ const SignStep = ({
       iconClass="text-white"
       iconBgClass={error ? "bg-danger" : "bg-warning"}
       iconSize="3x"
-      title={walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"}
+      title="Confirm on Ledger"
       description={
         <React.Fragment>
           {transaction && (
