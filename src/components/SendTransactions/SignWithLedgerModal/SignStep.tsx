@@ -10,9 +10,10 @@ import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
+import { HandleCloseType } from "../helpers";
 
 export interface SignModalType {
-  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
+  handleClose: (props?: HandleCloseType) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
@@ -51,18 +52,24 @@ const SignStep = ({
         const nonce = getLatestNonce(account);
         transaction.setNonce(new Nonce(nonce.valueOf() + index));
         setWaitingForDevice(true);
-        provider.signTransaction(transaction).then((tx) => {
-          const newSignedTx = { [index]: tx };
-          setSignedTransactions((existing) =>
-            existing ? { ...existing, ...newSignedTx } : newSignedTx
-          );
-          if (!isLast) {
-            setCurrentStep((exising) => exising + 1);
-          } else {
+        provider
+          .signTransaction(transaction)
+          .then((tx) => {
+            const newSignedTx = { [index]: tx };
+            setSignedTransactions((existing) =>
+              existing ? { ...existing, ...newSignedTx } : newSignedTx
+            );
+            if (!isLast) {
+              setCurrentStep((exising) => exising + 1);
+            } else {
+              handleClose({ updateBatchStatus: false });
+              history.push(callbackRoute);
+            }
+          })
+          .catch(() => {
+            setWaitingForDevice(false);
             handleClose({ updateBatchStatus: false });
-            history.push(callbackRoute);
-          }
-        });
+          });
       })
       .catch((e) => {
         setWaitingForDevice(false);
@@ -79,7 +86,7 @@ const SignStep = ({
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isFirst) {
-      handleClose({ updateBatchStatus: true });
+      handleClose();
       history.push(callbackRoute);
     } else {
       setCurrentStep((existing) => existing - 1);
