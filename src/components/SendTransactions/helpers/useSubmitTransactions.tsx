@@ -5,10 +5,7 @@ import {
   TransactionStatus,
 } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
-import useSendTransactions, {
-  updateSendStatus,
-  SendStatusType,
-} from "helpers/useSendTransactions";
+import { updateSendStatus } from "helpers/useSendTransactions";
 import { setItem } from "helpers/localStorage";
 
 const searchInteval = 2000;
@@ -68,7 +65,6 @@ export default function useSubmitTransactions() {
         try {
           const hash = await dapp.proxy.sendTransaction(transaction);
           const { status } = await getStatus(hash);
-
           if (!status.isPending()) {
             updateSendStatus({
               loading: false,

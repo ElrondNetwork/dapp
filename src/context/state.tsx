@@ -5,7 +5,6 @@ import {
   WalletProvider,
   Nonce,
   ChainID,
-  HWProvider,
 } from "@elrondnetwork/erdjs";
 import { AccountType, NetworkType } from "helpers/types";
 import { getItem } from "helpers/session";
@@ -44,6 +43,8 @@ export interface StateType {
   };
   walletConnectLogin?: {
     loginType: string;
+    callbackRoute: string;
+    logoutRoute: string;
   };
   address: string;
   nonce: number;
@@ -87,18 +88,15 @@ export const createInitialState = ({
       ? sessionNetwork.gatewayAddress
       : defaultGatewayAddress;
 
+  const defaultProvider = newWalletProvider(sessionNetwork);
+
   const state: StateType = {
     walletConnectBridge,
     walletConnectDeepLink,
     network: sessionNetwork,
     chainId: new ChainID("-1"),
     dapp: {
-      provider: getItem("ledgerLogin")
-        ? new HWProvider(
-            new ProxyProvider(gatewayAddress, { timeout: 4000 }),
-            getItem("ledgerLogin").index
-          )
-        : newWalletProvider(sessionNetwork),
+      provider: defaultProvider, // will be checked in useSetProvider
       proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
       apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
