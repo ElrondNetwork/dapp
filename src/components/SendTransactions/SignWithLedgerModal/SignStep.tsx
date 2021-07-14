@@ -98,7 +98,7 @@ const SignStep = ({
       description={
         <React.Fragment>
           {transaction && (
-            <div>
+            <React.Fragment>
               <div
                 className="form-group text-left"
                 data-testid="transactionTitle"
@@ -142,7 +142,7 @@ const SignStep = ({
                   {isFirst ? "Cancel" : "Back"}
                 </a>
               </div>
-            </div>
+            </React.Fragment>
           )}
         </React.Fragment>
       }
