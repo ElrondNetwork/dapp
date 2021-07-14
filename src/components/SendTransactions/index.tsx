@@ -6,8 +6,9 @@ import {
   Nonce,
 } from "@elrondnetwork/erdjs";
 import { useContext } from "context";
-import SignWithDeviceModal from "./SignWithDeviceModal";
+import SignWithLedgerModal from "./SignWithLedgerModal";
 import ForbiddenModal from "./ForbiddenModal";
+import SignWithWalletConnectModal from "./SignWithWalletConnectModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import useSendTransactions, {
   updateSendStatus,
@@ -42,17 +43,23 @@ export default function SendTransactions() {
 
   const providerType = getProviderType(provider);
 
-  const handleClose = () => {
+  const handleClose = ({
+    updateBatchStatus,
+  }: {
+    updateBatchStatus: boolean;
+  }) => {
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
-    updateSendStatus({
-      loading: false,
-      status: "cancelled",
-      sessionId: newSessionId,
-    });
+    if (updateBatchStatus) {
+      updateSendStatus({
+        loading: false,
+        status: "cancelled",
+        sessionId: newSessionId,
+      });
+    }
   };
 
   const send = (e: CustomEvent) => {
@@ -157,7 +164,10 @@ export default function SendTransactions() {
 
   return (
     <React.Fragment>
-      <SignWithDeviceModal {...sendProps} />
+      {providerType === "ledger" && <SignWithLedgerModal {...sendProps} />}
+      {providerType === "walletconnect" && (
+        <SignWithWalletConnectModal {...sendProps} />
+      )}
       <ForbiddenModal
         show={showForbiddenModal}
         handleClose={() => {
