@@ -15,7 +15,7 @@ export interface SendStatusType {
   }[];
   sessionId?: string;
   sequential?: boolean;
-  status?: "success" | "failed" | "cancelled" | "pending" | "forbidden";
+  status?: "success" | "failed" | "cancelled" | "pending";
   successDescription?: string;
 }
 
