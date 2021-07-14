@@ -43,13 +43,13 @@ export default function SendTransactions() {
 
   const providerType = getProviderType(provider);
 
-  const handleClose = (noToast?: boolean) => {
+  const handleClose = (showToast: boolean = true) => {
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
-    if (!noToast) {
+    if (showToast) {
       updateSendStatus({
         loading: false,
         status: "cancelled",

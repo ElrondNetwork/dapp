@@ -12,7 +12,7 @@ import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
 
 export interface SignModalType {
-  handleClose: (noToast?: boolean) => void;
+  handleClose: (showToast: boolean) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
@@ -59,7 +59,7 @@ const SignStep = ({
           if (!isLast) {
             setCurrentStep((exising) => exising + 1);
           } else {
-            handleClose(true);
+            handleClose(false);
             history.push(callbackRoute);
           }
         });
@@ -79,7 +79,7 @@ const SignStep = ({
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isFirst) {
-      handleClose();
+      handleClose(true);
       history.push(callbackRoute);
     } else {
       setCurrentStep((existing) => existing - 1);
@@ -98,7 +98,7 @@ const SignStep = ({
       description={
         <React.Fragment>
           {transaction && (
-            <React.Fragment>
+            <div>
               <div
                 className="form-group text-left"
                 data-testid="transactionTitle"
@@ -142,7 +142,7 @@ const SignStep = ({
                   {isFirst ? "Cancel" : "Back"}
                 </a>
               </div>
-            </React.Fragment>
+            </div>
           )}
         </React.Fragment>
       }

@@ -6,7 +6,7 @@ import { useSubmitTransactions } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: () => void;
+  handleClose: (showToast: boolean) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -52,12 +52,14 @@ const SignWithLedgerModal = ({
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={() => {
+        handleClose(true);
+      }}
       className="modal-container"
       animation={false}
       centered
     >
-      <div className="card">
+      <div className="card container">
         <div className="card-body">
           {transactions.map((transaction, index) => (
             <SignStep

@@ -3,7 +3,6 @@ import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
-import { useContext } from "context";
 import { ProviderType } from "./../helpers";
 import TransactionStatus from "./TransactionStatus";
 
@@ -28,7 +27,6 @@ const SendModal = ({
   callbackRoute,
   showStatus,
 }: SendModalType) => {
-  const { walletConnectLogin } = useContext();
   return (
     <Modal
       show={show}
@@ -37,7 +35,7 @@ const SendModal = ({
       animation={false}
       centered
     >
-      <div className="card">
+      <div className="card container">
         <div className="card-body">
           {showStatus === true ? (
             <TransactionStatus
@@ -51,9 +49,7 @@ const SendModal = ({
               iconClass="text-white"
               iconBgClass={error ? "bg-danger" : "bg-warning"}
               iconSize="3x"
-              title={
-                walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"
-              }
+              title="Confirm on Ledger"
               description={
                 <React.Fragment>
                   {transaction && (

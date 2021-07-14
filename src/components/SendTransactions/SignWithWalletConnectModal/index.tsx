@@ -10,7 +10,7 @@ import PageState from "components/PageState";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: (noToast?: boolean) => void;
+  handleClose: (showToast: boolean) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -49,7 +49,7 @@ const SignWithWalletConnectModal = ({
 
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleClose();
+    handleClose(true);
     history.push(callbackRoute);
   };
 
@@ -62,7 +62,7 @@ const SignWithWalletConnectModal = ({
           .then((account) => {
             transaction.setNonce(new Nonce(account.nonce.valueOf()));
             provider.signTransaction(transaction).then((tx: Transaction) => {
-              const newSignedTx = { 0: tx };
+              const newSignedTx = { [0]: tx };
               setSignedTransactions((existing) =>
                 existing ? { ...existing, ...newSignedTx } : newSignedTx
               );
@@ -131,7 +131,7 @@ const SignWithWalletConnectModal = ({
         sequential,
         sessionId,
       });
-      handleClose(true);
+      handleClose(false);
       history.push(callbackRoute);
     }
   }, [signedTransactions, transactions]);
@@ -140,7 +140,7 @@ const SignWithWalletConnectModal = ({
     <Modal
       show={show}
       onHide={() => {
-        handleClose();
+        handleClose(true);
       }}
       className="modal-container"
       animation={false}
