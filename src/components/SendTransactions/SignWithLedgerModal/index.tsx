@@ -2,11 +2,11 @@ import * as React from "react";
 import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import SignStep from "./SignStep";
-import { useSubmitTransactions } from "../helpers";
+import { useSubmitTransactions, HandleCloseType } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
+  handleClose: (props?: HandleCloseType) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -52,9 +52,7 @@ const SignWithLedgerModal = ({
   return (
     <Modal
       show={show}
-      onHide={() => {
-        handleClose({ updateBatchStatus: true });
-      }}
+      onHide={handleClose}
       className="modal-container"
       animation={false}
       centered

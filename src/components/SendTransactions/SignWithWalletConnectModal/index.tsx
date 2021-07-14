@@ -5,12 +5,12 @@ import { Transaction, Address, Nonce } from "@elrondnetwork/erdjs";
 import { Signature } from "@elrondnetwork/erdjs/out/signature";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "context";
-import { useSubmitTransactions } from "../helpers";
+import { useSubmitTransactions, HandleCloseType } from "../helpers";
 import PageState from "components/PageState";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
+  handleClose: (props?: HandleCloseType) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -49,7 +49,7 @@ const SignWithWalletConnectModal = ({
 
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleClose({ updateBatchStatus: true });
+    handleClose();
     history.push(callbackRoute);
   };
 
@@ -139,9 +139,7 @@ const SignWithWalletConnectModal = ({
   return (
     <Modal
       show={show}
-      onHide={() => {
-        handleClose({ updateBatchStatus: true });
-      }}
+      onHide={handleClose}
       className="modal-container"
       animation={false}
       centered

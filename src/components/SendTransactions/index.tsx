@@ -9,7 +9,12 @@ import { useContext } from "context";
 import SignWithLedgerModal from "./SignWithLedgerModal";
 import ForbiddenModal from "./ForbiddenModal";
 import SignWithWalletConnectModal from "./SignWithWalletConnectModal";
-import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
+import {
+  getProviderType,
+  walletSign,
+  useSearchTransactions,
+  HandleCloseType,
+} from "./helpers";
 import useSendTransactions, {
   updateSendStatus,
 } from "helpers/useSendTransactions";
@@ -43,11 +48,8 @@ export default function SendTransactions() {
 
   const providerType = getProviderType(provider);
 
-  const handleClose = ({
-    updateBatchStatus,
-  }: {
-    updateBatchStatus: boolean;
-  }) => {
+  const handleClose = (props?: HandleCloseType) => {
+    const updateBatchStatus = props ? props.updateBatchStatus : true;
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setNewSuccessDescription(undefined);
