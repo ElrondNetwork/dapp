@@ -14,7 +14,8 @@ export interface SendStatusType {
     sessionId: string;
   }[];
   sessionId?: string;
-  status?: "success" | "failed" | "cancelled" | "pending";
+  sequential?: boolean;
+  status?: "success" | "failed" | "cancelled" | "pending" | "forbidden";
   successDescription?: string;
 }
 
@@ -32,6 +33,7 @@ export default function useSendTransactions() {
     sessionId: "",
     transactions: [],
     status: undefined,
+    sequential: undefined,
   });
 
   const updateState = (e: CustomEvent) => {
