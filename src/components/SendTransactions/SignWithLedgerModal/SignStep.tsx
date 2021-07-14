@@ -12,7 +12,7 @@ import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
 
 export interface SignModalType {
-  handleClose: () => void;
+  handleClose: (noToast?: boolean) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
@@ -59,7 +59,7 @@ const SignStep = ({
           if (!isLast) {
             setCurrentStep((exising) => exising + 1);
           } else {
-            handleClose();
+            handleClose(true);
             history.push(callbackRoute);
           }
         });
@@ -80,6 +80,7 @@ const SignStep = ({
     e.preventDefault();
     if (isFirst) {
       handleClose();
+      history.push(callbackRoute);
     } else {
       setCurrentStep((existing) => existing - 1);
     }

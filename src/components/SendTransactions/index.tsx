@@ -43,17 +43,19 @@ export default function SendTransactions() {
 
   const providerType = getProviderType(provider);
 
-  const handleClose = () => {
+  const handleClose = (noToast?: boolean) => {
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
-    updateSendStatus({
-      loading: false,
-      status: "cancelled",
-      sessionId: newSessionId,
-    });
+    if (!noToast) {
+      updateSendStatus({
+        loading: false,
+        status: "cancelled",
+        sessionId: newSessionId,
+      });
+    }
   };
 
   const send = (e: CustomEvent) => {
