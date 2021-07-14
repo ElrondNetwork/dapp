@@ -3,13 +3,16 @@ import {
   Transaction,
   IDappProvider,
   Address,
-  TransactionHash,
   Nonce,
 } from "@elrondnetwork/erdjs";
 import { useContext } from "context";
 import SignWithLedgerModal from "./SignWithLedgerModal";
+import ForbiddenModal from "./ForbiddenModal";
+import SignWithWalletConnectModal from "./SignWithWalletConnectModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
-import { updateSendStatus } from "helpers/useSendTransactions";
+import useSendTransactions, {
+  updateSendStatus,
+} from "helpers/useSendTransactions";
 import { getLatestNonce } from "helpers/accountMethods";
 
 interface SignTransactionsType {
@@ -21,6 +24,7 @@ interface SignTransactionsType {
 
 export default function SendTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
+  const [showForbiddenModal, setShowForbiddenModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [newSequential, setNewSequential] = React.useState<boolean>();
@@ -31,6 +35,7 @@ export default function SendTransactions() {
   const [error, setError] = React.useState("");
   const context = useContext();
   const { dapp, address, network } = context;
+  const { sendStatus } = useSendTransactions();
 
   useSearchTransactions();
 
@@ -39,7 +44,6 @@ export default function SendTransactions() {
   const providerType = getProviderType(provider);
 
   const handleClose = () => {
-    const callbackRoute = newCallbackRoute;
     setNewTransactions(undefined);
     setNewCallbackRoute("");
     setNewSuccessDescription(undefined);
@@ -60,12 +64,16 @@ export default function SendTransactions() {
         successDescription,
         sequential,
       } = e.detail;
-      signTransactions({
-        transactions,
-        callbackRoute,
-        successDescription,
-        sequential,
-      });
+      if (sendStatus.sequential && sendStatus.status === "pending") {
+        setShowForbiddenModal(true);
+      } else {
+        signTransactions({
+          transactions,
+          callbackRoute,
+          successDescription,
+          sequential,
+        });
+      }
     }
   };
 
@@ -74,7 +82,7 @@ export default function SendTransactions() {
     return () => {
       document.removeEventListener("transactions", send);
     };
-  }, [context]);
+  }, [context, sendStatus]);
 
   const signTransactions = ({
     transactions,
@@ -148,5 +156,18 @@ export default function SendTransactions() {
     sessionId: newSessionId,
   };
 
-  return <SignWithLedgerModal {...sendProps} />;
+  return (
+    <React.Fragment>
+      {providerType === "ledger" && <SignWithLedgerModal {...sendProps} />}
+      {providerType === "walletconnect" && (
+        <SignWithWalletConnectModal {...sendProps} />
+      )}
+      <ForbiddenModal
+        show={showForbiddenModal}
+        handleClose={() => {
+          setShowForbiddenModal(false);
+        }}
+      />
+    </React.Fragment>
+  );
 }

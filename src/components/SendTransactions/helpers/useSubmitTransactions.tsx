@@ -16,7 +16,6 @@ const searchInteval = 2000;
 export default function useSubmitTransactions() {
   const { dapp, account } = useContext();
   const dispatch = useDispatch();
-  const { sendStatus } = useSendTransactions();
   const ref = React.useRef<any>();
 
   const getStatus = (
@@ -56,24 +55,13 @@ export default function useSubmitTransactions() {
       updateSendStatus({
         loading: false,
         status: "pending",
-        transactions:
-          sendStatus.transactions && sendStatus.transactions.length > 0
-            ? [
-                ...sendStatus.transactions,
-                ...transactions.map((tx) => ({
-                  hash: tx.getHash(),
-                  status: new TransactionStatus("pending"),
-                  sessionId,
-                })),
-              ]
-            : [
-                ...transactions.map((tx) => ({
-                  hash: tx.getHash(),
-                  status: new TransactionStatus("pending"),
-                  sessionId,
-                })),
-              ],
+        transactions: transactions.map((tx) => ({
+          hash: tx.getHash(),
+          status: new TransactionStatus("pending"),
+          sessionId,
+        })),
         sessionId,
+        sequential,
         successDescription,
       });
       for (let [index, transaction] of txEntries) {
@@ -87,6 +75,7 @@ export default function useSubmitTransactions() {
               status: index === transactions.length - 1 ? "success" : "pending",
               transactions: [{ hash, status, sessionId }],
               sessionId,
+              sequential,
               successDescription,
             });
           }
@@ -113,6 +102,7 @@ export default function useSubmitTransactions() {
             sessionId,
           })),
           sessionId,
+          sequential,
           successDescription,
         });
 
@@ -123,6 +113,7 @@ export default function useSubmitTransactions() {
               ? "success"
               : "failed",
             transactions: statuses.map((status) => ({ ...status, sessionId })),
+            sequential,
             successDescription,
           });
         });
