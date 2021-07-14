@@ -7,7 +7,7 @@ import {
   Nonce,
 } from "@elrondnetwork/erdjs";
 import { useContext } from "context";
-import SignWithDeviceModal from "./SignWithDeviceModal";
+import SignWithLedgerModal from "./SignWithLedgerModal";
 import { getProviderType, walletSign, useSearchTransactions } from "./helpers";
 import { updateSendStatus } from "helpers/useSendTransactions";
 import { getLatestNonce } from "helpers/accountMethods";
@@ -148,5 +148,5 @@ export default function SendTransactions() {
     sessionId: newSessionId,
   };
 
-  return <SignWithDeviceModal {...sendProps} />;
+  return <SignWithLedgerModal {...sendProps} />;
 }

@@ -16,7 +16,7 @@ export interface SignModalType {
   sessionId: string;
 }
 
-const SignWithDeviceModal = ({
+const SignWithLedgerModal = ({
   show,
   handleClose,
   error,
@@ -82,4 +82,4 @@ const SignWithDeviceModal = ({
   );
 };
 
-export default SignWithDeviceModal;
+export default SignWithLedgerModal;
