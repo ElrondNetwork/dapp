@@ -12,7 +12,7 @@ import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
 
 export interface SignModalType {
-  handleClose: () => void;
+  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
@@ -39,7 +39,7 @@ const SignStep = ({
   callbackRoute,
 }: SignModalType) => {
   const history = useHistory();
-  const { dapp, address, walletConnectLogin } = useContext();
+  const { dapp, address } = useContext();
   const [waitingForDevice, setWaitingForDevice] = React.useState(false);
 
   const provider: IDappProvider = dapp.provider;
@@ -59,7 +59,7 @@ const SignStep = ({
           if (!isLast) {
             setCurrentStep((exising) => exising + 1);
           } else {
-            handleClose();
+            handleClose({ updateBatchStatus: false });
             history.push(callbackRoute);
           }
         });
@@ -71,11 +71,7 @@ const SignStep = ({
   };
 
   let signBtnLabel = "Sign & Continue";
-  signBtnLabel = waitingForDevice
-    ? walletConnectLogin
-      ? "Confirm on Maiar"
-      : "Check your Ledger"
-    : signBtnLabel;
+  signBtnLabel = waitingForDevice ? "Check your Ledger" : signBtnLabel;
   signBtnLabel = isLast && !waitingForDevice ? "Sign & Submit" : signBtnLabel;
 
   const isFirst = currentStep === 0;
@@ -83,7 +79,8 @@ const SignStep = ({
   const close = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isFirst) {
-      handleClose();
+      handleClose({ updateBatchStatus: true });
+      history.push(callbackRoute);
     } else {
       setCurrentStep((existing) => existing - 1);
     }
@@ -97,7 +94,7 @@ const SignStep = ({
       iconClass="text-white"
       iconBgClass={error ? "bg-danger" : "bg-warning"}
       iconSize="3x"
-      title={walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"}
+      title="Confirm on Ledger"
       description={
         <React.Fragment>
           {transaction && (

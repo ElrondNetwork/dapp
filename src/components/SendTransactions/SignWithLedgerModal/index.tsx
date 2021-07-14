@@ -6,7 +6,7 @@ import { useSubmitTransactions } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
-  handleClose: () => void;
+  handleClose: ({ updateBatchStatus }: { updateBatchStatus: boolean }) => void;
   error: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
@@ -16,7 +16,7 @@ export interface SignModalType {
   sessionId: string;
 }
 
-const SignWithDeviceModal = ({
+const SignWithLedgerModal = ({
   show,
   handleClose,
   error,
@@ -52,12 +52,14 @@ const SignWithDeviceModal = ({
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={() => {
+        handleClose({ updateBatchStatus: true });
+      }}
       className="modal-container"
       animation={false}
       centered
     >
-      <div className="card">
+      <div className="card container">
         <div className="card-body">
           {transactions.map((transaction, index) => (
             <SignStep
@@ -82,4 +84,4 @@ const SignWithDeviceModal = ({
   );
 };
 
-export default SignWithDeviceModal;
+export default SignWithLedgerModal;
