@@ -17,7 +17,7 @@ export default function useSubmitTransactions() {
   const getStatus = (
     hash: TransactionHash
   ): Promise<{ status: TransactionStatus; hash: TransactionHash }> =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       const newInterval = setInterval(() => {
         if (!document.hidden) {
           dapp.apiProvider
@@ -30,7 +30,7 @@ export default function useSubmitTransactions() {
             })
             .catch(() => {
               clearInterval(newInterval);
-              reject("Transaction not found");
+              resolve({ status: new TransactionStatus("fail"), hash });
             });
         }
       }, searchInteval);
@@ -56,24 +56,48 @@ export default function useSubmitTransactions() {
           hash: tx.getHash(),
           status: new TransactionStatus("pending"),
           sessionId,
+          receiver: tx.getReceiver(),
         })),
         sessionId,
         sequential,
         successDescription,
       });
+      const statuses = [];
       for (let [index, transaction] of txEntries) {
         try {
           const hash = await dapp.proxy.sendTransaction(transaction);
           const { status } = await getStatus(hash);
+          statuses.push(status);
           if (!status.isPending()) {
+            const endStatus =
+              statuses.length === transactions.length &&
+              statuses.every((status) => status.isSuccessful())
+                ? "success"
+                : "failed";
+            const batchStatus =
+              index === transactions.length - 1 ? endStatus : "pending";
+
             updateSendStatus({
               loading: false,
-              status: index === transactions.length - 1 ? "success" : "pending",
-              transactions: [{ hash, status, sessionId }],
+              status: batchStatus,
+              transactions: [
+                {
+                  hash,
+                  status,
+                  sessionId,
+                  receiver: (transaction as Transaction).getReceiver(),
+                },
+              ],
               sessionId,
               sequential,
               successDescription,
             });
+
+            if (batchStatus === "success") {
+              const nonce = account.nonce.valueOf() + transactions.length;
+              const oneHour = 3600000;
+              setItem("nonce", nonce, oneHour);
+            }
           }
         } catch (err) {
           updateSendStatus({ loading: false, status: "failed", sessionId });
@@ -92,10 +116,11 @@ export default function useSubmitTransactions() {
         updateSendStatus({
           loading: false,
           status: "pending",
-          transactions: hashes.map((hash) => ({
+          transactions: hashes.map((hash, i) => ({
             hash,
             status: new TransactionStatus("pending"),
             sessionId,
+            receiver: transactions[i].getReceiver(),
           })),
           sessionId,
           sequential,
@@ -108,7 +133,11 @@ export default function useSubmitTransactions() {
             status: statuses.every(({ status }) => status.isSuccessful())
               ? "success"
               : "failed",
-            transactions: statuses.map((status) => ({ ...status, sessionId })),
+            transactions: statuses.map((status, i) => ({
+              ...status,
+              receiver: transactions[i].getReceiver(),
+              sessionId,
+            })),
             sessionId,
             sequential,
             successDescription,

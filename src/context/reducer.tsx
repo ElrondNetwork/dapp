@@ -2,6 +2,7 @@ import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import { setItem, removeItem } from "helpers/session";
 import * as ls from "helpers/localStorage";
+import { AccountType } from "helpers/types";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -11,7 +12,8 @@ export type ActionType =
   | { type: "logout" }
   | { type: "setProvider"; provider: StateType["dapp"]["provider"] }
   | { type: "setAccount"; account: StateType["account"] }
-  | { type: "setAccountNonce"; nonce: StateType["nonce"] }
+  | { type: "setAccountNonce"; nonce: number }
+  | { type: "setAccountShard"; shard: StateType["shard"] }
   | { type: "setChainId"; chainId: StateType["chainId"] }
   | { type: "setLedgerAccount"; ledgerAccount: StateType["ledgerAccount"] }
   | {
@@ -57,6 +59,13 @@ export function reducer(state: StateType, action: ActionType): StateType {
           ...state.account,
           nonce: new Nonce(action.nonce),
         },
+      };
+    }
+
+    case "setAccountShard": {
+      return {
+        ...state,
+        shard: action.shard,
       };
     }
 

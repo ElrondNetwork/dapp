@@ -8,7 +8,10 @@ import WalletConnect from "./components/WalletConnect";
 import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
 import useSendTransactions from "./helpers/useSendTransactions";
-import { useRefreshAccount } from "./helpers/accountMethods";
+import {
+  useRefreshAccount,
+  useGetAccountShard,
+} from "./helpers/accountMethods";
 import {
   RouteType as RouteInterface,
   NetworkType as NetworkInterface,
@@ -42,6 +45,7 @@ export {
   Authenticate,
   Pages,
   useRefreshAccount,
+  useGetAccountShard,
   useSendTransaction,
   useSendTransactions,
   useWebWalletLogin,
