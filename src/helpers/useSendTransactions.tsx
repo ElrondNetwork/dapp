@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Address,
   Transaction,
   TransactionHash,
   TransactionStatus,
@@ -12,6 +13,7 @@ export interface SendStatusType {
     hash: TransactionHash;
     status: TransactionStatus;
     sessionId: string;
+    receiver: Address;
   }[];
   sessionId?: string;
   sequential?: boolean;
