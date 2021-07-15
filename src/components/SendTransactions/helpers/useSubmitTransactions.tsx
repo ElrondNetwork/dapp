@@ -24,6 +24,7 @@ export default function useSubmitTransactions() {
             .getTransaction(hash)
             .then(({ status }) => {
               if (!status.isPending()) {
+                clearInterval(newInterval);
                 resolve({ status, hash });
               }
             })
