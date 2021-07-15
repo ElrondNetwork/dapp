@@ -13,23 +13,23 @@ const searchInteval = 2000;
 export default function useSubmitTransactions() {
   const { dapp, account } = useContext();
   const dispatch = useDispatch();
-  const ref = React.useRef<any>();
 
   const getStatus = (
     hash: TransactionHash
   ): Promise<{ status: TransactionStatus; hash: TransactionHash }> =>
     new Promise((resolve, reject) => {
-      ref.current = setInterval(() => {
+      const newInterval = setInterval(() => {
         if (!document.hidden) {
           dapp.apiProvider
             .getTransaction(hash)
             .then(({ status }) => {
               if (!status.isPending()) {
-                clearInterval(ref.current);
+                clearInterval(newInterval);
                 resolve({ status, hash });
               }
             })
             .catch(() => {
+              clearInterval(newInterval);
               reject("Transaction not found");
             });
         }
@@ -76,7 +76,7 @@ export default function useSubmitTransactions() {
             });
           }
         } catch (err) {
-          updateSendStatus({ loading: false, status: "failed" });
+          updateSendStatus({ loading: false, status: "failed", sessionId });
           console.error("Failed seding transaction", err);
         }
       }
@@ -109,6 +109,7 @@ export default function useSubmitTransactions() {
               ? "success"
               : "failed",
             transactions: statuses.map((status) => ({ ...status, sessionId })),
+            sessionId,
             sequential,
             successDescription,
           });
@@ -122,7 +123,7 @@ export default function useSubmitTransactions() {
 
         dispatch({ type: "setAccountNonce", nonce });
       } catch (err) {
-        updateSendStatus({ loading: false, status: "failed" });
+        updateSendStatus({ loading: false, status: "failed", sessionId });
         console.error("Failed seding transaction", err);
       }
     }

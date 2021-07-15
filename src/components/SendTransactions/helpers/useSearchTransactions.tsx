@@ -69,7 +69,11 @@ export default function useSearchTransactions() {
               sessionId: signSessionId.toString(),
             });
           } catch (err) {
-            updateSendStatus({ loading: false, status: "failed" });
+            updateSendStatus({
+              loading: false,
+              status: "failed",
+              sessionId: signSessionId.toString(),
+            });
           }
         }
       }
