@@ -25,6 +25,29 @@ export function getLatestNonce(account: AccountOnNetwork) {
   return nonce;
 }
 
+export function useGetAccountShard() {
+  const { network, address, shard } = useContext();
+  const dispatch = useDispatch();
+
+  return () =>
+    new Promise((resolve) => {
+      if (shard === undefined) {
+        fetch(`${network.apiAddress}/accounts/${address}`)
+          .then((response) => response.json())
+          .then(({ shard }) => {
+            dispatch({ type: "setAccountShard", shard });
+            resolve(shard);
+          })
+          .catch((err) => {
+            console.error(err);
+            resolve(undefined);
+          });
+      } else {
+        resolve(shard);
+      }
+    });
+}
+
 export function useRefreshAccount() {
   const { dapp } = useContext();
   const getAddress = useGetAddress();
