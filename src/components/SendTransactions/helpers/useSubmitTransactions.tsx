@@ -95,8 +95,8 @@ export default function useSubmitTransactions() {
 
             if (batchStatus === "success") {
               const nonce = account.nonce.valueOf() + transactions.length;
-              const oneHour = 3600000;
-              setItem("nonce", nonce, oneHour);
+              const oneHourInSeconds = 3600;
+              setItem("nonce", nonce, oneHourInSeconds);
             }
           }
         } catch (err) {
@@ -146,9 +146,9 @@ export default function useSubmitTransactions() {
 
         const nonce = account.nonce.valueOf() + transactions.length;
 
-        const oneHour = 3600000;
+        const oneHourInSeconds = 3600;
 
-        setItem("nonce", nonce, oneHour);
+        setItem("nonce", nonce, oneHourInSeconds);
 
         dispatch({ type: "setAccountNonce", nonce });
       } catch (err) {

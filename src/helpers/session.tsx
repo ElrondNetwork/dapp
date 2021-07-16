@@ -10,13 +10,17 @@ export type SessionKeyType =
   | "transactionIdentifier"
   | "ledgerAccountIndex";
 
-export const setItem = (key: SessionKeyType, item: any, ttl: number = 3600) => {
-  const expires = moment().unix() + ttl;
+export const setItem = (
+  key: SessionKeyType,
+  item: any,
+  secondsToExipre: number = 3600
+) => {
+  const expires = moment().unix() + secondsToExipre;
   sessionStorage.setItem(
     String(key),
     JSON.stringify({
       expires,
-      data: item
+      data: item,
     })
   );
 };

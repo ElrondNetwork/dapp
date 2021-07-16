@@ -2,8 +2,12 @@ import moment from "moment";
 
 export type LocalKeyType = number | "nonce";
 
-export const setItem = (key: LocalKeyType, item: any, ttl: number = 120000) => {
-  const expires = moment().unix() + ttl;
+export const setItem = (
+  key: LocalKeyType,
+  item: any,
+  secondsToExpire: number = 120000
+) => {
+  const expires = moment().unix() + secondsToExpire;
   localStorage.setItem(
     String(key),
     JSON.stringify({
