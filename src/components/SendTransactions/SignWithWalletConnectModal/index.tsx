@@ -139,6 +139,7 @@ const SignWithWalletConnectModal = ({
   return (
     <Modal
       show={show}
+      backdrop="static"
       onHide={handleClose}
       className="modal-container"
       animation={false}
