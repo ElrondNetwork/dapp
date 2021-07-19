@@ -54,27 +54,43 @@ export default function useSendTransactions() {
         const updatedTransactionHashes = updatedTransactions
           ? updatedTransactions.map((tx) => tx.hash.toString())
           : [];
+        const existingTransactionHashes = existing.transactions
+          ? existing.transactions.map((tx) => tx.hash.toString())
+          : [];
 
         const newTxs =
           existing.transactions && existing.transactions.length > 0
-            ? existing.transactions.map((existingTx) => {
-                if (
-                  updatedTransactionHashes.includes(existingTx.hash.toString())
-                ) {
-                  return updatedTransactions?.find(
-                    (tx) => tx.hash.toString() === existingTx.hash.toString()
-                  );
-                } else {
-                  return existingTx;
-                }
-              })
+            ? [
+                ...existing.transactions.map((existingTx) => {
+                  if (
+                    updatedTransactionHashes.includes(
+                      existingTx.hash.toString()
+                    )
+                  ) {
+                    return updatedTransactions?.find(
+                      (tx) => tx.hash.toString() === existingTx.hash.toString()
+                    );
+                  } else {
+                    return existingTx;
+                  }
+                }),
+                ...(updatedTransactions
+                  ? [
+                      ...updatedTransactions.filter(
+                        ({ hash }: { hash: TransactionHash }) =>
+                          !existingTransactionHashes.includes(hash.toString())
+                      ),
+                    ]
+                  : []),
+              ]
             : updatedTransactions;
 
-        return {
+        const newState = {
           ...existing,
           ...e.detail.sendStatus,
           transactions: newTxs,
         };
+        return newState;
       });
     }
   };

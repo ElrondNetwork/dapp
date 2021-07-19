@@ -12,6 +12,7 @@ const ForbiddenModal = ({ show, handleClose }: SignModalType) => {
   return (
     <Modal
       show={show}
+      backdrop="static"
       onHide={handleClose}
       className="modal-container"
       animation={false}

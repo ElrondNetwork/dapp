@@ -33,7 +33,6 @@ export default function SendTransactions() {
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
   const [newSequential, setNewSequential] = React.useState<boolean>();
-  const [newSessionId, setNewSessionId] = React.useState("");
   const [newsuccessDescription, setNewSuccessDescription] = React.useState<
     string | undefined
   >();
@@ -59,7 +58,7 @@ export default function SendTransactions() {
       updateSendStatus({
         loading: false,
         status: "cancelled",
-        sessionId: newSessionId,
+        sessionId: Date.now().toString(),
       });
     }
   };
@@ -125,14 +124,12 @@ export default function SendTransactions() {
               break;
             case "ledger":
               setNewSequential(sequential);
-              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
               setNewSequential(sequential);
-              setNewSessionId(Date.now().toString());
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
@@ -161,7 +158,6 @@ export default function SendTransactions() {
     callbackRoute: newCallbackRoute,
     successDescription: newsuccessDescription || "",
     sequential: newSequential,
-    sessionId: newSessionId,
   };
 
   return (

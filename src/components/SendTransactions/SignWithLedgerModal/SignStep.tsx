@@ -10,9 +10,9 @@ import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
-import { HandleCloseType } from "../helpers";
+import { useSubmitTransactions, HandleCloseType } from "../helpers";
 
-export interface SignModalType {
+export interface SignStepType {
   handleClose: (props?: HandleCloseType) => void;
   error: string;
   transaction: Transaction;
@@ -21,10 +21,13 @@ export interface SignModalType {
   currentStep: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   isLast: boolean;
+  signedTransactions?: Record<number, Transaction>;
   setSignedTransactions: React.Dispatch<
-    React.SetStateAction<Record<number, Transaction>>
+    React.SetStateAction<Record<number, Transaction>> | undefined
   >;
   setError: (value: React.SetStateAction<string>) => void;
+  successDescription?: string;
+  sequential: boolean;
 }
 
 const SignStep = ({
@@ -35,15 +38,25 @@ const SignStep = ({
   index,
   isLast,
   setSignedTransactions,
+  signedTransactions,
   currentStep,
   setCurrentStep,
   callbackRoute,
-}: SignModalType) => {
+  successDescription,
+  sequential,
+}: SignStepType) => {
   const history = useHistory();
   const { dapp, address } = useContext();
   const [waitingForDevice, setWaitingForDevice] = React.useState(false);
+  const submitTransactions = useSubmitTransactions();
 
   const provider: IDappProvider = dapp.provider;
+
+  const reset = () => {
+    setCurrentStep(0);
+    setSignedTransactions(undefined);
+    setWaitingForDevice(false);
+  };
 
   const sign = () => {
     dapp.proxy
@@ -56,23 +69,31 @@ const SignStep = ({
           .signTransaction(transaction)
           .then((tx) => {
             const newSignedTx = { [index]: tx };
-            setSignedTransactions((existing) =>
-              existing ? { ...existing, ...newSignedTx } : newSignedTx
-            );
+            const newSignedTransactions = signedTransactions
+              ? { ...signedTransactions, ...newSignedTx }
+              : newSignedTx;
+            setSignedTransactions(newSignedTransactions);
             if (!isLast) {
               setCurrentStep((exising) => exising + 1);
-            } else {
+            } else if (newSignedTransactions) {
               handleClose({ updateBatchStatus: false });
+              submitTransactions({
+                transactions: Object.values(newSignedTransactions),
+                successDescription,
+                sequential,
+                sessionId: Date.now().toString(),
+              });
+              reset();
               history.push(callbackRoute);
             }
           })
           .catch(() => {
-            setWaitingForDevice(false);
+            reset();
             handleClose({ updateBatchStatus: false });
           });
       })
       .catch((e) => {
-        setWaitingForDevice(false);
+        reset();
         setError(e.message);
       });
   };

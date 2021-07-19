@@ -17,7 +17,6 @@ export interface SignModalType {
   callbackRoute: string;
   successDescription?: string;
   sequential?: boolean;
-  sessionId: string;
 }
 
 const SignWithWalletConnectModal = ({
@@ -29,7 +28,6 @@ const SignWithWalletConnectModal = ({
   callbackRoute,
   successDescription,
   sequential = false,
-  sessionId,
 }: SignModalType) => {
   const history = useHistory();
   const context = useContext();
@@ -129,7 +127,7 @@ const SignWithWalletConnectModal = ({
         transactions: Object.values(signedTransactions),
         successDescription,
         sequential,
-        sessionId,
+        sessionId: Date.now().toString(),
       });
       handleClose({ updateBatchStatus: false });
       history.push(callbackRoute);
@@ -139,6 +137,7 @@ const SignWithWalletConnectModal = ({
   return (
     <Modal
       show={show}
+      backdrop="static"
       onHide={handleClose}
       className="modal-container"
       animation={false}

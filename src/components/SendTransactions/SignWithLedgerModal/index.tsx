@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
-import SignStep from "./SignStep";
+import SignStep, { SignStepType } from "./SignStep";
 import { useSubmitTransactions, HandleCloseType } from "../helpers";
 
 export interface SignModalType {
@@ -11,9 +11,8 @@ export interface SignModalType {
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
   callbackRoute: string;
-  successDescription?: string;
-  sequential?: boolean;
-  sessionId: string;
+  successDescription?: SignStepType["successDescription"];
+  sequential?: SignStepType["sequential"];
 }
 
 const SignWithLedgerModal = ({
@@ -25,33 +24,16 @@ const SignWithLedgerModal = ({
   callbackRoute,
   successDescription,
   sequential = false,
-  sessionId,
 }: SignModalType) => {
-  const submitTransactions = useSubmitTransactions();
-
   const [currentStep, setCurrentStep] = React.useState(0);
   const [signedTransactions, setSignedTransactions] = React.useState<
-    Record<number, Transaction>
+    SignStepType["signedTransactions"]
   >();
-
-  React.useEffect(() => {
-    const signingDisabled =
-      !signedTransactions ||
-      (signedTransactions &&
-        Object.keys(signedTransactions).length !== transactions.length);
-    if (!signingDisabled && signedTransactions) {
-      submitTransactions({
-        transactions: Object.values(signedTransactions),
-        successDescription,
-        sequential,
-        sessionId,
-      });
-    }
-  }, [signedTransactions, transactions]);
 
   return (
     <Modal
       show={show}
+      backdrop="static"
       onHide={handleClose}
       className="modal-container"
       animation={false}
@@ -70,9 +52,12 @@ const SignWithLedgerModal = ({
                 setError,
                 callbackRoute,
                 setSignedTransactions,
+                signedTransactions,
                 currentStep,
                 setCurrentStep,
                 isLast: index === transactions.length - 1,
+                successDescription,
+                sequential,
               }}
             />
           ))}
