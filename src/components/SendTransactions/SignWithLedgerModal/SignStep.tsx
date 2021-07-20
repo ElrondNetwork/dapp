@@ -28,6 +28,7 @@ export interface SignStepType {
   setError: (value: React.SetStateAction<string>) => void;
   successDescription?: string;
   sequential: boolean;
+  delayLast: boolean;
 }
 
 const SignStep = ({
@@ -44,6 +45,7 @@ const SignStep = ({
   callbackRoute,
   successDescription,
   sequential,
+  delayLast,
 }: SignStepType) => {
   const history = useHistory();
   const { dapp, address } = useContext();
@@ -82,6 +84,7 @@ const SignStep = ({
                 successDescription,
                 sequential,
                 sessionId: Date.now().toString(),
+                delayLast,
               });
               reset();
               history.push(callbackRoute);

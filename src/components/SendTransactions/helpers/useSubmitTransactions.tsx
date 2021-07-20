@@ -5,10 +5,11 @@ import {
   TransactionStatus,
 } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
-import { updateSendStatus } from "helpers/useSendTransactions";
+import { SendStatusType, updateSendStatus } from "helpers/useSendTransactions";
 import { setItem } from "helpers/localStorage";
 
 const searchInteval = 2000;
+const delayInterval = 12200;
 
 export default function useSubmitTransactions() {
   const { dapp, account } = useContext();
@@ -41,10 +42,12 @@ export default function useSubmitTransactions() {
     successDescription,
     sequential,
     sessionId,
+    delayLast,
   }: {
     transactions: Transaction[];
     successDescription?: string;
     sequential: boolean;
+    delayLast?: boolean;
     sessionId: string;
   }) => {
     if (sequential) {
@@ -106,18 +109,11 @@ export default function useSubmitTransactions() {
       }
     } else {
       try {
-        const txHashes = await Promise.all(
-          transactions.map((transaction) =>
-            dapp.proxy.sendTransaction(transaction)
-          )
-        );
-        const hashes = txHashes.map((entry) => new TransactionHash(`${entry}`));
-
         updateSendStatus({
           loading: false,
           status: "pending",
-          transactions: hashes.map((hash, i) => ({
-            hash,
+          transactions: transactions.map((tx, i) => ({
+            hash: tx.getHash(),
             status: new TransactionStatus("pending"),
             sessionId,
             receiver: transactions[i].getReceiver(),
@@ -127,30 +123,104 @@ export default function useSubmitTransactions() {
           successDescription,
         });
 
-        Promise.all(hashes.map((hash) => getStatus(hash))).then((statuses) => {
-          updateSendStatus({
-            loading: false,
-            status: statuses.every(({ status }) => status.isSuccessful())
-              ? "success"
-              : "failed",
-            transactions: statuses.map((status, i) => ({
-              ...status,
-              receiver: transactions[i].getReceiver(),
-              sessionId,
-            })),
-            sessionId,
-            sequential,
-            successDescription,
-          });
-        });
+        let hashes: TransactionHash[] = [];
+        if (delayLast) {
+          const txEntries: any = transactions.entries();
+          for (let [index, transaction] of txEntries) {
+            if (index === transactions.length - 1) {
+              const delayed = (): Promise<() => Promise<TransactionHash>> =>
+                new Promise((resolve) => {
+                  setTimeout(() => {
+                    resolve(() => dapp.proxy.sendTransaction(transaction));
+                  }, delayInterval);
+                });
+              const sendDelayedTransaction = await delayed();
+              const hash = await sendDelayedTransaction();
+              hashes.push(hash);
+            } else {
+              const hash = await dapp.proxy.sendTransaction(transaction);
+              hashes.push(hash);
+            }
+          }
+        } else {
+          hashes = await Promise.all(
+            transactions.map((tx) => dapp.proxy.sendTransaction(tx))
+          );
+        }
 
-        const nonce = account.nonce.valueOf() + transactions.length;
+        let resolvedTransactions: SendStatusType["transactions"] = [];
+        const newInterval = setInterval(() => {
+          if (!document.hidden) {
+            hashes.forEach((hash, i) => {
+              const txResolved = resolvedTransactions?.some(
+                (tx) => tx.hash.toString() === hash.toString()
+              );
+              if (!txResolved) {
+                dapp.apiProvider
+                  .getTransaction(hash)
+                  .then(({ status }) => {
+                    if (!status.isPending()) {
+                      const transaction = {
+                        status,
+                        hash,
+                        receiver: transactions[i].getReceiver(),
+                        sessionId,
+                      };
 
-        const oneHourInSeconds = 3600;
+                      resolvedTransactions?.push(transaction);
+                      updateSendStatus({
+                        loading: false,
+                        status: "pending",
+                        transactions: [transaction],
+                        sessionId,
+                        sequential,
+                        successDescription,
+                      });
+                    }
+                  })
+                  .catch(() => {
+                    const failedTransaction = {
+                      status: new TransactionStatus("fail"),
+                      hash,
+                      receiver: transactions[i].getReceiver(),
+                      sessionId,
+                    };
+                    resolvedTransactions?.push(failedTransaction);
+                    updateSendStatus({
+                      loading: false,
+                      status: "pending",
+                      transactions: [failedTransaction],
+                      sessionId,
+                      sequential,
+                      successDescription,
+                    });
+                  });
+              }
+              if (resolvedTransactions?.length === transactions.length) {
+                clearInterval(newInterval);
+                updateSendStatus({
+                  loading: false,
+                  status: resolvedTransactions.every(({ status }) =>
+                    status.isSuccessful()
+                  )
+                    ? "success"
+                    : "failed",
+                  transactions: resolvedTransactions,
+                  sessionId,
+                  sequential,
+                  successDescription,
+                });
+                const nonce = account.nonce.valueOf() + transactions.length;
 
-        setItem("nonce", nonce, oneHourInSeconds);
+                const oneHourInSeconds = 3600;
 
-        dispatch({ type: "setAccountNonce", nonce });
+                setItem("nonce", nonce, oneHourInSeconds);
+
+                dispatch({ type: "setAccountNonce", nonce });
+              }
+            });
+          }
+        }, searchInteval);
       } catch (err) {
         updateSendStatus({ loading: false, status: "failed", sessionId });
         console.error("Failed seding transaction", err);

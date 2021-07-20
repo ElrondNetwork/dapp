@@ -17,8 +17,17 @@ export interface SendStatusType {
   }[];
   sessionId?: string;
   sequential?: boolean;
+  delayLast?: boolean;
   status?: "success" | "failed" | "cancelled" | "pending";
   successDescription?: string;
+}
+
+export interface SendTransactionsType {
+  transactions: Transaction[];
+  callbackRoute: string;
+  successDescription?: string;
+  sequential?: boolean;
+  delayLast?: boolean;
 }
 
 export function updateSendStatus(sendStatus: SendStatusType) {
@@ -36,6 +45,7 @@ export default function useSendTransactions() {
     transactions: [],
     status: undefined,
     sequential: undefined,
+    delayLast: undefined,
   });
 
   const updateState = (e: CustomEvent) => {
@@ -107,14 +117,16 @@ export default function useSendTransactions() {
     callbackRoute,
     successDescription,
     sequential,
-  }: {
-    transactions: Transaction[];
-    callbackRoute: string;
-    successDescription?: string;
-    sequential?: boolean;
-  }) => {
+    delayLast,
+  }: SendTransactionsType) => {
     const customEvent = new CustomEvent("transactions", {
-      detail: { transactions, callbackRoute, successDescription, sequential },
+      detail: {
+        transactions,
+        callbackRoute,
+        successDescription,
+        sequential,
+        delayLast,
+      },
     });
     document.dispatchEvent(customEvent);
   };

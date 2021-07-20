@@ -13,6 +13,7 @@ export interface SignModalType {
   callbackRoute: string;
   successDescription?: SignStepType["successDescription"];
   sequential?: SignStepType["sequential"];
+  delayLast?: SignStepType["delayLast"];
 }
 
 const SignWithLedgerModal = ({
@@ -24,6 +25,7 @@ const SignWithLedgerModal = ({
   callbackRoute,
   successDescription,
   sequential = false,
+  delayLast = false,
 }: SignModalType) => {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [signedTransactions, setSignedTransactions] = React.useState<
@@ -58,6 +60,7 @@ const SignWithLedgerModal = ({
                 isLast: index === transactions.length - 1,
                 successDescription,
                 sequential,
+                delayLast,
               }}
             />
           ))}

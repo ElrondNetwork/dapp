@@ -17,21 +17,16 @@ import {
 } from "./helpers";
 import useSendTransactions, {
   updateSendStatus,
+  SendTransactionsType,
 } from "helpers/useSendTransactions";
 import { getLatestNonce } from "helpers/accountMethods";
-
-interface SignTransactionsType {
-  transactions: Transaction[];
-  callbackRoute: string;
-  successDescription?: string;
-  sequential?: boolean;
-}
 
 export default function SendTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
   const [showForbiddenModal, setShowForbiddenModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
+  const [newDelayLast, setNewDelayLast] = React.useState<boolean>();
   const [newSequential, setNewSequential] = React.useState<boolean>();
   const [newsuccessDescription, setNewSuccessDescription] = React.useState<
     string | undefined
@@ -70,6 +65,7 @@ export default function SendTransactions() {
         callbackRoute,
         successDescription,
         sequential,
+        delayLast,
       } = e.detail;
       if (sendStatus.sequential && sendStatus.status === "pending") {
         setShowForbiddenModal(true);
@@ -79,6 +75,7 @@ export default function SendTransactions() {
           callbackRoute,
           successDescription,
           sequential,
+          delayLast,
         });
       }
     }
@@ -96,7 +93,8 @@ export default function SendTransactions() {
     callbackRoute,
     successDescription,
     sequential,
-  }: SignTransactionsType) => {
+    delayLast,
+  }: SendTransactionsType) => {
     const showError = (e: string) => {
       setShowSignModal(true);
       setError(e);
@@ -120,11 +118,13 @@ export default function SendTransactions() {
                 walletAddress: `${network.walletAddress}`,
                 successDescription,
                 sequential,
+                delayLast,
               });
               break;
             case "ledger":
               setNewSequential(sequential);
               setNewTransactions(transactions);
+              setNewDelayLast(delayLast);
               setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
@@ -132,6 +132,7 @@ export default function SendTransactions() {
               setNewSequential(sequential);
               setNewTransactions(transactions);
               setNewSuccessDescription(successDescription);
+              setNewDelayLast(delayLast);
               setShowSignModal(true);
               break;
           }
@@ -158,6 +159,7 @@ export default function SendTransactions() {
     callbackRoute: newCallbackRoute,
     successDescription: newsuccessDescription || "",
     sequential: newSequential,
+    delayLast: newDelayLast,
   };
 
   return (
