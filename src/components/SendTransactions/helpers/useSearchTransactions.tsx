@@ -39,6 +39,7 @@ export default function useSearchTransactions() {
               : [];
 
             const sequential = "sequential" in sessionObject ? true : false;
+            const delayLast = "delayLast" in sessionObject ? true : false;
             const successDescription =
               "successDescription" in sessionObject
                 ? sessionObject.successDescription
@@ -67,6 +68,7 @@ export default function useSearchTransactions() {
               successDescription,
               sequential,
               sessionId: signSessionId.toString(),
+              delayLast,
             });
           } catch (err) {
             updateSendStatus({
