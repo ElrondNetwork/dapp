@@ -5,6 +5,7 @@ import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
 import { ProviderType } from "./../helpers";
 import TransactionStatus from "./TransactionStatus";
+import { useContext } from "context";
 
 export interface SendModalType {
   show: boolean;
@@ -27,6 +28,7 @@ const SendModal = ({
   callbackRoute,
   showStatus,
 }: SendModalType) => {
+  const { walletConnectLogin } = useContext();
   return (
     <Modal
       show={show}
@@ -50,7 +52,9 @@ const SendModal = ({
               iconClass="text-white"
               iconBgClass={error ? "bg-danger" : "bg-warning"}
               iconSize="3x"
-              title="Confirm on Ledger"
+              title={
+                walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"
+              }
               description={
                 <React.Fragment>
                   {transaction && (
@@ -70,23 +74,25 @@ const SendModal = ({
                           </React.Fragment>
                         )}
                       </div>
-                      {error && (
-                        <p className="text-danger d-flex justify-content-center align-items-center">
-                          {error}
-                        </p>
-                      )}
-                      <div className="text-center">
-                        <button
-                          id="closeButton"
-                          className="btn btn-primary mx-2 "
-                          onClick={handleClose}
-                          disabled={providerType === "ledger" && error === ""}
-                        >
-                          Close
-                        </button>
-                      </div>
                     </React.Fragment>
                   )}
+                  <React.Fragment>
+                    {error && (
+                      <p className="text-danger d-flex justify-content-center align-items-center">
+                        {error}
+                      </p>
+                    )}
+                    <div className="text-center">
+                      <button
+                        id="closeButton"
+                        className="btn btn-primary mx-2 "
+                        onClick={handleClose}
+                        disabled={providerType === "ledger" && error === ""}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </React.Fragment>
                 </React.Fragment>
               }
             />
