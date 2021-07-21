@@ -129,6 +129,7 @@ const SignWithWalletConnectModal = ({
         sequential,
         sessionId: Date.now().toString(),
       });
+      setSignedTransactions(undefined);
       handleClose({ updateBatchStatus: false });
       history.push(callbackRoute);
     }
