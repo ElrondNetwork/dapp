@@ -5,7 +5,7 @@ import { useContext, useDispatch } from "context";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
 
 export default function useSetProvider() {
-  const { network, dapp } = useContext();
+  const { network } = useContext();
   const dispatch = useDispatch();
 
   const walletConnectLogin = getItem("walletConnectLogin");

@@ -1,13 +1,14 @@
 import React from "react";
 import { useContext } from "context";
-import { WalletProvider } from "@elrondnetwork/erdjs";
 import { setItem } from "helpers/session";
 import { newWalletProvider } from "context/state";
 
 export const useWebWalletLogin = ({
   callbackRoute,
+  token,
 }: {
   callbackRoute: string;
+  token?: string;
 }) => {
   const { dapp, network } = useContext();
   return () => {
@@ -23,6 +24,7 @@ export const useWebWalletLogin = ({
             callbackUrl: encodeURIComponent(
               `${window.location.origin}${callbackRoute}`
             ),
+            ...(token ? { token } : {}),
           });
         } else {
           console.warn(
@@ -38,12 +40,14 @@ export const useWebWalletLogin = ({
 
 const WalletLogin = ({
   callbackRoute,
+  token,
   webWalletButtonLabel,
 }: {
   callbackRoute: string;
+  token?: string;
   webWalletButtonLabel: string;
 }) => {
-  const webWalletLogin = useWebWalletLogin({ callbackRoute });
+  const webWalletLogin = useWebWalletLogin({ callbackRoute, token });
 
   return (
     <button
