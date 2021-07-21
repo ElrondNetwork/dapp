@@ -109,20 +109,6 @@ export default function useSubmitTransactions() {
       }
     } else {
       try {
-        updateSendStatus({
-          loading: false,
-          status: "pending",
-          transactions: transactions.map((tx, i) => ({
-            hash: tx.getHash(),
-            status: new TransactionStatus("pending"),
-            sessionId,
-            receiver: transactions[i].getReceiver(),
-          })),
-          sessionId,
-          sequential,
-          successDescription,
-        });
-
         let hashes: TransactionHash[] = [];
         if (delayLast) {
           const txEntries: any = transactions.entries();
@@ -140,6 +126,21 @@ export default function useSubmitTransactions() {
             } else {
               const hash = await dapp.proxy.sendTransaction(transaction);
               hashes.push(hash);
+              updateSendStatus({
+                loading: false,
+                status: "pending",
+                transactions: [
+                  {
+                    hash,
+                    status: new TransactionStatus("pending"),
+                    sessionId,
+                    receiver: transaction.getReceiver(),
+                  },
+                ],
+                sessionId,
+                sequential,
+                successDescription,
+              });
             }
           }
         } else {
@@ -147,6 +148,20 @@ export default function useSubmitTransactions() {
             transactions.map((tx) => dapp.proxy.sendTransaction(tx))
           );
         }
+
+        updateSendStatus({
+          loading: false,
+          status: "pending",
+          transactions: hashes.map((hash, i) => ({
+            hash,
+            status: new TransactionStatus("pending"),
+            sessionId,
+            receiver: transactions[i].getReceiver(),
+          })),
+          sessionId,
+          sequential,
+          successDescription,
+        });
 
         let resolvedTransactions: SendStatusType["transactions"] = [];
         const newInterval = setInterval(() => {
