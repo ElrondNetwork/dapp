@@ -50,7 +50,7 @@ const SendModal = ({
               iconClass="text-white"
               iconBgClass={error ? "bg-danger" : "bg-warning"}
               iconSize="3x"
-              title="Confirm on Ledger"
+              title={providerType === "ledger" ? "Confirm on Ledger": "Confirm on Maiar"}
               description={
                 <React.Fragment>
                   {transaction && (
