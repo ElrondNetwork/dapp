@@ -9,7 +9,7 @@ import { SendStatusType, updateSendStatus } from "helpers/useSendTransactions";
 import { setItem } from "helpers/localStorage";
 
 const searchInteval = 2000;
-const delayInterval = 12200;
+const delayInterval = 30000;
 
 export default function useSubmitTransactions() {
   const { dapp, account } = useContext();
