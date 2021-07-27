@@ -79,7 +79,8 @@ export function useRefreshAccount() {
 
   return () =>
     dapp.provider.isInitialized()
-      ? dapp.provider
+      ? setAccount()
+      : dapp.provider
           .init()
           .then((initialised) => {
             if (!initialised) {
@@ -89,6 +90,5 @@ export function useRefreshAccount() {
           })
           .catch((e) => {
             console.error("Failed initializing provider ", e);
-          })
-      : setAccount();
+          });
 }

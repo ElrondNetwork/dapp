@@ -59,12 +59,24 @@ const SignWithWalletConnectModal = ({
           .getAccount(new Address(address))
           .then((account) => {
             transaction.setNonce(new Nonce(account.nonce.valueOf()));
-            provider.signTransaction(transaction).then((tx: Transaction) => {
-              const newSignedTx = { [0]: tx };
-              setSignedTransactions((existing) =>
-                existing ? { ...existing, ...newSignedTx } : newSignedTx
-              );
-            });
+            provider
+              .init()
+              .then((initialised: boolean) => {
+                if (!initialised) {
+                  return;
+                }
+                provider
+                  .signTransaction(transaction)
+                  .then((tx: Transaction) => {
+                    const newSignedTx = { [0]: tx };
+                    setSignedTransactions((existing) =>
+                      existing ? { ...existing, ...newSignedTx } : newSignedTx
+                    );
+                  });
+              })
+              .catch((e: any) => {
+                console.error("Failed initializing provider ", e);
+              });
           })
           .catch((e) => {
             setError(e.message);
@@ -91,22 +103,39 @@ const SignWithWalletConnectModal = ({
             });
 
             provider
-              .sendCustomMessage({
-                method: "erd_batch_sign",
-                params: transactionsDetails,
+              .init()
+              .then((initialised: boolean) => {
+                if (!initialised) {
+                  return;
+                }
+                provider
+                  .sendCustomMessage({
+                    method: "erd_batch_sign",
+                    params: transactionsDetails,
+                  })
+                  .then((signatures: any) => {
+                    signatures.forEach((signature: any, key: number) => {
+                      const transaction = transactions[key];
+                      transaction.applySignature(
+                        new Signature(signature.signature),
+                        new Address(address)
+                      );
+                      const newSignedTx = {
+                        [key]: transaction,
+                      };
+                      setSignedTransactions((existing) =>
+                        existing
+                          ? {
+                              ...existing,
+                              ...newSignedTx,
+                            }
+                          : newSignedTx
+                      );
+                    });
+                  });
               })
-              .then((signatures: any) => {
-                signatures.forEach((signature: any, key: number) => {
-                  const transaction = transactions[key];
-                  transaction.applySignature(
-                    new Signature(signature.signature),
-                    new Address(address)
-                  );
-                  const newSignedTx = { [key]: transaction };
-                  setSignedTransactions((existing) =>
-                    existing ? { ...existing, ...newSignedTx } : newSignedTx
-                  );
-                });
+              .catch((e: any) => {
+                console.error("Failed initializing provider ", e);
               });
           })
           .catch((e) => {
