@@ -10,13 +10,15 @@ import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
 import { getLatestNonce } from "helpers/accountMethods";
-import { useSubmitTransactions, HandleCloseType } from "../helpers";
+import { HandleCloseType } from "../helpers";
+import { updateSignStatus } from "helpers/useSignTransactions";
 
 export interface SignStepType {
   handleClose: (props?: HandleCloseType) => void;
   error: string;
   transaction: Transaction;
   callbackRoute: string;
+  sessionId: string;
   index: number;
   currentStep: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -26,9 +28,6 @@ export interface SignStepType {
     React.SetStateAction<Record<number, Transaction>> | undefined
   >;
   setError: (value: React.SetStateAction<string>) => void;
-  successDescription?: string;
-  sequential: boolean;
-  delayLast: boolean;
 }
 
 const SignStep = ({
@@ -37,20 +36,17 @@ const SignStep = ({
   setError,
   transaction,
   index,
+  sessionId,
   isLast,
   setSignedTransactions,
   signedTransactions,
   currentStep,
   setCurrentStep,
   callbackRoute,
-  successDescription,
-  sequential,
-  delayLast,
 }: SignStepType) => {
   const history = useHistory();
   const { dapp, address } = useContext();
   const [waitingForDevice, setWaitingForDevice] = React.useState(false);
-  const submitTransactions = useSubmitTransactions();
 
   const provider: IDappProvider = dapp.provider;
 
@@ -58,6 +54,7 @@ const SignStep = ({
     setCurrentStep(0);
     setSignedTransactions(undefined);
     setWaitingForDevice(false);
+    updateSignStatus({});
   };
 
   const sign = () => {
@@ -79,12 +76,12 @@ const SignStep = ({
               setCurrentStep((exising) => exising + 1);
             } else if (newSignedTransactions) {
               handleClose({ updateBatchStatus: false });
-              submitTransactions({
-                transactions: Object.values(newSignedTransactions),
-                successDescription,
-                sequential,
-                sessionId: Date.now().toString(),
-                delayLast,
+              updateSignStatus({
+                [sessionId]: {
+                  loading: false,
+                  status: "signed",
+                  transactions: Object.values(newSignedTransactions),
+                },
               });
               reset();
               history.push(callbackRoute);

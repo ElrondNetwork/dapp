@@ -1,31 +1,27 @@
 import * as React from "react";
 import { Modal } from "react-bootstrap";
-import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
+import { Transaction } from "@elrondnetwork/erdjs";
 import SignStep, { SignStepType } from "./SignStep";
-import { useSubmitTransactions, HandleCloseType } from "../helpers";
+import { HandleCloseType } from "../helpers";
 
 export interface SignModalType {
   show: boolean;
   handleClose: (props?: HandleCloseType) => void;
   error: string;
+  sessionId: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
   callbackRoute: string;
-  successDescription?: SignStepType["successDescription"];
-  sequential?: SignStepType["sequential"];
-  delayLast?: SignStepType["delayLast"];
 }
 
 const SignWithLedgerModal = ({
   show,
   handleClose,
   error,
+  sessionId,
   setError,
   transactions,
   callbackRoute,
-  successDescription,
-  sequential = false,
-  delayLast = false,
 }: SignModalType) => {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [signedTransactions, setSignedTransactions] = React.useState<
@@ -51,6 +47,7 @@ const SignWithLedgerModal = ({
                 transaction,
                 handleClose,
                 error,
+                sessionId,
                 setError,
                 callbackRoute,
                 setSignedTransactions,
@@ -58,9 +55,6 @@ const SignWithLedgerModal = ({
                 currentStep,
                 setCurrentStep,
                 isLast: index === transactions.length - 1,
-                successDescription,
-                sequential,
-                delayLast,
               }}
             />
           ))}

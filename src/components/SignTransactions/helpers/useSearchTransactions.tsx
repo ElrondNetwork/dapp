@@ -5,14 +5,12 @@ import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
 import * as ls from "helpers/localStorage";
 import { useContext } from "context";
-import { updateSendStatus } from "helpers/useSendTransactions";
-import useSubmitTransactions from "./useSubmitTransactions";
+import { updateSignStatus } from "helpers/useSignTransactions";
 import newTransaction from "./newTransaction";
 
 export default function useSearchTransactions() {
   const { search } = useLocation();
   const { address } = useContext();
-  const submitTransactions = useSubmitTransactions();
 
   React.useEffect(() => {
     if (search) {
@@ -38,13 +36,6 @@ export default function useSearchTransactions() {
               ? sessionObject.transactions
               : [];
 
-            const sequential = "sequential" in sessionObject ? true : false;
-            const delayLast = "delayLast" in sessionObject ? true : false;
-            const successDescription =
-              "successDescription" in sessionObject
-                ? sessionObject.successDescription
-                : "";
-
             const transactions = parsedTansactions.map(
               (transaction, index) => ({
                 ...transaction,
@@ -63,18 +54,19 @@ export default function useSearchTransactions() {
               return transaction;
             });
 
-            submitTransactions({
-              transactions: signedTransactions,
-              successDescription,
-              sequential,
-              sessionId: signSessionId.toString(),
-              delayLast,
+            updateSignStatus({
+              [signSessionId.toString()]: {
+                loading: false,
+                status: "signed",
+                transactions: signedTransactions,
+              },
             });
           } catch (err) {
-            updateSendStatus({
-              loading: false,
-              status: "failed",
-              sessionId: signSessionId.toString(),
+            updateSignStatus({
+              [signSessionId.toString()]: {
+                loading: false,
+                status: "failed",
+              },
             });
           }
         }
