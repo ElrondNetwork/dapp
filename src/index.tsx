@@ -7,7 +7,7 @@ import { useWebWalletLogin } from "./components/Unlock/Login/Wallet";
 import WalletConnect from "./components/WalletConnect";
 import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
-import useSendTransactions from "./helpers/useSendTransactions";
+import useSignTransactions from "./helpers/useSignTransactions";
 import {
   useRefreshAccount,
   useGetAccountShard,
@@ -16,7 +16,7 @@ import {
   RouteType as RouteInterface,
   NetworkType as NetworkInterface,
 } from "./helpers/types";
-import SendTransactions from "components/SendTransactions";
+import SignTransactions from "components/SignTransactions";
 
 export type NetworkType = NetworkInterface;
 export type RouteType = RouteInterface;
@@ -34,7 +34,7 @@ const Authenticate = ({
     <AuthenticateComponent routes={routes} unlockRoute={unlockRoute}>
       {children}
       <Send />
-      <SendTransactions />
+      <SignTransactions />
     </AuthenticateComponent>
   );
 };
@@ -47,7 +47,7 @@ export {
   useRefreshAccount,
   useGetAccountShard,
   useSendTransaction,
-  useSendTransactions,
+  useSignTransactions,
   useWebWalletLogin,
   Context,
   useContext,

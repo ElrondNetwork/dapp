@@ -7,7 +7,6 @@ import {
 } from "@elrondnetwork/erdjs";
 import { useContext } from "context";
 import SignWithLedgerModal from "./SignWithLedgerModal";
-import ForbiddenModal from "./ForbiddenModal";
 import SignWithWalletConnectModal from "./SignWithWalletConnectModal";
 import {
   getProviderType,
@@ -15,26 +14,21 @@ import {
   useSearchTransactions,
   HandleCloseType,
 } from "./helpers";
-import useSendTransactions, {
-  updateSendStatus,
-  SendTransactionsType,
-} from "helpers/useSendTransactions";
+import useSignTransactions, {
+  updateSignStatus,
+  SignTransactionsType,
+} from "helpers/useSignTransactions";
 import { getLatestNonce } from "helpers/accountMethods";
 
-export default function SendTransactions() {
+export default function SignTransactions() {
   const [showSignModal, setShowSignModal] = React.useState(false);
-  const [showForbiddenModal, setShowForbiddenModal] = React.useState(false);
   const [newTransactions, setNewTransactions] = React.useState<Transaction[]>();
   const [newCallbackRoute, setNewCallbackRoute] = React.useState("");
-  const [newDelayLast, setNewDelayLast] = React.useState<boolean>();
-  const [newSequential, setNewSequential] = React.useState<boolean>();
-  const [newsuccessDescription, setNewSuccessDescription] = React.useState<
-    string | undefined
-  >();
+  const [newSessionId, setNewSessionId] = React.useState("");
   const [error, setError] = React.useState("");
   const context = useContext();
   const { dapp, address, network } = context;
-  const { sendStatus } = useSendTransactions();
+  const { signStatus } = useSignTransactions();
 
   useSearchTransactions();
 
@@ -46,61 +40,57 @@ export default function SendTransactions() {
     const updateBatchStatus = props ? props.updateBatchStatus : true;
     setNewTransactions(undefined);
     setNewCallbackRoute("");
-    setNewSuccessDescription(undefined);
     setError("");
     setShowSignModal(false);
     if (updateBatchStatus) {
-      updateSendStatus({
-        loading: false,
-        status: "cancelled",
-        sessionId: Date.now().toString(),
+      updateSignStatus({
+        [newSessionId]: {
+          loading: false,
+          status: "cancelled",
+        },
       });
     }
   };
 
-  const send = (e: CustomEvent) => {
-    if (e.detail && "transactions" in e.detail && "callbackRoute" in e.detail) {
-      const {
+  const sign = (e: CustomEvent) => {
+    if (
+      e.detail &&
+      "transactions" in e.detail &&
+      "callbackRoute" in e.detail &&
+      "sessionId" in e.detail
+    ) {
+      const { transactions, callbackRoute, sessionId } = e.detail;
+      signTransactions({
         transactions,
+        sessionId,
         callbackRoute,
-        successDescription,
-        sequential,
-        delayLast,
-      } = e.detail;
-      if (sendStatus.sequential && sendStatus.status === "pending") {
-        setShowForbiddenModal(true);
-      } else {
-        signTransactions({
-          transactions,
-          callbackRoute,
-          successDescription,
-          sequential,
-          delayLast,
-        });
-      }
+      });
     }
   };
 
   React.useEffect(() => {
-    document.addEventListener("transactions", send);
+    document.addEventListener("signTransactions", sign);
     return () => {
-      document.removeEventListener("transactions", send);
+      document.removeEventListener("signTransactions", sign);
     };
-  }, [context, sendStatus]);
+  }, [context, signStatus]);
 
   const signTransactions = ({
+    sessionId,
     transactions,
     callbackRoute,
-    successDescription,
-    sequential,
-    delayLast,
-  }: SendTransactionsType) => {
+  }: SignTransactionsType) => {
     const showError = (e: string) => {
       setShowSignModal(true);
       setError(e);
     };
     setNewCallbackRoute(callbackRoute);
-    updateSendStatus({ loading: true });
+    setNewSessionId(sessionId);
+    updateSignStatus({
+      [sessionId]: {
+        loading: true,
+      },
+    });
     if (provider) {
       dapp.proxy
         .getAccount(new Address(address))
@@ -113,32 +103,29 @@ export default function SendTransactions() {
           switch (providerType) {
             case "wallet":
               walletSign({
+                sessionId,
                 transactions,
                 callbackRoute,
                 walletAddress: `${network.walletAddress}`,
-                successDescription,
-                sequential,
-                delayLast,
               });
               break;
             case "ledger":
-              setNewSequential(sequential);
               setNewTransactions(transactions);
-              setNewDelayLast(delayLast);
-              setNewSuccessDescription(successDescription);
               setShowSignModal(true);
               break;
             case "walletconnect":
-              setNewSequential(sequential);
               setNewTransactions(transactions);
-              setNewSuccessDescription(successDescription);
-              setNewDelayLast(delayLast);
               setShowSignModal(true);
               break;
           }
         })
         .catch((e) => {
-          updateSendStatus({ loading: false, status: "cancelled" });
+          updateSignStatus({
+            [sessionId]: {
+              loading: false,
+              status: "cancelled",
+            },
+          });
           showError(e);
         });
     } else {
@@ -149,31 +136,23 @@ export default function SendTransactions() {
     }
   };
 
-  const sendProps = {
+  const signProps = {
     handleClose,
     error,
     setError,
+    sessionId: newSessionId,
     show: showSignModal,
     transactions: newTransactions || [],
     providerType,
     callbackRoute: newCallbackRoute,
-    successDescription: newsuccessDescription || "",
-    sequential: newSequential,
-    delayLast: newDelayLast,
   };
 
   return (
     <React.Fragment>
-      {providerType === "ledger" && <SignWithLedgerModal {...sendProps} />}
+      {providerType === "ledger" && <SignWithLedgerModal {...signProps} />}
       {providerType === "walletconnect" && (
-        <SignWithWalletConnectModal {...sendProps} />
+        <SignWithWalletConnectModal {...signProps} />
       )}
-      <ForbiddenModal
-        show={showForbiddenModal}
-        handleClose={() => {
-          setShowForbiddenModal(false);
-        }}
-      />
     </React.Fragment>
   );
 }

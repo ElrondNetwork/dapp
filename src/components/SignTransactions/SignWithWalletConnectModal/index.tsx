@@ -5,33 +5,31 @@ import { Transaction, Address, Nonce } from "@elrondnetwork/erdjs";
 import { Signature } from "@elrondnetwork/erdjs/out/signature";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "context";
-import { useSubmitTransactions, HandleCloseType } from "../helpers";
+import { HandleCloseType } from "../helpers";
 import PageState from "components/PageState";
+import { updateSignStatus } from "helpers/useSignTransactions";
 
 export interface SignModalType {
   show: boolean;
   handleClose: (props?: HandleCloseType) => void;
   error: string;
+  sessionId: string;
   transactions: Transaction[];
   setError: (value: React.SetStateAction<string>) => void;
   callbackRoute: string;
-  successDescription?: string;
-  sequential?: boolean;
 }
 
 const SignWithWalletConnectModal = ({
   show,
   handleClose,
   error,
+  sessionId,
   setError,
   transactions,
   callbackRoute,
-  successDescription,
-  sequential = false,
 }: SignModalType) => {
   const history = useHistory();
   const context = useContext();
-  const submitTransactions = useSubmitTransactions();
 
   const { dapp, address } = context;
   const provider: any = dapp.provider;
@@ -152,11 +150,12 @@ const SignWithWalletConnectModal = ({
         Object.keys(signedTransactions).length !== transactions.length);
 
     if (!signingDisabled && signedTransactions) {
-      submitTransactions({
-        transactions: Object.values(signedTransactions),
-        successDescription,
-        sequential,
-        sessionId: Date.now().toString(),
+      updateSignStatus({
+        [sessionId]: {
+          loading: false,
+          status: "signed",
+          transactions: Object.values(signedTransactions),
+        },
       });
       setSignedTransactions(undefined);
       handleClose({ updateBatchStatus: false });

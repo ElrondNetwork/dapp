@@ -1,11 +1,6 @@
 import qs from "qs";
-import { Transaction } from "@elrondnetwork/erdjs";
 import * as ls from "helpers/localStorage";
-import { SendTransactionsType } from "helpers/useSendTransactions";
-
-type SignTransactionsType = SendTransactionsType & {
-  walletAddress: string;
-};
+import { SignTransactionsType } from "helpers/useSignTransactions";
 
 const buildSearchString = (plainTransactions: Object[]) => {
   const response = {};
@@ -58,10 +53,8 @@ export default function walletSign({
   walletAddress,
   transactions,
   callbackRoute,
-  successDescription,
-  sequential,
-  delayLast,
-}: SignTransactionsType) {
+  sessionId,
+}: SignTransactionsType & { walletAddress: string }) {
   const plainTransactions = transactions
     .map((tx) => tx.toPlainObject())
     .map((tx) => ({
@@ -69,15 +62,10 @@ export default function walletSign({
       data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
     }));
 
-  const signSessionId = Date.now();
-
   ls.setItem(
-    signSessionId,
+    sessionId as any,
     JSON.stringify({
       transactions: plainTransactions,
-      ...(sequential ? { sequential } : {}),
-      ...(successDescription ? { successDescription } : {}),
-      ...(delayLast ? { delayLast } : {}),
     })
   );
 
@@ -90,7 +78,7 @@ export default function walletSign({
 
   const callbackUrl = replyUrl({
     callbackUrl: `${window.location.origin}${callbackRoute}`,
-    urlParams: { [ls.signSession]: signSessionId.toString() },
+    urlParams: { [ls.signSession]: sessionId },
   });
 
   const search = qs.stringify({
