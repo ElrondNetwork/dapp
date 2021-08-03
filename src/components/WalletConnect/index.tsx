@@ -11,11 +11,13 @@ const WalletConnect = ({
   lead = "Scan the QR code using Maiar",
   callbackRoute,
   logoutRoute,
+  token,
 }: {
   title?: string;
   lead?: string;
   callbackRoute: string;
   logoutRoute: string;
+  token?: string;
 }) => {
   const { walletConnectDeepLink } = useContext();
 
@@ -32,7 +34,11 @@ const WalletConnect = ({
   React.useEffect(() => {
     if (walletConnect) {
       walletConnect.login().then((walletConectUri) => {
-        setWcUri(walletConectUri);
+        if (token) {
+          setWcUri(`${walletConectUri}&token=${token}`);
+        } else {
+          setWcUri(walletConectUri);
+        }
       });
     }
   }, [walletConnect]);

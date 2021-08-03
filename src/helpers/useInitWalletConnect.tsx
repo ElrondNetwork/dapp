@@ -57,6 +57,7 @@ export default function useInitWalletConnect({
         onClientLogout: handleOnLogout,
       }
     );
+    dispatch({ type: "setProvider", provider });
     dapp.provider = provider;
     setWalletConnect(provider);
   };
