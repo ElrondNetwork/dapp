@@ -1,10 +1,6 @@
-import {
-  AccountOnNetwork,
-  Address,
-  DAPP_DEFAULT_TIMEOUT,
-  Nonce,
-} from "@elrondnetwork/erdjs";
+import { AccountOnNetwork, Address, Nonce } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
+import { setItem } from "helpers/localStorage";
 
 export function useGetAccount() {
   const { dapp } = useContext();
@@ -15,6 +11,23 @@ export function useGetAddress() {
   const { dapp } = useContext();
   return () => dapp.provider.getAddress();
 }
+
+export const useSetNonce = () => {
+  const dispatch = useDispatch();
+  const { account, address } = useContext();
+  const oneHourInSeconds = 3600;
+  return (nonce: number) => {
+    setItem("nonce", nonce, oneHourInSeconds);
+    dispatch({
+      type: "setAccount",
+      account: {
+        balance: account.balance.toString(),
+        address,
+        nonce: new Nonce(nonce),
+      },
+    });
+  };
+};
 
 export function getLatestNonce(account: AccountOnNetwork) {
   const lsNonce = localStorage.getItem("nonce");

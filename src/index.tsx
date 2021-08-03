@@ -11,6 +11,7 @@ import useSignTransactions from "./helpers/useSignTransactions";
 import {
   useRefreshAccount,
   useGetAccountShard,
+  useSetNonce,
 } from "./helpers/accountMethods";
 import {
   RouteType as RouteInterface,
@@ -49,6 +50,7 @@ export {
   useSendTransaction,
   useSignTransactions,
   useWebWalletLogin,
+  useSetNonce,
   Context,
   useContext,
   useDispatch,
