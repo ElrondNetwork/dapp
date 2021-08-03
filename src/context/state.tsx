@@ -6,7 +6,7 @@ import {
   Nonce,
   ChainID,
 } from "@elrondnetwork/erdjs";
-import { AccountType, NetworkType } from "helpers/types";
+import { NetworkType } from "helpers/types";
 import { getItem } from "helpers/session";
 
 const defaultGatewayAddress = "https://gateway.elrond.com";
@@ -22,6 +22,13 @@ export const defaultNetwork: NetworkType = {
   gatewayAddress: "",
   explorerAddress: "",
 };
+
+interface AccountType {
+  address: string;
+  balance: string;
+  nonce: Nonce;
+  code?: string;
+}
 
 export interface DappState {
   provider: IDappProvider;

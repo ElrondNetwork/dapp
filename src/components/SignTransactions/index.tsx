@@ -95,10 +95,9 @@ export default function SignTransactions() {
       dapp.proxy
         .getAccount(new Address(address))
         .then((account) => {
-          const nonce = getLatestNonce(account);
-
+          const latestNonce = getLatestNonce(account);
           transactions.forEach((tx, i) => {
-            tx.setNonce(new Nonce(nonce.valueOf() + i));
+            tx.setNonce(new Nonce(latestNonce.valueOf() + i));
           });
           switch (providerType) {
             case "wallet":

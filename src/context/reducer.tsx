@@ -2,7 +2,6 @@ import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import { setItem, removeItem } from "helpers/session";
 import * as ls from "helpers/localStorage";
-import { AccountType } from "helpers/types";
 
 export type DispatchType = (action: ActionType) => void;
 

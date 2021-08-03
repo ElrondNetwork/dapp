@@ -10,7 +10,6 @@ export interface SignModalType {
   error: string;
   sessionId: string;
   transactions: Transaction[];
-  setError: (value: React.SetStateAction<string>) => void;
   callbackRoute: string;
 }
 
@@ -19,7 +18,6 @@ const SignWithLedgerModal = ({
   handleClose,
   error,
   sessionId,
-  setError,
   transactions,
   callbackRoute,
 }: SignModalType) => {
@@ -48,7 +46,6 @@ const SignWithLedgerModal = ({
                 handleClose,
                 error,
                 sessionId,
-                setError,
                 callbackRoute,
                 setSignedTransactions,
                 signedTransactions,
