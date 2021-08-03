@@ -27,13 +27,11 @@ export interface SignStepType {
   setSignedTransactions: React.Dispatch<
     React.SetStateAction<Record<number, Transaction>> | undefined
   >;
-  setError: (value: React.SetStateAction<string>) => void;
 }
 
 const SignStep = ({
   handleClose,
   error,
-  setError,
   transaction,
   index,
   sessionId,
@@ -58,43 +56,33 @@ const SignStep = ({
   };
 
   const sign = () => {
-    dapp.proxy
-      .getAccount(new Address(address))
-      .then((account) => {
-        const nonce = getLatestNonce(account);
-        transaction.setNonce(new Nonce(nonce.valueOf() + index));
-        setWaitingForDevice(true);
-        provider
-          .signTransaction(transaction)
-          .then((tx) => {
-            const newSignedTx = { [index]: tx };
-            const newSignedTransactions = signedTransactions
-              ? { ...signedTransactions, ...newSignedTx }
-              : newSignedTx;
-            setSignedTransactions(newSignedTransactions);
-            if (!isLast) {
-              setCurrentStep((exising) => exising + 1);
-            } else if (newSignedTransactions) {
-              handleClose({ updateBatchStatus: false });
-              updateSignStatus({
-                [sessionId]: {
-                  loading: false,
-                  status: "signed",
-                  transactions: Object.values(newSignedTransactions),
-                },
-              });
-              reset();
-              history.push(callbackRoute);
-            }
-          })
-          .catch(() => {
-            reset();
-            handleClose({ updateBatchStatus: false });
+    setWaitingForDevice(true);
+    provider
+      .signTransaction(transaction)
+      .then((tx) => {
+        const newSignedTx = { [index]: tx };
+        const newSignedTransactions = signedTransactions
+          ? { ...signedTransactions, ...newSignedTx }
+          : newSignedTx;
+        setSignedTransactions(newSignedTransactions);
+        if (!isLast) {
+          setCurrentStep((exising) => exising + 1);
+        } else if (newSignedTransactions) {
+          handleClose({ updateBatchStatus: false });
+          updateSignStatus({
+            [sessionId]: {
+              loading: false,
+              status: "signed",
+              transactions: Object.values(newSignedTransactions),
+            },
           });
+          reset();
+          history.push(callbackRoute);
+        }
       })
-      .catch((e) => {
+      .catch(() => {
         reset();
-        setError(e.message);
+        handleClose({ updateBatchStatus: false });
       });
   };
 

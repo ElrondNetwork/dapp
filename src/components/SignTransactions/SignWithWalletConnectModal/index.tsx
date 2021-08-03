@@ -80,64 +80,59 @@ const SignWithWalletConnectModal = ({
             setError(e.message);
           });
       } else {
-        dapp.proxy
-          .getAccount(new Address(address))
-          .then((account) => {
-            const transactionsDetails = transactions.map((transaction, key) => {
-              transaction.setNonce(new Nonce(account.nonce.valueOf() + key));
-              return {
-                nonce: transaction.getNonce().valueOf(),
-                from: address.toString(),
-                to: transaction.getReceiver().toString(),
-                amount: transaction.getValue().toString(),
-                gasPrice: transaction.getGasPrice().valueOf().toString(),
-                gasLimit: transaction.getGasLimit().valueOf().toString(),
-                data: Buffer.from(
-                  transaction.getData().toString().trim()
-                ).toString(),
-                chainId: transaction.getChainID().valueOf(),
-                version: transaction.getVersion().valueOf(),
-              };
-            });
+        const transactionsDetails = transactions.map((transaction) => {
+          return {
+            nonce: transaction.getNonce().valueOf(),
+            from: address.toString(),
+            to: transaction.getReceiver().toString(),
+            amount: transaction.getValue().toString(),
+            gasPrice: transaction.getGasPrice().valueOf().toString(),
+            gasLimit: transaction.getGasLimit().valueOf().toString(),
+            data: Buffer.from(
+              transaction.getData().toString().trim()
+            ).toString(),
+            chainId: transaction.getChainID().valueOf(),
+            version: transaction.getVersion().valueOf(),
+          };
+        });
 
+        provider
+          .init()
+          .then((initialised: boolean) => {
+            if (!initialised) {
+              return;
+            }
             provider
-              .init()
-              .then((initialised: boolean) => {
-                if (!initialised) {
-                  return;
-                }
-                provider
-                  .sendCustomMessage({
-                    method: "erd_batch_sign",
-                    params: transactionsDetails,
-                  })
-                  .then((signatures: any) => {
-                    signatures.forEach((signature: any, key: number) => {
-                      const transaction = transactions[key];
-                      transaction.applySignature(
-                        new Signature(signature.signature),
-                        new Address(address)
-                      );
-                      const newSignedTx = {
-                        [key]: transaction,
-                      };
-                      setSignedTransactions((existing) =>
-                        existing
-                          ? {
-                              ...existing,
-                              ...newSignedTx,
-                            }
-                          : newSignedTx
-                      );
-                    });
-                  });
+              .sendCustomMessage({
+                method: "erd_batch_sign",
+                params: transactionsDetails,
               })
-              .catch((e: any) => {
-                console.error("Failed initializing provider ", e);
+              .then((signatures: any) => {
+                signatures.forEach((signature: any, key: number) => {
+                  const transaction = transactions[key];
+                  transaction.applySignature(
+                    new Signature(signature.signature),
+                    new Address(address)
+                  );
+                  const newSignedTx = {
+                    [key]: transaction,
+                  };
+                  setSignedTransactions((existing) =>
+                    existing
+                      ? {
+                          ...existing,
+                          ...newSignedTx,
+                        }
+                      : newSignedTx
+                  );
+                });
+              })
+              .catch(() => {
+                handleClose();
               });
           })
-          .catch((e) => {
-            setError(e.message);
+          .catch((e: any) => {
+            console.error("Failed initializing provider ", e);
           });
       }
     }
