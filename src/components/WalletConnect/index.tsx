@@ -2,9 +2,9 @@ import React from "react";
 import QRCode from "qrcode";
 // @ts-ignore
 import platform from "platform";
-import * as ls from "helpers/localStorage";
 import { useContext } from "context";
 import { ReactComponent as Lightning } from "./lightning.svg";
+import storage from "helpers/storage";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
 
 const WalletConnect = ({
@@ -32,7 +32,7 @@ const WalletConnect = ({
 
   React.useEffect(() => {
     if (walletConnect) {
-      ls.removeItem("walletconnect");
+      storage.local.removeItem("walletconnect");
       walletConnect.login().then((walletConectUri) => {
         setWcUri(walletConectUri);
       });

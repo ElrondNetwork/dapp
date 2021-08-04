@@ -2,7 +2,7 @@ import React from "react";
 import { WalletConnectProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
-import { getItem } from "helpers/session";
+import storage from "helpers/storage";
 
 interface InitWalletConnectType {
   callbackRoute: string;
@@ -65,7 +65,7 @@ export default function useInitWalletConnect({
     dapp.provider
       .getAddress()
       .then((address) => {
-        const loggedIn = !!getItem("loggedIn");
+        const loggedIn = !!storage.session.getItem("loggedIn");
         if (!loggedIn) {
           history.push(callbackRoute);
         }
@@ -86,7 +86,7 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogout = () => {
-    if (!!getItem("loggedIn")) {
+    if (!!storage.session.getItem("loggedIn")) {
       history.push(logoutRoute);
     }
     dispatch({ type: "logout" });
