@@ -34,7 +34,7 @@ export const useSetNonce = () => {
 };
 
 export function getLatestNonce(account: AccountOnNetwork) {
-  const lsNonce = localStorage.getItem("nonce");
+  const lsNonce = storage.local.getItem("nonce");
   const nonce =
     lsNonce && !isNaN(parseInt(lsNonce))
       ? new Nonce(Math.max(parseInt(lsNonce), account.nonce.valueOf()))
