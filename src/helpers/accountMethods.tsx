@@ -1,6 +1,7 @@
+import moment from "moment";
 import { AccountOnNetwork, Address, Nonce } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
-import { setItem } from "helpers/localStorage";
+import storage from "helpers/storage";
 
 export function useGetAccount() {
   const { dapp } = useContext();
@@ -15,9 +16,12 @@ export function useGetAddress() {
 export const useSetNonce = () => {
   const dispatch = useDispatch();
   const { account, address } = useContext();
-  const oneHourInSeconds = 3600;
   return (nonce: number) => {
-    setItem("nonce", nonce, oneHourInSeconds);
+    storage.local.setItem({
+      key: "nonce",
+      data: nonce,
+      expires: moment().add(1, "hours").unix(),
+    });
     dispatch({
       type: "setAccount",
       account: {
@@ -30,7 +34,7 @@ export const useSetNonce = () => {
 };
 
 export function getLatestNonce(account: AccountOnNetwork) {
-  const lsNonce = localStorage.getItem("nonce");
+  const lsNonce = storage.local.getItem("nonce");
   const nonce =
     lsNonce && !isNaN(parseInt(lsNonce))
       ? new Nonce(Math.max(parseInt(lsNonce), account.nonce.valueOf()))

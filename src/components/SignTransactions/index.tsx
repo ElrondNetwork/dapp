@@ -8,12 +8,8 @@ import {
 import { useContext } from "context";
 import SignWithLedgerModal from "./SignWithLedgerModal";
 import SignWithWalletConnectModal from "./SignWithWalletConnectModal";
-import {
-  getProviderType,
-  walletSign,
-  useSearchTransactions,
-  HandleCloseType,
-} from "./helpers";
+import getProviderType from "helpers/getProviderType";
+import { walletSign, useSearchTransactions, HandleCloseType } from "./helpers";
 import useSignTransactions, {
   updateSignStatus,
   SignTransactionsType,

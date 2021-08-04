@@ -8,7 +8,7 @@ import {
 import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext } from "context";
 import SendModal from "./SendModal";
-import { getProviderType } from "./helpers";
+import getProviderType from "helpers/getProviderType";
 import { getLatestNonce, useRefreshAccount } from "helpers/accountMethods";
 
 interface SendTransactionType {
