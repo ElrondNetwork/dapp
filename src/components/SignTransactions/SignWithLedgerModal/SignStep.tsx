@@ -1,15 +1,9 @@
 import * as React from "react";
-import {
-  Address,
-  Nonce,
-  Transaction,
-  IDappProvider,
-} from "@elrondnetwork/erdjs";
+import { Transaction, IDappProvider } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import PageState from "components/PageState";
 import { useContext } from "context";
-import { getLatestNonce } from "helpers/accountMethods";
 import { HandleCloseType } from "../helpers";
 import { updateSignStatus } from "helpers/useSignTransactions";
 

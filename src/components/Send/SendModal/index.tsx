@@ -3,7 +3,7 @@ import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
-import { ProviderType } from "./../helpers";
+import getProviderType, { ProviderType } from "helpers/getProviderType";
 import TransactionStatus from "./TransactionStatus";
 import { useContext } from "context";
 
