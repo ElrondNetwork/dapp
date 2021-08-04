@@ -64,7 +64,7 @@ export default function useInitWalletConnect({
   const handleOnLogin = () => {
     dapp.provider
       .getAddress()
-      .then((address: string) => {
+      .then((address) => {
         const loggedIn = !!getItem("loggedIn");
         if (!loggedIn) {
           history.push(callbackRoute);
