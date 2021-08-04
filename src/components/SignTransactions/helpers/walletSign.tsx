@@ -1,5 +1,6 @@
 import qs from "qs";
-import * as ls from "helpers/localStorage";
+import moment from "moment";
+import storage from "helpers/storage";
 import { SignTransactionsType } from "helpers/useSignTransactions";
 
 const buildSearchString = (plainTransactions: Object[]) => {
@@ -62,12 +63,19 @@ export default function walletSign({
       data: tx.data ? Buffer.from(tx.data, "base64").toString() : "",
     }));
 
-  ls.setItem(
-    sessionId as any,
-    JSON.stringify({
-      transactions: plainTransactions,
-    })
-  );
+  let sessions = storage.local.getItem("sessions");
+  if (sessions) {
+    sessions[sessionId] = plainTransactions;
+  } else {
+    sessions = {};
+    sessions[sessionId] = plainTransactions;
+  }
+
+  storage.local.setItem({
+    key: "sessions",
+    data: sessions,
+    expires: moment().add(10, "minutes").unix(),
+  });
 
   const parsedTransactions = buildSearchString(
     plainTransactions.map((tx) => ({
@@ -78,7 +86,7 @@ export default function walletSign({
 
   const callbackUrl = replyUrl({
     callbackUrl: `${window.location.origin}${callbackRoute}`,
-    urlParams: { [ls.signSession]: sessionId },
+    urlParams: { [storage.local.signSession]: sessionId },
   });
 
   const search = qs.stringify({

@@ -1,6 +1,7 @@
 import React from "react";
+import moment from "moment";
 import { useContext } from "context";
-import { setItem } from "helpers/session";
+import storage from "helpers/storage";
 import { newWalletProvider } from "context/state";
 
 export const useWebWalletLogin = ({
@@ -19,7 +20,11 @@ export const useWebWalletLogin = ({
         if (initialised) {
           // Wallet provider will redirect, we can set a session information so we know when we are getting back
           //  that we initiated a wallet provider login
-          setItem("walletLogin", {}, 60); // Set a 60s session only
+          storage.session.setItem({
+            key: "walletLogin",
+            data: {},
+            expires: moment().add(1, "minutes").unix(),
+          });
           dapp.provider.login({
             callbackUrl: encodeURIComponent(
               `${window.location.origin}${callbackRoute}`

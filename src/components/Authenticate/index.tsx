@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Address } from "@elrondnetwork/erdjs";
-import { getItem, removeItem } from "helpers/session";
+import storage from "helpers/storage";
 import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
@@ -33,6 +33,8 @@ const Authenticate = ({
   const getAddress = useGetAddress();
   const getNetworkConfig = useGetNetworkConfig();
   useSetProvider();
+
+  const { getItem, removeItem } = storage.session;
 
   React.useMemo(() => {
     if (getItem("walletLogin")) {
