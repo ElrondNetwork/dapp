@@ -7,7 +7,7 @@ import {
   ChainID,
 } from "@elrondnetwork/erdjs";
 import { NetworkType } from "helpers/types";
-import { getItem } from "helpers/session";
+import storage from "helpers/storage";
 
 const defaultGatewayAddress = "https://gateway.elrond.com";
 const defaultApiAddress = "https://gateway.elrond.com";
@@ -96,6 +96,8 @@ export const createInitialState = ({
       : defaultGatewayAddress;
 
   const defaultProvider = newWalletProvider(sessionNetwork);
+
+  const { getItem } = storage.session;
 
   const state: StateType = {
     walletConnectBridge,

@@ -1,12 +1,13 @@
 import * as React from "react";
 import { ProxyProvider, HWProvider } from "@elrondnetwork/erdjs";
-import { getItem } from "helpers/session";
+import storage from "helpers/storage";
 import { useContext, useDispatch } from "context";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
 
 export default function useSetProvider() {
   const { network } = useContext();
   const dispatch = useDispatch();
+  const { getItem } = storage.session;
 
   const walletConnectLogin = getItem("walletConnectLogin");
 

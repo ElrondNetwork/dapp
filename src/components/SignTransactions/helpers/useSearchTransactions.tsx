@@ -1,9 +1,10 @@
 import * as React from "react";
+import moment from "moment";
 import qs from "qs";
 import { Signature } from "@elrondnetwork/erdjs/out/signature";
 import { Address, Nonce } from "@elrondnetwork/erdjs";
 import { useLocation } from "react-router-dom";
-import * as ls from "helpers/localStorage";
+import storage from "helpers/storage";
 import { useContext } from "context";
 import { updateSignStatus } from "helpers/useSignTransactions";
 import newTransaction from "./newTransaction";
@@ -18,22 +19,35 @@ export default function useSearchTransactions() {
 
       if (
         searchData &&
-        ls.signSession in searchData &&
+        storage.local.signSession in searchData &&
         "signature" in searchData &&
         Array.isArray(searchData.signature)
       ) {
-        const signSessionId: number = (searchData as any)[ls.signSession];
-        const sessionData = ls.getItem(signSessionId);
+        const signSessionId: number = (searchData as any)[
+          storage.local.signSession
+        ];
+        const sessions = storage.local.getItem("sessions");
 
-        if (sessionData) {
+        if (sessions) {
           try {
-            const sessionObject = JSON.parse(sessionData);
-            ls.removeItem(signSessionId);
+            let sessionTransactions = [];
+            try {
+              if (signSessionId in sessions) {
+                sessionTransactions = sessions[signSessionId];
+                const sessionsWithoutCurrent = { ...sessions };
+                delete sessionsWithoutCurrent[signSessionId];
+                storage.local.setItem({
+                  key: "sessions",
+                  data: sessionsWithoutCurrent,
+                  expires: moment().add(10, "minutes").unix(),
+                });
+              }
+            } catch (err) {
+              console.log("Unable to parse sessions");
+            }
 
-            const parsedTansactions: any[] = Array.isArray(
-              sessionObject.transactions
-            )
-              ? sessionObject.transactions
+            const parsedTansactions: any[] = Array.isArray(sessionTransactions)
+              ? sessionTransactions
               : [];
 
             const transactions = parsedTansactions.map(
