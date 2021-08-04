@@ -36,7 +36,11 @@ export default function useInitWalletConnect({
 
   React.useEffect(() => {
     return () => {
-      if (provider.walletConnector?.connected) {
+      if (
+        provider &&
+        "walletConnector" in provider &&
+        provider.walletConnector.connected
+      ) {
         window.addEventListener("storage", (e) => {
           if (e.key === "walletconnect") {
             handleOnLogout();
@@ -47,7 +51,11 @@ export default function useInitWalletConnect({
   });
 
   const heartbeat = () => {
-    if (provider?.walletConnector?.connected) {
+    if (
+      provider &&
+      "walletConnector" in provider &&
+      provider.walletConnector.connected
+    ) {
       provider
         .sendCustomMessage({
           method: "heartbeat",
