@@ -46,7 +46,7 @@ export function useGetAccountShard() {
   const { network, address, shard } = useContext();
   const dispatch = useDispatch();
 
-  return () =>
+  return (): Promise<number | undefined> =>
     new Promise((resolve) => {
       if (shard === undefined) {
         fetch(`${network.apiAddress}/accounts/${address}`)
