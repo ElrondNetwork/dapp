@@ -8,6 +8,7 @@ import WalletConnect from "./components/WalletConnect";
 import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
 import useSignTransactions from "./helpers/useSignTransactions";
+import calculateGasLimit from "./helpers/calculateGasLimit";
 import {
   useRefreshAccount,
   useGetAccountShard,
@@ -54,4 +55,5 @@ export {
   Context,
   useContext,
   useDispatch,
+  calculateGasLimit,
 };
