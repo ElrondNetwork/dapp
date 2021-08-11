@@ -1,10 +1,7 @@
-import {
-  AccountOnNetwork,
-  Address,
-  DAPP_DEFAULT_TIMEOUT,
-  Nonce,
-} from "@elrondnetwork/erdjs";
+import moment from "moment";
+import { AccountOnNetwork, Address, Nonce } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
+import storage from "helpers/storage";
 
 export function useGetAccount() {
   const { dapp } = useContext();
@@ -16,8 +13,28 @@ export function useGetAddress() {
   return () => dapp.provider.getAddress();
 }
 
+export const useSetNonce = () => {
+  const dispatch = useDispatch();
+  const { account, address } = useContext();
+  return (nonce: number) => {
+    storage.local.setItem({
+      key: "nonce",
+      data: nonce,
+      expires: moment().add(1, "hours").unix(),
+    });
+    dispatch({
+      type: "setAccount",
+      account: {
+        balance: account.balance.toString(),
+        address,
+        nonce: new Nonce(nonce),
+      },
+    });
+  };
+};
+
 export function getLatestNonce(account: AccountOnNetwork) {
-  const lsNonce = localStorage.getItem("nonce");
+  const lsNonce = storage.local.getItem("nonce");
   const nonce =
     lsNonce && !isNaN(parseInt(lsNonce))
       ? new Nonce(Math.max(parseInt(lsNonce), account.nonce.valueOf()))
@@ -29,7 +46,7 @@ export function useGetAccountShard() {
   const { network, address, shard } = useContext();
   const dispatch = useDispatch();
 
-  return () =>
+  return (): Promise<number | undefined> =>
     new Promise((resolve) => {
       if (shard === undefined) {
         fetch(`${network.apiAddress}/accounts/${address}`)

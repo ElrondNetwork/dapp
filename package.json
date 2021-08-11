@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/dapp",
-  "version": "0.0.27",
+  "version": "0.0.33",
   "description": "Elrond Dapp core components",
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
@@ -26,11 +26,11 @@
     "react-router-dom": "5.2.0",
     "react-bootstrap": "1.5.2",
     "axios": "0.21.1",
-    "@elrondnetwork/erdjs": "6.4.1",
+    "@elrondnetwork/erdjs": "6.5.2",
     "moment": "2.29.1"
   },
   "devDependencies": {
-    "@elrondnetwork/erdjs": "6.4.1",
+    "@elrondnetwork/erdjs": "6.5.2",
     "@testing-library/jest-dom": "5.12.0",
     "@testing-library/react": "11.2.6",
     "@testing-library/user-event": "13.1.8",
@@ -71,6 +71,7 @@
     "@fortawesome/react-fontawesome": "0.1.14",
     "@types/qs": "6.9.6",
     "axios": "0.21.1",
+    "bignumber.js": "9.0.1",
     "platform": "1.3.6",
     "qrcode": "1.4.4",
     "qs": "6.10.1",

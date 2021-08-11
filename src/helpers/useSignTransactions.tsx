@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  Address,
-  Transaction,
-  TransactionHash,
-  TransactionStatus,
-} from "@elrondnetwork/erdjs";
+import { Transaction } from "@elrondnetwork/erdjs";
 
 export interface SignStatusType {
   [sessionId: string]: {

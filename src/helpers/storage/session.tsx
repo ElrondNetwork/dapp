@@ -1,26 +1,28 @@
 import moment from "moment";
 
 export type SessionKeyType =
-  | number
   | "loggedIn"
   | "walletLogin"
   | "address"
   | "ledgerLogin"
   | "walletConnectLogin"
-  | "transactionIdentifier"
   | "ledgerAccountIndex";
+type ExpiresType = number | false;
 
-export const setItem = (
-  key: SessionKeyType,
-  item: any,
-  secondsToExipre: number = 3600
-) => {
-  const expires = moment().unix() + secondsToExipre;
+export const setItem = ({
+  key,
+  data,
+  expires,
+}: {
+  key: SessionKeyType;
+  data: any;
+  expires: ExpiresType;
+}) => {
   sessionStorage.setItem(
     String(key),
     JSON.stringify({
       expires,
-      data: item,
+      data,
     })
   );
 };

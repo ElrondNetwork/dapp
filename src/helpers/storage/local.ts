@@ -1,18 +1,22 @@
 import moment from "moment";
 
-export type LocalKeyType = number | "nonce";
+export type LocalKeyType = "nonce" | "sessions" | "walletconnect";
+type ExpiresType = number | false;
 
-export const setItem = (
-  key: LocalKeyType,
-  item: any,
-  secondsToExpire: number = 120000
-) => {
-  const expires = moment().unix() + secondsToExpire;
+export const setItem = ({
+  key,
+  data,
+  expires,
+}: {
+  key: LocalKeyType;
+  data: any;
+  expires: ExpiresType;
+}) => {
   localStorage.setItem(
     String(key),
     JSON.stringify({
       expires,
-      data: item,
+      data,
     })
   );
 };

@@ -6,8 +6,8 @@ import {
   Nonce,
   ChainID,
 } from "@elrondnetwork/erdjs";
-import { AccountType, NetworkType } from "helpers/types";
-import { getItem } from "helpers/session";
+import { NetworkType } from "helpers/types";
+import storage from "helpers/storage";
 
 const defaultGatewayAddress = "https://gateway.elrond.com";
 const defaultApiAddress = "https://gateway.elrond.com";
@@ -22,6 +22,13 @@ export const defaultNetwork: NetworkType = {
   gatewayAddress: "",
   explorerAddress: "",
 };
+
+interface AccountType {
+  address: string;
+  balance: string;
+  nonce: Nonce;
+  code?: string;
+}
 
 export interface DappState {
   provider: IDappProvider;
@@ -89,6 +96,8 @@ export const createInitialState = ({
       : defaultGatewayAddress;
 
   const defaultProvider = newWalletProvider(sessionNetwork);
+
+  const { getItem } = storage.session;
 
   const state: StateType = {
     walletConnectBridge,

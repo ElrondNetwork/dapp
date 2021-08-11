@@ -1,8 +1,7 @@
+import moment from "moment";
 import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
-import { setItem, removeItem } from "helpers/session";
-import * as ls from "helpers/localStorage";
-import { AccountType } from "helpers/types";
+import storage from "helpers/storage";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -22,13 +21,23 @@ export type ActionType =
     };
 
 export function reducer(state: StateType, action: ActionType): StateType {
+  const in1hour = moment().add(1, "hours").unix();
   switch (action.type) {
     case "login": {
-      ls.removeItem("nonce");
+      storage.local.removeItem("nonce");
+      storage.local.removeItem("sessions");
       const { address } = action;
       let loggedIn = address || address !== "" ? true : false;
-      setItem("loggedIn", loggedIn);
-      setItem("address", address);
+      storage.session.setItem({
+        key: "loggedIn",
+        data: loggedIn,
+        expires: in1hour,
+      });
+      storage.session.setItem({
+        key: "address",
+        data: address,
+        expires: in1hour,
+      });
       return {
         ...state,
         address,
@@ -36,8 +45,14 @@ export function reducer(state: StateType, action: ActionType): StateType {
       };
     }
     case "ledgerLogin": {
-      ls.removeItem("nonce");
-      setItem("ledgerLogin", action.ledgerLogin);
+      storage.local.removeItem("nonce");
+      if (action.ledgerLogin) {
+        storage.session.setItem({
+          key: "ledgerLogin",
+          data: action.ledgerLogin,
+          expires: in1hour,
+        });
+      }
       return { ...state, ledgerLogin: action.ledgerLogin };
     }
 
@@ -78,7 +93,13 @@ export function reducer(state: StateType, action: ActionType): StateType {
     }
 
     case "setWalletConnectLogin": {
-      setItem("walletConnectLogin", action.walletConnectLogin);
+      if (action.walletConnectLogin) {
+        storage.session.setItem({
+          key: "walletConnectLogin",
+          data: action.walletConnectLogin,
+          expires: in1hour,
+        });
+      }
       return { ...state, walletConnectLogin: action.walletConnectLogin };
     }
 
@@ -88,11 +109,12 @@ export function reducer(state: StateType, action: ActionType): StateType {
         .logout()
         .then()
         .catch((e) => console.error("logout", e));
-      removeItem("loggedIn");
-      removeItem("address");
-      removeItem("ledgerLogin");
-      removeItem("walletConnectLogin");
-      ls.removeItem("nonce");
+      storage.session.removeItem("loggedIn");
+      storage.session.removeItem("address");
+      storage.session.removeItem("ledgerLogin");
+      storage.session.removeItem("walletConnectLogin");
+      storage.local.removeItem("nonce");
+      storage.local.removeItem("sessions");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,
