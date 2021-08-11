@@ -14,7 +14,7 @@ export default function useInitWalletConnect({
   logoutRoute,
 }: InitWalletConnectType) {
   const heartbeatInterval = 30000;
-  const { dapp, walletConnectBridge, tokenLogin } = useContext();
+  const { dapp, walletConnectBridge } = useContext();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -26,8 +26,6 @@ export default function useInitWalletConnect({
   ] = React.useState<WalletConnectProvider>();
 
   const provider: any = dapp.provider;
-  const loginToken =
-    tokenLogin && "loginToken" in tokenLogin ? tokenLogin.loginToken : "";
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -73,6 +71,7 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogin = () => {
+    const provider: any = dapp.provider;
     provider
       .getAddress()
       .then((address: string) => {
@@ -80,15 +79,29 @@ export default function useInitWalletConnect({
         if (!loggedIn) {
           history.push(callbackRoute);
         }
+        provider.getSignature().then((signature: string) => {
+          if (signature) {
+            const tokenLogin = storage.session.getItem("tokenLogin");
+            const loginToken =
+              tokenLogin && "loginToken" in tokenLogin
+                ? tokenLogin.loginToken
+                : "";
 
-        const signature =
-          provider && "signature" in provider ? provider.signature : "";
-
+            dispatch({
+              type: "setTokenLogin",
+              tokenLogin: {
+                loginToken,
+                signature,
+              },
+            });
+          }
+        });
         dispatch({
-          type: "setTokenLogin",
-          tokenLogin: {
-            loginToken,
-            signature,
+          type: "setWalletConnectLogin",
+          walletConnectLogin: {
+            loginType: "walletConnect",
+            callbackRoute,
+            logoutRoute,
           },
         });
         dispatch({ type: "login", address });
