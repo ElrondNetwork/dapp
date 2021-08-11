@@ -2,7 +2,7 @@ import React from "react";
 import QRCode from "qrcode";
 // @ts-ignore
 import platform from "platform";
-import { useContext } from "context";
+import { useContext, useDispatch } from "context";
 import { ReactComponent as Lightning } from "./lightning.svg";
 import storage from "helpers/storage";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
@@ -21,6 +21,7 @@ const WalletConnect = ({
   token?: string;
 }) => {
   const { walletConnectDeepLink } = useContext();
+  const dispatch = useDispatch();
 
   const ref = React.useRef(null);
   const [qrSvg, setQrSvg] = React.useState<string>("");
@@ -38,12 +39,18 @@ const WalletConnect = ({
       walletConnect.login().then((walletConectUri) => {
         if (token) {
           setWcUri(`${walletConectUri}&token=${token}`);
+          dispatch({
+            type: "setTokenLogin",
+            tokenLogin: {
+              loginToken: token,
+            },
+          });
         } else {
           setWcUri(walletConectUri);
         }
       });
     }
-  }, [walletConnect]);
+  }, [walletConnect, token]);
 
   const isMobile =
     platform.os.family === "iOS" || platform.os.family === "Android";

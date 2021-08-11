@@ -14,7 +14,8 @@ export default function useInitWalletConnect({
   logoutRoute,
 }: InitWalletConnectType) {
   const heartbeatInterval = 30000;
-  const { dapp, walletConnectBridge } = useContext();
+  const { dapp, walletConnectBridge, tokenLogin } = useContext();
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -25,6 +26,8 @@ export default function useInitWalletConnect({
   ] = React.useState<WalletConnectProvider>();
 
   const provider: any = dapp.provider;
+  const loginToken =
+    tokenLogin && "loginToken" in tokenLogin ? tokenLogin.loginToken : "";
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -70,24 +73,27 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogin = () => {
-    dapp.provider
+    provider
       .getAddress()
-      .then((address) => {
+      .then((address: string) => {
         const loggedIn = !!storage.session.getItem("loggedIn");
         if (!loggedIn) {
           history.push(callbackRoute);
         }
+
+        const signature =
+          provider && "signature" in provider ? provider.signature : "";
+
         dispatch({
-          type: "setWalletConnectLogin",
-          walletConnectLogin: {
-            loginType: "walletConnect",
-            callbackRoute,
-            logoutRoute,
+          type: "setTokenLogin",
+          tokenLogin: {
+            loginToken,
+            signature,
           },
         });
         dispatch({ type: "login", address });
       })
-      .catch((e) => {
+      .catch((e: any) => {
         setError("Invalid address");
         console.log(e);
       });
