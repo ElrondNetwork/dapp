@@ -18,6 +18,10 @@ export type ActionType =
   | {
       type: "setWalletConnectLogin";
       walletConnectLogin: StateType["walletConnectLogin"];
+    }
+  | {
+      type: "setTokenLogin";
+      tokenLogin: StateType["tokenLogin"];
     };
 
 export function reducer(state: StateType, action: ActionType): StateType {
@@ -103,6 +107,17 @@ export function reducer(state: StateType, action: ActionType): StateType {
       return { ...state, walletConnectLogin: action.walletConnectLogin };
     }
 
+    case "setTokenLogin": {
+      if (action.tokenLogin) {
+        storage.session.setItem({
+          key: "tokenLogin",
+          data: action.tokenLogin,
+          expires: in1hour,
+        });
+      }
+      return { ...state, tokenLogin: action.tokenLogin };
+    }
+
     case "logout": {
       const { provider } = state.dapp;
       provider
@@ -113,6 +128,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
       storage.session.removeItem("address");
       storage.session.removeItem("ledgerLogin");
       storage.session.removeItem("walletConnectLogin");
+      storage.session.removeItem("tokenLogin");
       storage.local.removeItem("nonce");
       storage.local.removeItem("sessions");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;

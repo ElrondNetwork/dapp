@@ -2,7 +2,7 @@ import React from "react";
 import QRCode from "qrcode";
 // @ts-ignore
 import platform from "platform";
-import { useContext } from "context";
+import { useContext, useDispatch } from "context";
 import { ReactComponent as Lightning } from "./lightning.svg";
 import storage from "helpers/storage";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
@@ -12,13 +12,16 @@ const WalletConnect = ({
   lead = "Scan the QR code using Maiar",
   callbackRoute,
   logoutRoute,
+  token,
 }: {
   title?: string;
   lead?: string;
   callbackRoute: string;
   logoutRoute: string;
+  token?: string;
 }) => {
   const { walletConnectDeepLink } = useContext();
+  const dispatch = useDispatch();
 
   const ref = React.useRef(null);
   const [qrSvg, setQrSvg] = React.useState<string>("");
@@ -34,10 +37,20 @@ const WalletConnect = ({
     if (walletConnect) {
       storage.local.removeItem("walletconnect");
       walletConnect.login().then((walletConectUri) => {
-        setWcUri(walletConectUri);
+        if (token) {
+          setWcUri(`${walletConectUri}&token=${token}`);
+          dispatch({
+            type: "setTokenLogin",
+            tokenLogin: {
+              loginToken: token,
+            },
+          });
+        } else {
+          setWcUri(walletConectUri);
+        }
       });
     }
-  }, [walletConnect]);
+  }, [walletConnect, token]);
 
   const isMobile =
     platform.os.family === "iOS" || platform.os.family === "Android";

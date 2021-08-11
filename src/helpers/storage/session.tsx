@@ -6,7 +6,8 @@ export type SessionKeyType =
   | "address"
   | "ledgerLogin"
   | "walletConnectLogin"
-  | "ledgerAccountIndex";
+  | "ledgerAccountIndex"
+  | "tokenLogin";
 type ExpiresType = number | false;
 
 export const setItem = ({

@@ -64,6 +64,10 @@ export interface StateType {
   };
   walletConnectAccount?: string;
   apiAddress: string;
+  tokenLogin?: {
+    loginToken: string;
+    signature?: string;
+  }
 }
 export const emptyAccount: AccountType = {
   balance: "...",
@@ -127,6 +131,7 @@ export const createInitialState = ({
         : undefined,
     walletConnectAccount: getItem("address"),
     apiAddress,
+    tokenLogin: getItem("tokenLogin"),
   };
 
   return state;
