@@ -92,7 +92,7 @@ const Authenticate = ({
   const redirect = privateRoute && !loggedIn && !getItem("walletLogin");
 
   React.useEffect(() => {
-    if (!redirect && privateRoute && chainId.valueOf() === "-1") {
+    if (chainId.valueOf() === "-1") {
       getNetworkConfig()
         .then((networkConfig) => {
           dispatch({
@@ -105,7 +105,7 @@ const Authenticate = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, chainId.valueOf()]);
+  }, [chainId.valueOf()]);
 
   const fetchAccount = () => {
     if (address && loggedIn) {

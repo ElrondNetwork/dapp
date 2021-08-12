@@ -13,7 +13,7 @@ export default function useInitWalletConnect({
   callbackRoute,
   logoutRoute,
 }: InitWalletConnectType) {
-  const heartbeatInterval = 30000;
+  const heartbeatInterval = 15000;
   const { dapp, walletConnectBridge } = useContext();
 
   const dispatch = useDispatch();
