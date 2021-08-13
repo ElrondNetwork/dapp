@@ -4,7 +4,7 @@ import { faBan } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
 import WalletLogin from "./Login/Wallet";
 import { useContext } from "context";
-import Extension from "components/Extension";
+import ExtensionLogin from "./Login/Extension";
 
 const Unlock = ({
   callbackRoute,
@@ -78,7 +78,10 @@ const Unlock = ({
                 >
                   {walletConnectButtonLabel}
                 </Link>
-                <Extension label={extensionButtonLabel} />
+                <ExtensionLogin
+                  callbackRoute={callbackRoute}
+                  extensionButtonLabel={extensionButtonLabel}
+                />
               </div>
             </div>
           </div>

@@ -77,7 +77,7 @@ export const emptyAccount: AccountType = {
 };
 
 export const newWalletProvider = (network: NetworkType) =>
-  new WalletProvider(`${network.walletAddress}${dappInitRoute}`, iframeId);
+  new WalletProvider(`${network.walletAddress}${dappInitRoute}`);
 
 export const createInitialState = ({
   network,

@@ -4,6 +4,7 @@ import Send from "./components/Send";
 import AuthenticateComponent from "./components/Authenticate";
 import Ledger from "./components/Ledger";
 import { useWebWalletLogin } from "./components/Unlock/Login/Wallet";
+import { useExtensionLogin } from "./components/Unlock/Login/Extension";
 import WalletConnect from "./components/WalletConnect";
 import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
@@ -51,6 +52,7 @@ export {
   useSendTransaction,
   useSignTransactions,
   useWebWalletLogin,
+  useExtensionLogin,
   useSetNonce,
   Context,
   useContext,
