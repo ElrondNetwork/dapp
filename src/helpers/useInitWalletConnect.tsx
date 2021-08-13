@@ -13,8 +13,9 @@ export default function useInitWalletConnect({
   callbackRoute,
   logoutRoute,
 }: InitWalletConnectType) {
-  const heartbeatInterval = 30000;
+  const heartbeatInterval = 15000;
   const { dapp, walletConnectBridge } = useContext();
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -70,13 +71,31 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogin = () => {
-    dapp.provider
+    const provider: any = dapp.provider;
+    provider
       .getAddress()
-      .then((address) => {
+      .then((address: string) => {
         const loggedIn = !!storage.session.getItem("loggedIn");
         if (!loggedIn) {
           history.push(callbackRoute);
         }
+        provider.getSignature().then((signature: string) => {
+          if (signature) {
+            const tokenLogin = storage.session.getItem("tokenLogin");
+            const loginToken =
+              tokenLogin && "loginToken" in tokenLogin
+                ? tokenLogin.loginToken
+                : "";
+
+            dispatch({
+              type: "setTokenLogin",
+              tokenLogin: {
+                loginToken,
+                signature,
+              },
+            });
+          }
+        });
         dispatch({
           type: "setWalletConnectLogin",
           walletConnectLogin: {
@@ -87,7 +106,7 @@ export default function useInitWalletConnect({
         });
         dispatch({ type: "login", address });
       })
-      .catch((e) => {
+      .catch((e: any) => {
         setError("Invalid address");
         console.log(e);
       });

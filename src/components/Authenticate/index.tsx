@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Address } from "@elrondnetwork/erdjs";
-import storage from "helpers/storage";
-import { RouteType } from "helpers/types";
 import { useContext, useDispatch } from "context";
 import { matchPath, Redirect, useLocation } from "react-router-dom";
 import Loader from "components/Loader";
+import storage from "helpers/storage";
+import { RouteType } from "helpers/types";
 import { useGetNetworkConfig } from "./helpers";
 import {
   useGetAccount,
@@ -12,6 +12,8 @@ import {
   getLatestNonce,
 } from "helpers/accountMethods";
 import useSetProvider from "./useSetProvider";
+import addressIsValid from "helpers/addressIsValid";
+import { dappInitRoute, iframeId } from "dappConfig";
 
 const Authenticate = ({
   children,
@@ -23,11 +25,18 @@ const Authenticate = ({
   unlockRoute: string;
 }) => {
   const dispatch = useDispatch();
-  const { loggedIn, dapp, address, ledgerAccount, chainId } = useContext();
+  const {
+    loggedIn,
+    dapp,
+    address,
+    ledgerAccount,
+    chainId,
+    network,
+  } = useContext();
   const [autehnitcatedRoutes] = React.useState(
     routes.filter((route) => Boolean(route.authenticatedRoute))
   );
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [loading, setLoading] = React.useState(false);
   const getAccount = useGetAccount();
   const getAddress = useGetAddress();
@@ -35,6 +44,16 @@ const Authenticate = ({
   useSetProvider();
 
   const { getItem, removeItem } = storage.session;
+
+  React.useEffect(() => {
+    const urlSearchParams = new URLSearchParams(search);
+    const params = Object.fromEntries(urlSearchParams as any);
+    const urlAddress = params.address;
+    const iframe: any = document.getElementById(iframeId);
+    if (addressIsValid(urlAddress) && iframe && !iframe.src.includes("#")) {
+      iframe.src = `${network.walletAddress}${dappInitRoute}#${urlAddress}`;
+    }
+  }, [search]);
 
   React.useMemo(() => {
     if (getItem("walletLogin")) {
@@ -92,7 +111,7 @@ const Authenticate = ({
   const redirect = privateRoute && !loggedIn && !getItem("walletLogin");
 
   React.useEffect(() => {
-    if (!redirect && privateRoute && chainId.valueOf() === "-1") {
+    if (chainId.valueOf() === "-1") {
       getNetworkConfig()
         .then((networkConfig) => {
           dispatch({
@@ -105,7 +124,7 @@ const Authenticate = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, chainId.valueOf()]);
+  }, [chainId.valueOf()]);
 
   const fetchAccount = () => {
     if (address && loggedIn) {
