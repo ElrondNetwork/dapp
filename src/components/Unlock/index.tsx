@@ -4,6 +4,7 @@ import { faBan } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
 import WalletLogin from "./Login/Wallet";
 import { useContext } from "context";
+import Extension from "components/Extension";
 
 const Unlock = ({
   callbackRoute,
@@ -13,6 +14,7 @@ const Unlock = ({
   webWalletButtonLabel = "Web Wallet",
   walletConnectButtonLabel = "Maiar Login",
   ledgerButtonLabel = "Ledger",
+  extensionButtonLabel = "Extension",
   ledgerRoute,
   walletConnectRoute,
 }: {
@@ -23,6 +25,7 @@ const Unlock = ({
   webWalletButtonLabel?: string;
   walletConnectButtonLabel?: string;
   ledgerButtonLabel?: string;
+  extensionButtonLabel?: string;
   ledgerRoute: string;
   walletConnectRoute: string;
 }) => {
@@ -75,6 +78,7 @@ const Unlock = ({
                 >
                   {walletConnectButtonLabel}
                 </Link>
+                <Extension label={extensionButtonLabel} />
               </div>
             </div>
           </div>
