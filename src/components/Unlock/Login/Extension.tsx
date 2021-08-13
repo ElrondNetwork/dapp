@@ -21,14 +21,12 @@ export const useExtensionLogin = ({
     dapp.provider
       .init()
       .then(async (initialised) => {
-        console.log("initialized: ", initialised);
         if (initialised) {
           storage.session.setItem({
             key: "walletLogin",
             data: {},
             expires: moment().add(1, "minutes").unix(),
           });
-          console.log("the token is: ", token);
           await dapp.provider.login({
             callbackUrl: encodeURIComponent(
               `${window.location.origin}${callbackRoute}`
@@ -42,14 +40,6 @@ export const useExtensionLogin = ({
             type: "login",
             address: await dapp.provider.getAddress(),
           });
-          console.log(
-            "the account is: ",
-            `${callbackRoute}/?address=${
-              (dapp.provider as ExtensionProvider).account.address
-            }&signature=${
-              (dapp.provider as ExtensionProvider).account.signature
-            }&loginToken=${token}`
-          );
           history.push(
             `${callbackRoute}?address=${
               (dapp.provider as ExtensionProvider).account.address

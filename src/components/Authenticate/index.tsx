@@ -127,7 +127,6 @@ const Authenticate = ({
   }, [chainId.valueOf()]);
 
   const fetchAccount = () => {
-    console.log("fetch account", address, loggedIn);
     if (address && loggedIn) {
       dapp.proxy
         .getAccount(new Address(address))
