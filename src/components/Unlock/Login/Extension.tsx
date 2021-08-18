@@ -17,7 +17,7 @@ export const useExtensionLogin = ({
   const history = useHistory();
 
   return () => {
-    dapp.provider = new ExtensionProvider("pecdchfdfmkndoghjpdnfiafbmcmhkim");
+    dapp.provider = new ExtensionProvider();
     dapp.provider
       .init()
       .then(async (initialised) => {

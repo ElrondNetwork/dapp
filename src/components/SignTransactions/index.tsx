@@ -112,6 +112,11 @@ export default function SignTransactions() {
               setNewTransactions(transactions);
               setShowSignModal(true);
               break;
+
+            case "extension":
+              console.log("extension transactions");
+              // extensionSign(transactions);
+              break;
           }
         })
         .catch((e) => {
