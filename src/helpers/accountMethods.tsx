@@ -1,16 +1,34 @@
 import moment from "moment";
+import { useLocation } from "react-router-dom";
 import { AccountOnNetwork, Address, Nonce } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
+import addressIsValid from "./addressIsValid";
+import getProviderType from "./getProviderType";
 
 export function useGetAccount() {
   const { dapp } = useContext();
   return (address: string) => dapp.proxy.getAccount(new Address(address));
 }
 
-export function useGetAddress() {
+export function useGetAddress(): () => Promise<string> {
+  const { search } = useLocation();
   const { dapp } = useContext();
-  return () => dapp.provider.getAddress();
+  const providerType = getProviderType(dapp.provider);
+
+  return () =>
+    providerType !== "wallet"
+      ? dapp.provider.getAddress()
+      : new Promise((resolve) => {
+          if (storage.session.getItem("walletLogin")) {
+            const urlSearchParams = new URLSearchParams(search);
+            const params = Object.fromEntries(urlSearchParams as any);
+            if (addressIsValid(params.address)) {
+              resolve(params.address);
+            }
+          }
+          resolve("");
+        });
 }
 
 export const useSetNonce = () => {
