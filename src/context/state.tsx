@@ -8,7 +8,7 @@ import {
 } from "@elrondnetwork/erdjs";
 import { NetworkType } from "helpers/types";
 import storage from "helpers/storage";
-import { dappInitRoute, iframeId } from "dappConfig";
+import { dappInitRoute } from "dappConfig";
 
 const defaultGatewayAddress = "https://gateway.elrond.com";
 const defaultApiAddress = "https://gateway.elrond.com";
@@ -77,7 +77,7 @@ export const emptyAccount: AccountType = {
 };
 
 export const newWalletProvider = (network: NetworkType) =>
-  new WalletProvider(`${network.walletAddress}${dappInitRoute}`, iframeId);
+  new WalletProvider(`${network.walletAddress}${dappInitRoute}`);
 
 export const createInitialState = ({
   network,

@@ -2,7 +2,6 @@ import moment from "moment";
 import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import storage from "helpers/storage";
-import { dappInitRoute, iframeId } from "dappConfig";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -129,11 +128,6 @@ export function reducer(state: StateType, action: ActionType): StateType {
         walletConnectBridge,
         walletConnectDeepLink,
       });
-      const iframe: any = document.getElementById(iframeId);
-      if (iframe && iframe.src.includes("#")) {
-        iframe.src = `${network.walletAddress}${dappInitRoute}`;
-      }
-
       return initialState;
     }
 
