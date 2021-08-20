@@ -13,7 +13,7 @@ export function useGetAccount() {
 
 export function useGetAddress(): () => Promise<string> {
   const { search } = useLocation();
-  const { dapp } = useContext();
+  const { dapp, address, loggedIn } = useContext();
   const providerType = getProviderType(dapp.provider);
 
   return () =>
@@ -26,6 +26,9 @@ export function useGetAddress(): () => Promise<string> {
             if (addressIsValid(params.address)) {
               resolve(params.address);
             }
+          }
+          if (loggedIn) {
+            resolve(address);
           }
           resolve("");
         });
