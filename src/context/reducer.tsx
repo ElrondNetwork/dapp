@@ -120,16 +120,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
     }
 
     case "logout": {
-      const { provider } = state.dapp;
-      provider
-        .logout()
-        .then()
-        .catch((e) => console.error("logout", e));
-      storage.session.removeItem("loggedIn");
-      storage.session.removeItem("address");
-      storage.session.removeItem("ledgerLogin");
-      storage.session.removeItem("walletConnectLogin");
-      storage.session.removeItem("tokenLogin");
+      storage.session.clear();
       storage.local.removeItem("nonce");
       storage.local.removeItem("sessions");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;

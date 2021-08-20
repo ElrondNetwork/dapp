@@ -9,6 +9,7 @@ import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
 import useSignTransactions from "./helpers/useSignTransactions";
 import calculateGasLimit from "./helpers/calculateGasLimit";
+import useLogout from "./helpers/useLogout";
 import {
   useRefreshAccount,
   useGetAccountShard,
@@ -55,5 +56,6 @@ export {
   Context,
   useContext,
   useDispatch,
+  useLogout,
   calculateGasLimit,
 };
