@@ -57,3 +57,5 @@ export const getItem = (key: SessionKeyType): any => {
 
 export const removeItem = (key: SessionKeyType) =>
   sessionStorage.removeItem(String(key));
+
+export const clear = () => sessionStorage.clear();
