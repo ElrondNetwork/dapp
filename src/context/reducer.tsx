@@ -29,7 +29,6 @@ export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "login": {
       storage.local.removeItem("nonce");
-      storage.local.removeItem("sessions");
       const { address } = action;
       let loggedIn = address || address !== "" ? true : false;
       storage.session.setItem({
@@ -121,7 +120,6 @@ export function reducer(state: StateType, action: ActionType): StateType {
     case "logout": {
       storage.session.clear();
       storage.local.removeItem("nonce");
-      storage.local.removeItem("sessions");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,

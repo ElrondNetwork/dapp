@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export type LocalKeyType = "nonce" | "sessions" | "walletconnect";
+export type LocalKeyType = "nonce" | "walletconnect";
 type ExpiresType = number | false;
 
 export const setItem = ({
@@ -50,7 +50,5 @@ export const getItem = (key: LocalKeyType): any => {
 
 export const removeItem = (key: LocalKeyType) =>
   localStorage.removeItem(String(key));
-
-export const signSession = "signSession";
 
 export const successDescription = "successDescription";

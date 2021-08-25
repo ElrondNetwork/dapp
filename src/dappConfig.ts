@@ -1,1 +1,1 @@
-export const dappInitRoute = "/dapp/init";
+export const DAPP_INIT_ROUTE = "/dapp/init";
