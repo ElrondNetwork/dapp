@@ -3,9 +3,9 @@ import { useContext, useDispatch } from "context";
 export default function useLogout() {
   const { dapp } = useContext();
   const dispatch = useDispatch();
-  return () => {
+  return ({ callbackUrl }: { callbackUrl: string }) => {
     dapp.provider
-      .logout()
+      .logout({ callbackUrl })
       .then(() => {
         dispatch({ type: "logout" });
       })
