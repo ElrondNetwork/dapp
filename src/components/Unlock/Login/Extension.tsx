@@ -36,16 +36,17 @@ export const useExtensionLogin = ({
           });
 
           dispatch({ type: "setProvider", provider: dapp.provider });
-          dispatch({
-            type: "login",
-            address: await dapp.provider.getAddress(),
-          });
+          const address = await dapp.provider.getAddress();
+          dispatch({ type: "login", address });
+          const addressParam = `address=${
+            (dapp.provider as ExtensionProvider).account.address
+          }`;
+          const signatureParam = `signature=${
+            (dapp.provider as ExtensionProvider).account.signature
+          }`;
+          const loginTokenParam = `loginToken=${token}`;
           history.push(
-            `${callbackRoute}?address=${
-              (dapp.provider as ExtensionProvider).account.address
-            }&signature=${
-              (dapp.provider as ExtensionProvider).account.signature
-            }&loginToken=${token}`
+            `${callbackRoute}?${addressParam}&${signatureParam}&${loginTokenParam}`
           );
         } else {
           console.warn(

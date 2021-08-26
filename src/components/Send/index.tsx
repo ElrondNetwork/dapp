@@ -149,11 +149,6 @@ export default function Send() {
             .getAccount(new Address(address))
             .then((account) => {
               transaction.setNonce(getLatestNonce(account));
-              console.log("receiver is: ", transaction.getReceiver().bech32());
-              console.log(
-                "plain transaction object",
-                transaction.toPlainObject()
-              );
               provider
                 .sendTransaction(transaction.toPlainObject(), {
                   callbackUrl: encodeURIComponent(
