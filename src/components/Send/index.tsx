@@ -143,6 +143,26 @@ export default function Send() {
               showError(e.message);
             });
           break;
+
+        case "extension":
+          dapp.proxy
+            .getAccount(new Address(address))
+            .then((account) => {
+              transaction.setNonce(getLatestNonce(account));
+              provider
+                .sendTransaction(transaction.toPlainObject(), {
+                  callbackUrl: encodeURIComponent(
+                    `${window.location.origin}${callbackRoute}`
+                  ),
+                })
+                .catch((e) => {
+                  showError(e);
+                });
+            })
+            .catch((e) => {
+              showError(e);
+            });
+          break;
       }
     } else {
       setShowSendModal(true);

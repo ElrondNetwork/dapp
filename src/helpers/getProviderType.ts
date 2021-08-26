@@ -3,9 +3,15 @@ import {
   IDappProvider,
   HWProvider,
   WalletConnectProvider,
+  ExtensionProvider,
 } from "@elrondnetwork/erdjs";
 
-export type ProviderType = "wallet" | "ledger" | "walletconnect" | "";
+export type ProviderType =
+  | "wallet"
+  | "ledger"
+  | "walletconnect"
+  | "extension"
+  | "";
 
 const getProviderType = (provider: IDappProvider | undefined): ProviderType => {
   let providerType: ProviderType = "";
@@ -22,6 +28,11 @@ const getProviderType = (provider: IDappProvider | undefined): ProviderType => {
 
   providerType =
     provider && provider.constructor === HWProvider ? "ledger" : providerType;
+
+  providerType =
+    provider && provider.constructor === ExtensionProvider
+      ? "extension"
+      : providerType;
 
   return providerType;
 };
