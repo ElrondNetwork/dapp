@@ -24,19 +24,25 @@ export default function useSetProvider() {
     switch (true) {
       case Boolean(getItem("ledgerLogin")):
         const provider = new HWProvider(
-          new ProxyProvider(`${network.gatewayAddress}`, { timeout: 4000 }),
-          getItem("ledgerLogin").index
+          new ProxyProvider(`${network.gatewayAddress}`, { timeout: 4000 })
         );
         provider
           .init()
           .then((success: any) => {
-            if (success) {
-              dispatch({ type: "setProvider", provider });
-            } else {
-              console.error(
-                "Could not initialise ledger app, make sure Elrond app is open"
-              );
-            }
+            provider
+              .login({ addressIndex: getItem("ledgerLogin").index })
+              .then(() => {
+                if (success) {
+                  dispatch({ type: "setProvider", provider });
+                } else {
+                  console.error(
+                    "Could not initialise ledger app, make sure Elrond app is open"
+                  );
+                }
+              })
+              .catch((err) => {
+                console.error("Unable to login to HWProvider", err);
+              });
           })
           .catch((err) => {
             console.error("error", err);

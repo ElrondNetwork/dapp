@@ -8,8 +8,8 @@ import { useExtensionLogin } from "./components/Unlock/Login/Extension";
 import WalletConnect from "./components/WalletConnect";
 import { ContextProvider as Context, useContext, useDispatch } from "./context";
 import useSendTransaction from "./helpers/useSend";
-import useSignTransactions from "./helpers/useSignTransactions";
 import calculateGasLimit from "./helpers/calculateGasLimit";
+import useLogout from "./helpers/useLogout";
 import {
   useRefreshAccount,
   useGetAccountShard,
@@ -19,7 +19,6 @@ import {
   RouteType as RouteInterface,
   NetworkType as NetworkInterface,
 } from "./helpers/types";
-import SignTransactions from "components/SignTransactions";
 
 export type NetworkType = NetworkInterface;
 export type RouteType = RouteInterface;
@@ -37,7 +36,6 @@ const Authenticate = ({
     <AuthenticateComponent routes={routes} unlockRoute={unlockRoute}>
       {children}
       <Send />
-      <SignTransactions />
     </AuthenticateComponent>
   );
 };
@@ -50,12 +48,12 @@ export {
   useRefreshAccount,
   useGetAccountShard,
   useSendTransaction,
-  useSignTransactions,
   useWebWalletLogin,
   useExtensionLogin,
   useSetNonce,
   Context,
   useContext,
   useDispatch,
+  useLogout,
   calculateGasLimit,
 };

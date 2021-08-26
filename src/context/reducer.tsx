@@ -2,7 +2,6 @@ import moment from "moment";
 import { Nonce } from "@elrondnetwork/erdjs";
 import { createInitialState, StateType } from "./state";
 import storage from "helpers/storage";
-import { dappInitRoute, iframeId } from "dappConfig";
 
 export type DispatchType = (action: ActionType) => void;
 
@@ -30,7 +29,6 @@ export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "login": {
       storage.local.removeItem("nonce");
-      storage.local.removeItem("sessions");
       const { address } = action;
       let loggedIn = address || address !== "" ? true : false;
       storage.session.setItem({
@@ -120,29 +118,14 @@ export function reducer(state: StateType, action: ActionType): StateType {
     }
 
     case "logout": {
-      const { provider } = state.dapp;
-      provider
-        .logout()
-        .then()
-        .catch((e) => console.error("logout", e));
-      storage.session.removeItem("loggedIn");
-      storage.session.removeItem("address");
-      storage.session.removeItem("ledgerLogin");
-      storage.session.removeItem("walletConnectLogin");
-      storage.session.removeItem("tokenLogin");
+      storage.session.clear();
       storage.local.removeItem("nonce");
-      storage.local.removeItem("sessions");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,
         walletConnectBridge,
         walletConnectDeepLink,
       });
-      const iframe: any = document.getElementById(iframeId);
-      if (iframe && iframe.src.includes("#")) {
-        iframe.src = `${network.walletAddress}${dappInitRoute}`;
-      }
-
       return initialState;
     }
 

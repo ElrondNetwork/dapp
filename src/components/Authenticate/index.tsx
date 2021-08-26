@@ -13,7 +13,6 @@ import {
 } from "helpers/accountMethods";
 import useSetProvider from "./useSetProvider";
 import addressIsValid from "helpers/addressIsValid";
-import { dappInitRoute, iframeId } from "dappConfig";
 
 const Authenticate = ({
   children,
@@ -25,14 +24,7 @@ const Authenticate = ({
   unlockRoute: string;
 }) => {
   const dispatch = useDispatch();
-  const {
-    loggedIn,
-    dapp,
-    address,
-    ledgerAccount,
-    chainId,
-    network,
-  } = useContext();
+  const { loggedIn, dapp, address, ledgerAccount, chainId } = useContext();
   const [autehnitcatedRoutes] = React.useState(
     routes.filter((route) => Boolean(route.authenticatedRoute))
   );
@@ -44,16 +36,6 @@ const Authenticate = ({
   useSetProvider();
 
   const { getItem, removeItem } = storage.session;
-
-  React.useEffect(() => {
-    const urlSearchParams = new URLSearchParams(search);
-    const params = Object.fromEntries(urlSearchParams as any);
-    const urlAddress = params.address;
-    const iframe: any = document.getElementById(iframeId);
-    if (addressIsValid(urlAddress) && iframe && !iframe.src.includes("#")) {
-      iframe.src = `${network.walletAddress}${dappInitRoute}#${urlAddress}`;
-    }
-  }, [search]);
 
   React.useMemo(() => {
     if (getItem("walletLogin")) {
