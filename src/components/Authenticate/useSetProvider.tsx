@@ -1,13 +1,19 @@
 import * as React from "react";
-import { ProxyProvider, HWProvider } from "@elrondnetwork/erdjs";
+import {
+  ProxyProvider,
+  HWProvider,
+  ExtensionProvider,
+} from "@elrondnetwork/erdjs";
 import storage from "helpers/storage";
 import { useContext, useDispatch } from "context";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
+import { useGetAddress } from "helpers/accountMethods";
 
 export default function useSetProvider() {
   const { network } = useContext();
   const dispatch = useDispatch();
   const { getItem } = storage.session;
+  const getAddress = useGetAddress();
 
   const walletConnectLogin = getItem("walletConnectLogin");
 
@@ -22,7 +28,7 @@ export default function useSetProvider() {
 
   React.useEffect(() => {
     switch (true) {
-      case Boolean(getItem("ledgerLogin")):
+      case Boolean(getItem("ledgerLogin")): {
         const provider = new HWProvider(
           new ProxyProvider(`${network.gatewayAddress}`, { timeout: 4000 })
         );
@@ -47,11 +53,37 @@ export default function useSetProvider() {
           .catch((err) => {
             console.error("error", err);
           });
-
         break;
-      case Boolean(walletConnectLogin):
+      }
+
+      case Boolean(walletConnectLogin): {
         walletConnectInit();
         break;
+      }
+
+      case Boolean(getItem("extensionLogin")): {
+        getAddress()
+          .then((address) => {
+            const provider = ExtensionProvider.getInstance(address);
+            provider
+              .init()
+              .then((success: any) => {
+                if (success) {
+                  dispatch({ type: "setProvider", provider });
+                } else {
+                  console.error(
+                    "Could not initialise extension, make sure Elrond wallet extension is installed."
+                  );
+                }
+              })
+              .catch((err) => {
+                console.error("Unable to login to ExtensionProvider", err);
+              });
+          })
+          .catch((e) => {});
+
+        break;
+      }
     }
   }, []);
 }
