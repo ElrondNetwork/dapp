@@ -4,7 +4,6 @@ import { ExtensionProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
-import { useGetAddress } from "helpers/accountMethods";
 
 export const useExtensionLogin = ({
   callbackRoute,
@@ -18,13 +17,13 @@ export const useExtensionLogin = ({
   const history = useHistory();
 
   return () => {
-    dapp.provider = ExtensionProvider.getInstance();
+    dapp.provider = new ExtensionProvider();
     dapp.provider
       .init()
       .then(async (initialised) => {
         if (initialised) {
           storage.session.setItem({
-            key: "extensionLogin",
+            key: "walletLogin",
             data: {},
             expires: moment().add(1, "minutes").unix(),
           });
@@ -37,17 +36,18 @@ export const useExtensionLogin = ({
           });
 
           dispatch({ type: "setProvider", provider: dapp.provider });
-
           const address = await dapp.provider.getAddress();
-          const account = (dapp.provider as ExtensionProvider).account;
-
-          const addressParam = `address=${account.address}`;
-          const signatureParam = `signature=${account.signature}`;
+          dispatch({ type: "login", address });
+          const addressParam = `address=${
+            (dapp.provider as ExtensionProvider).account.address
+          }`;
+          const signatureParam = `signature=${
+            (dapp.provider as ExtensionProvider).account.signature
+          }`;
           const loginTokenParam = `loginToken=${token}`;
           history.push(
             `${callbackRoute}?${addressParam}&${signatureParam}&${loginTokenParam}`
           );
-          dispatch({ type: "login", address });
         } else {
           console.warn(
             "Something went wrong trying to redirect to wallet login.."

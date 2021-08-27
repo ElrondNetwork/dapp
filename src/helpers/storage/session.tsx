@@ -4,7 +4,6 @@ export type SessionKeyType =
   | "loggedIn"
   | "walletLogin"
   | "address"
-  | "extensionLogin"
   | "ledgerLogin"
   | "walletConnectLogin"
   | "ledgerAccountIndex"
