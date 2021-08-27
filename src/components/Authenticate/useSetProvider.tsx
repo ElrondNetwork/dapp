@@ -80,7 +80,9 @@ export default function useSetProvider() {
                 console.error("Unable to login to ExtensionProvider", err);
               });
           })
-          .catch((e) => {});
+          .catch((e) => {
+            console.log(e);
+          });
 
         break;
       }
