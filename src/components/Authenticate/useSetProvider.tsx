@@ -64,7 +64,9 @@ export default function useSetProvider() {
       case Boolean(getItem("extensionLogin")): {
         getAddress()
           .then((address) => {
-            const provider = ExtensionProvider.getInstance(address);
+            const provider = ExtensionProvider.getInstance().setAddress(
+              address
+            );
             provider
               .init()
               .then((success: any) => {
