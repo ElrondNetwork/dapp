@@ -4,10 +4,10 @@ export type SessionKeyType =
   | "loggedIn"
   | "walletLogin"
   | "address"
-  | "extensionLogin"
   | "ledgerLogin"
   | "walletConnectLogin"
   | "ledgerAccountIndex"
+  | "extensionLogin"
   | "tokenLogin";
 type ExpiresType = number | false;
 
