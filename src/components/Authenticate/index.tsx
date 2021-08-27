@@ -12,7 +12,6 @@ import {
   getLatestNonce,
 } from "helpers/accountMethods";
 import useSetProvider from "./useSetProvider";
-import addressIsValid from "helpers/addressIsValid";
 
 const Authenticate = ({
   children,
