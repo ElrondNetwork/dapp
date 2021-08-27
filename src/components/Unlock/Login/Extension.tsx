@@ -17,13 +17,13 @@ export const useExtensionLogin = ({
   const history = useHistory();
 
   return () => {
-    dapp.provider = new ExtensionProvider();
+    dapp.provider = ExtensionProvider.getInstance();
     dapp.provider
       .init()
       .then(async (initialised) => {
         if (initialised) {
           storage.session.setItem({
-            key: "walletLogin",
+            key: "extensionLogin",
             data: {},
             expires: moment().add(1, "minutes").unix(),
           });
@@ -36,18 +36,17 @@ export const useExtensionLogin = ({
           });
 
           dispatch({ type: "setProvider", provider: dapp.provider });
+
           const address = await dapp.provider.getAddress();
-          dispatch({ type: "login", address });
-          const addressParam = `address=${
-            (dapp.provider as ExtensionProvider).account.address
-          }`;
-          const signatureParam = `signature=${
-            (dapp.provider as ExtensionProvider).account.signature
-          }`;
+          const account = (dapp.provider as ExtensionProvider).account;
+
+          const addressParam = `address=${account.address}`;
+          const signatureParam = `signature=${account.signature}`;
           const loginTokenParam = `loginToken=${token}`;
           history.push(
             `${callbackRoute}?${addressParam}&${signatureParam}&${loginTokenParam}`
           );
+          dispatch({ type: "login", address });
         } else {
           console.warn(
             "Something went wrong trying to redirect to wallet login.."

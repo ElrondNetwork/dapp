@@ -7,6 +7,7 @@ export type SessionKeyType =
   | "ledgerLogin"
   | "walletConnectLogin"
   | "ledgerAccountIndex"
+  | "extensionLogin"
   | "tokenLogin";
 type ExpiresType = number | false;
 
