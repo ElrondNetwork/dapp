@@ -39,7 +39,7 @@ const Ledger = ({ callbackRoute }: { callbackRoute: string }) => {
             .login()
             .then((address) => {
               dispatch({ type: "setProvider", provider: hwWalletP });
-              dispatch({ type: "login", address });
+              dispatch({ type: "login", address, loginMethod: "ledger" });
               setLoading(false);
               history.push(callbackRoute);
             })

@@ -12,6 +12,7 @@ import {
   getLatestNonce,
 } from "helpers/accountMethods";
 import useSetProvider from "./useSetProvider";
+import { newWalletProvider } from "helpers/provider";
 
 const Authenticate = ({
   children,
@@ -23,11 +24,18 @@ const Authenticate = ({
   unlockRoute: string;
 }) => {
   const dispatch = useDispatch();
-  const { loggedIn, dapp, address, ledgerAccount, chainId } = useContext();
+  const {
+    loggedIn,
+    dapp,
+    address,
+    ledgerAccount,
+    chainId,
+    network,
+  } = useContext();
   const [autehnitcatedRoutes] = React.useState(
     routes.filter((route) => Boolean(route.authenticatedRoute))
   );
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
   const [loading, setLoading] = React.useState(false);
   const getAccount = useGetAccount();
   const getAddress = useGetAddress();
@@ -39,42 +47,31 @@ const Authenticate = ({
   React.useMemo(() => {
     if (getItem("walletLogin")) {
       setLoading(true);
-      dapp.provider
-        .init()
-        .then((initialised) => {
-          if (!initialised) {
-            setLoading(false);
-            return;
-          }
-
-          getAddress()
-            .then((address) => {
-              removeItem("walletLogin");
-              dispatch({ type: "login", address });
-              getAccount(address)
-                .then((account) => {
-                  dispatch({
-                    type: "setAccount",
-                    account: {
-                      balance: account.balance.toString(),
-                      address,
-                      nonce: getLatestNonce(account),
-                    },
-                  });
-                  setLoading(false);
-                })
-                .catch((e) => {
-                  console.error("Failed getting account ", e);
-                  setLoading(false);
-                });
+      const provider = newWalletProvider(network);
+      getAddress()
+        .then((address) => {
+          removeItem("walletLogin");
+          dispatch({ type: "setProvider", provider });
+          dispatch({ type: "login", address, loginMethod: "wallet" });
+          getAccount(address)
+            .then((account) => {
+              dispatch({
+                type: "setAccount",
+                account: {
+                  balance: account.balance.toString(),
+                  address,
+                  nonce: getLatestNonce(account),
+                },
+              });
+              setLoading(false);
             })
             .catch((e) => {
-              console.error("Failed getting address ", e);
+              console.error("Failed getting account ", e);
               setLoading(false);
             });
         })
         .catch((e) => {
-          console.error("Failed initializing provider ", e);
+          console.error("Failed getting address ", e);
           setLoading(false);
         });
     }

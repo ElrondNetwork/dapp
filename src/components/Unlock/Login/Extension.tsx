@@ -12,13 +12,12 @@ export const useExtensionLogin = ({
   callbackRoute: string;
   token?: string;
 }) => {
-  const { dapp } = useContext();
   const dispatch = useDispatch();
   const history = useHistory();
 
   return () => {
-    dapp.provider = ExtensionProvider.getInstance();
-    dapp.provider
+    const provider = ExtensionProvider.getInstance();
+    provider
       .init()
       .then(async (initialised) => {
         if (initialised) {
@@ -27,7 +26,7 @@ export const useExtensionLogin = ({
             data: {},
             expires: moment().add(1, "minutes").unix(),
           });
-          await dapp.provider.login({
+          await provider.login({
             callbackUrl: encodeURIComponent(
               `${window.location.origin}${callbackRoute}`
             ),
@@ -35,10 +34,10 @@ export const useExtensionLogin = ({
             ...(token ? { token } : {}),
           });
 
-          dispatch({ type: "setProvider", provider: dapp.provider });
+          dispatch({ type: "setProvider", provider });
 
-          const address = await dapp.provider.getAddress();
-          const account = (dapp.provider as ExtensionProvider).account;
+          const address = await provider.getAddress();
+          const account = provider.account;
 
           const addressParam = `address=${account.address}`;
           const signatureParam = `signature=${account.signature}`;
@@ -46,7 +45,7 @@ export const useExtensionLogin = ({
           history.push(
             `${callbackRoute}?${addressParam}&${signatureParam}&${loginTokenParam}`
           );
-          dispatch({ type: "login", address });
+          dispatch({ type: "login", address, loginMethod: "extension" });
         } else {
           console.warn(
             "Something went wrong trying to redirect to wallet login.."

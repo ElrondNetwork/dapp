@@ -75,7 +75,7 @@ export default function useInitWalletConnect({
     provider
       .getAddress()
       .then((address: string) => {
-        const loggedIn = !!storage.session.getItem("loggedIn");
+        const loggedIn = !!storage.session.getItem("loginMethod");
         if (!loggedIn) {
           history.push(callbackRoute);
         }
@@ -104,7 +104,7 @@ export default function useInitWalletConnect({
             logoutRoute,
           },
         });
-        dispatch({ type: "login", address });
+        dispatch({ type: "login", address, loginMethod: "walletconnect" });
       })
       .catch((e: any) => {
         setError("Invalid address");
@@ -113,7 +113,7 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogout = () => {
-    if (!!storage.session.getItem("loggedIn")) {
+    if (!!storage.session.getItem("loginMethod")) {
       history.push(logoutRoute);
     }
     dispatch({ type: "logout" });

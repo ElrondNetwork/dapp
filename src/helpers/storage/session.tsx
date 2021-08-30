@@ -1,7 +1,7 @@
 import moment from "moment";
 
 export type SessionKeyType =
-  | "loggedIn"
+  | "loginMethod"
   | "walletLogin"
   | "address"
   | "ledgerLogin"
