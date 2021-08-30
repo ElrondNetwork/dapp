@@ -35,7 +35,7 @@ const statusData: Record<
   },
   pending: {
     icon: faHourglass,
-    title: "Procesing request",
+    title: "Processing request",
   },
 };
 
