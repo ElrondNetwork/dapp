@@ -2,7 +2,6 @@ import {
   IDappProvider,
   ProxyProvider,
   ApiProvider,
-  WalletProvider,
   Nonce,
   ChainID,
 } from "@elrondnetwork/erdjs";
