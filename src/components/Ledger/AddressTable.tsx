@@ -112,7 +112,7 @@ const AddressTable = ({
             .login({ addressIndex: selectedIndex })
             .then((address) => {
               dispatch({ type: "setProvider", provider: hwWalletProvider });
-              dispatch({ type: "login", address });
+              dispatch({ type: "login", address, loginMethod: "ledger" });
 
               dispatch({
                 type: "ledgerLogin",

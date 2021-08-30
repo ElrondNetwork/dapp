@@ -6,7 +6,11 @@ import storage from "helpers/storage";
 export type DispatchType = (action: ActionType) => void;
 
 export type ActionType =
-  | { type: "login"; address: StateType["address"] }
+  | {
+      type: "login";
+      address: StateType["address"];
+      loginMethod: StateType["loginMethod"];
+    }
   | { type: "ledgerLogin"; ledgerLogin: StateType["ledgerLogin"] }
   | { type: "logout" }
   | { type: "setProvider"; provider: StateType["dapp"]["provider"] }
@@ -29,11 +33,11 @@ export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "login": {
       storage.local.removeItem("nonce");
-      const { address } = action;
+      const { address, loginMethod } = action;
       let loggedIn = address || address !== "" ? true : false;
       storage.session.setItem({
-        key: "loggedIn",
-        data: loggedIn,
+        key: "loginMethod",
+        data: loginMethod,
         expires: in1hour,
       });
       storage.session.setItem({
@@ -44,7 +48,8 @@ export function reducer(state: StateType, action: ActionType): StateType {
       return {
         ...state,
         address,
-        loggedIn: loggedIn,
+        loggedIn,
+        loginMethod,
       };
     }
     case "ledgerLogin": {

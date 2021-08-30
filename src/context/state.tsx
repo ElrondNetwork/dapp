@@ -2,13 +2,12 @@ import {
   IDappProvider,
   ProxyProvider,
   ApiProvider,
-  WalletProvider,
   Nonce,
   ChainID,
 } from "@elrondnetwork/erdjs";
 import { NetworkType } from "helpers/types";
 import storage from "helpers/storage";
-import { DAPP_INIT_ROUTE } from "dappConfig";
+import { emptyProvider } from "helpers/provider";
 
 const defaultGatewayAddress = "https://gateway.elrond.com";
 const defaultApiAddress = "https://gateway.elrond.com";
@@ -37,6 +36,13 @@ export interface DappState {
   apiProvider: ApiProvider;
 }
 
+export type ProviderType =
+  | "wallet"
+  | "ledger"
+  | "walletconnect"
+  | "extension"
+  | "";
+
 export interface StateType {
   walletConnectBridge: string;
   walletConnectDeepLink: string;
@@ -45,6 +51,7 @@ export interface StateType {
   dapp: DappState;
   error: string;
   loggedIn: boolean;
+  loginMethod: ProviderType;
   ledgerLogin?: {
     index: number;
     loginType: string;
@@ -76,9 +83,6 @@ export const emptyAccount: AccountType = {
   nonce: new Nonce(0),
 };
 
-export const newWalletProvider = (network: NetworkType) =>
-  new WalletProvider(`${network.walletAddress}${DAPP_INIT_ROUTE}`);
-
 export const createInitialState = ({
   network,
   walletConnectBridge,
@@ -100,8 +104,6 @@ export const createInitialState = ({
       ? sessionNetwork.gatewayAddress
       : defaultGatewayAddress;
 
-  const defaultProvider = newWalletProvider(sessionNetwork);
-
   const { getItem } = storage.session;
 
   const state: StateType = {
@@ -110,12 +112,13 @@ export const createInitialState = ({
     network: sessionNetwork,
     chainId: new ChainID("-1"),
     dapp: {
-      provider: defaultProvider, // will be checked in useSetProvider
+      provider: emptyProvider, // will be checked in useSetProvider
       proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
       apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
     error: "",
-    loggedIn: !!getItem("loggedIn"),
+    loggedIn: !!getItem("loginMethod"),
+    loginMethod: getItem("loginMethod"),
     ledgerLogin: getItem("ledgerLogin"),
     walletConnectLogin: getItem("walletConnectLogin"),
     address: getItem("address"),

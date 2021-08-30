@@ -8,6 +8,7 @@ import storage from "helpers/storage";
 import { useContext, useDispatch } from "context";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
 import { useGetAddress } from "helpers/accountMethods";
+import { newWalletProvider } from "helpers/provider";
 
 export default function useSetProvider() {
   const { network } = useContext();
@@ -58,6 +59,12 @@ export default function useSetProvider() {
 
       case Boolean(walletConnectLogin): {
         walletConnectInit();
+        break;
+      }
+
+      case Boolean(getItem("loginMethod") === "wallet"): {
+        const provider = newWalletProvider(network);
+        dispatch({ type: "setProvider", provider });
         break;
       }
 

@@ -17,7 +17,7 @@ export function useGetAddress(): () => Promise<string> {
   const providerType = getProviderType(dapp.provider);
 
   return () =>
-    providerType !== "wallet"
+    providerType && providerType !== "wallet"
       ? dapp.provider.getAddress()
       : new Promise((resolve) => {
           if (storage.session.getItem("walletLogin")) {
