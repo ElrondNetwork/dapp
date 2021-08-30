@@ -29,6 +29,7 @@ export default function useSetProvider() {
 
   React.useEffect(() => {
     switch (true) {
+      case Boolean(getItem("loginMethod") === "ledger"):
       case Boolean(getItem("ledgerLogin")): {
         const provider = new HWProvider(
           new ProxyProvider(`${network.gatewayAddress}`, { timeout: 4000 })
@@ -57,6 +58,7 @@ export default function useSetProvider() {
         break;
       }
 
+      case Boolean(getItem("loginMethod") === "walletconnect"):
       case Boolean(walletConnectLogin): {
         walletConnectInit();
         break;
@@ -68,6 +70,7 @@ export default function useSetProvider() {
         break;
       }
 
+      case Boolean(getItem("loginMethod") === "extension"):
       case Boolean(getItem("extensionLogin")): {
         getAddress()
           .then((address) => {
