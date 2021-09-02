@@ -117,23 +117,23 @@ export const createInitialState = ({
       apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
     },
     error: "",
-    loggedIn: !!getItem("loginMethod"),
-    loginMethod: getItem("loginMethod"),
+    loggedIn: !!storage.local.getItem("loginMethod"),
+    loginMethod: storage.local.getItem("loginMethod"),
     ledgerLogin: getItem("ledgerLogin"),
     walletConnectLogin: getItem("walletConnectLogin"),
-    address: getItem("address"),
+    address: storage.local.getItem("address"),
     account: emptyAccount,
     shard: undefined,
     explorerAddress: sessionNetwork.explorerAddress || defaultExplorerAddress,
     egldLabel: network ? network.egldLabel : defaultNetwork.egldLabel,
     ledgerAccount:
-      getItem("ledgerAccountIndex") && getItem("address")
+      getItem("ledgerAccountIndex") && storage.local.getItem("address")
         ? {
             index: getItem("ledgerAccountIndex"),
-            address: getItem("address"),
+            address: storage.local.getItem("address"),
           }
         : undefined,
-    walletConnectAccount: getItem("address"),
+    walletConnectAccount: storage.local.getItem("address"),
     apiAddress,
     tokenLogin: getItem("tokenLogin"),
   };

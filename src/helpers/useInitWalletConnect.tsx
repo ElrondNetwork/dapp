@@ -75,7 +75,7 @@ export default function useInitWalletConnect({
     provider
       .getAddress()
       .then((address: string) => {
-        const loggedIn = !!storage.session.getItem("loginMethod");
+        const loggedIn = !!storage.local.getItem("loginMethod");
         if (!loggedIn) {
           history.push(callbackRoute);
         }
@@ -113,7 +113,7 @@ export default function useInitWalletConnect({
   };
 
   const handleOnLogout = () => {
-    if (!!storage.session.getItem("loginMethod")) {
+    if (!!storage.local.getItem("loginMethod")) {
       history.push(logoutRoute);
     }
     dispatch({ type: "logout" });

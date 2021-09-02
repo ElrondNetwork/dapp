@@ -1,6 +1,10 @@
 import moment from "moment";
 
-export type LocalKeyType = "nonce" | "walletconnect";
+export type LocalKeyType =
+  | "nonce"
+  | "walletconnect"
+  | "loginMethod"
+  | "address";
 type ExpiresType = number | false;
 
 export const setItem = ({
