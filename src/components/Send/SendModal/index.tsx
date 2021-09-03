@@ -29,6 +29,19 @@ const SendModal = ({
   showStatus,
 }: SendModalType) => {
   const { walletConnectLogin } = useContext();
+  const title = () => {
+    switch (providerType) {
+      case "extension":
+        return "Confirm on Wallet Extension";
+      case "ledger":
+        return "Confirm on Ledger";
+      case "walletconnect":
+        return "Confirm on Maiar";
+
+      default:
+        return "";
+    }
+  };
   return (
     <Modal
       show={show}
@@ -52,9 +65,7 @@ const SendModal = ({
               iconClass="text-white"
               iconBgClass={error ? "bg-danger" : "bg-warning"}
               iconSize="3x"
-              title={
-                walletConnectLogin ? "Confirm on Maiar" : "Confirm on Ledger"
-              }
+              title={title()}
               description={
                 <React.Fragment>
                   {transaction && (
