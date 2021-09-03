@@ -3,9 +3,8 @@ import { Modal } from "react-bootstrap";
 import { Transaction, TransactionHash } from "@elrondnetwork/erdjs";
 import { faHourglass, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PageState from "components/PageState";
-import getProviderType, { ProviderType } from "helpers/getProviderType";
+import { ProviderType } from "helpers/getProviderType";
 import TransactionStatus from "./TransactionStatus";
-import { useContext } from "context";
 
 export interface SendModalType {
   show: boolean;
@@ -28,20 +27,10 @@ const SendModal = ({
   callbackRoute,
   showStatus,
 }: SendModalType) => {
-  const { walletConnectLogin } = useContext();
-  const title = () => {
-    switch (providerType) {
-      case "extension":
-        return "Confirm on Wallet Extension";
-      case "ledger":
-        return "Confirm on Ledger";
-      case "walletconnect":
-        return "Confirm on Maiar";
+  let title = "Confirm on Maiar Extension";
+  title = providerType === "ledger" ? "Confirm on Ledger" : title;
+  title = providerType === "walletconnect" ? "Confirm on Maiar" : title;
 
-      default:
-        return "";
-    }
-  };
   return (
     <Modal
       show={show}
@@ -65,7 +54,7 @@ const SendModal = ({
               iconClass="text-white"
               iconBgClass={error ? "bg-danger" : "bg-warning"}
               iconSize="3x"
-              title={title()}
+              title={title}
               description={
                 <React.Fragment>
                   {transaction && (
