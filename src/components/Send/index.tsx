@@ -145,15 +145,19 @@ export default function Send() {
           break;
 
         case "extension":
+          setShowSendModal(true);
+          setNewTransaction(transaction);
           dapp.proxy
             .getAccount(new Address(address))
             .then((account) => {
               transaction.setNonce(getLatestNonce(account));
               provider
-                .sendTransaction(transaction.toPlainObject(), {
-                  callbackUrl: encodeURIComponent(
-                    `${window.location.origin}${callbackRoute}`
-                  ),
+                .sendTransaction(transaction)
+                .then((transaction) => {
+                  refreshAccount();
+                  setTxHash(transaction.getHash());
+                  setNewCallbackRoute(callbackRoute);
+                  setShowStatus(true);
                 })
                 .catch((e) => {
                   showError(e);
