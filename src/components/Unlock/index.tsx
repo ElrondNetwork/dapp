@@ -12,9 +12,9 @@ const Unlock = ({
   title = "Unlock",
   lead = "Please select your login method:",
   webWalletButtonLabel = "Web Wallet",
-  walletConnectButtonLabel = "Maiar Login",
+  walletConnectButtonLabel = "Maiar App",
   ledgerButtonLabel = "Ledger",
-  extensionButtonLabel = "Extension",
+  extensionButtonLabel = "Maiar Extension",
   ledgerRoute,
   walletConnectRoute,
 }: {
@@ -62,17 +62,6 @@ const Unlock = ({
               <div>
                 <Link
                   className="btn btn-primary px-sm-4 m-1 mx-sm-3"
-                  data-testid="ledgerLink"
-                  to={ledgerRoute}
-                >
-                  {ledgerButtonLabel}
-                </Link>
-                <WalletLogin
-                  callbackRoute={callbackRoute}
-                  webWalletButtonLabel={webWalletButtonLabel}
-                />
-                <Link
-                  className="btn btn-primary px-sm-4 m-1 mx-sm-3"
                   to={walletConnectRoute}
                   data-testid="walletConnectLink"
                 >
@@ -81,6 +70,17 @@ const Unlock = ({
                 <ExtensionLogin
                   callbackRoute={callbackRoute}
                   extensionButtonLabel={extensionButtonLabel}
+                />
+                <Link
+                  className="btn btn-primary px-sm-4 m-1 mx-sm-3"
+                  data-testid="ledgerLink"
+                  to={ledgerRoute}
+                >
+                  {ledgerButtonLabel}
+                </Link>
+                <WalletLogin
+                  callbackRoute={callbackRoute}
+                  webWalletButtonLabel={webWalletButtonLabel}
                 />
               </div>
             </div>

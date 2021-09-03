@@ -11,7 +11,7 @@ import { useGetAddress } from "helpers/accountMethods";
 import { newWalletProvider } from "helpers/provider";
 
 export default function useSetProvider() {
-  const { network } = useContext();
+  const { network, dapp } = useContext();
   const dispatch = useDispatch();
   const { getItem } = storage.session;
   const getAddress = useGetAddress();
@@ -31,29 +31,18 @@ export default function useSetProvider() {
     switch (true) {
       case Boolean(getItem("loginMethod") === "ledger"):
       case Boolean(getItem("ledgerLogin")): {
-        const provider = new HWProvider(
-          new ProxyProvider(`${network.gatewayAddress}`, { timeout: 4000 })
-        );
-        provider
+        const hwWalletP = new HWProvider(dapp.proxy);
+        hwWalletP
           .init()
           .then((success: any) => {
-            provider
-              .login({ addressIndex: getItem("ledgerLogin").index })
-              .then(() => {
-                if (success) {
-                  dispatch({ type: "setProvider", provider });
-                } else {
-                  console.error(
-                    "Could not initialise ledger app, make sure Elrond app is open"
-                  );
-                }
-              })
-              .catch((err) => {
-                console.error("Unable to login to HWProvider", err);
-              });
+            if (!success) {
+              console.warn("Could not initialise ledger app");
+              return;
+            }
+            dispatch({ type: "setProvider", provider: hwWalletP });
           })
           .catch((err) => {
-            console.error("error", err);
+            console.error("Could not initialise ledger app", err);
           });
         break;
       }

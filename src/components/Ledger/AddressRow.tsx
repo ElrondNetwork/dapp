@@ -8,6 +8,12 @@ interface AddressRowType {
   account: string;
 }
 
+const trimHash = (hash: string, keep = 10) => {
+  const start = hash.substring(0, keep);
+  const end = hash.substring(hash.length - keep);
+  return `${start}...${end}`;
+};
+
 const AddressRow = ({
   account,
   index,
@@ -46,7 +52,7 @@ const AddressRow = ({
             className="form-check-label text-nowrap trim-size-xl cursor-pointer m-0"
           >
             <div className="d-flex align-items-center text-nowrap trim">
-              <span className="text-truncate">{account}</span>
+              <span>{trimHash(account)}</span>
             </div>
           </label>
         </div>
