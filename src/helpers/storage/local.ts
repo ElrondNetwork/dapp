@@ -1,10 +1,5 @@
 import moment from "moment";
 
-export type LocalKeyType =
-  | "nonce"
-  | "walletconnect"
-  | "loginMethod"
-  | "address";
 type ExpiresType = number | false;
 
 export const setItem = ({
@@ -12,7 +7,7 @@ export const setItem = ({
   data,
   expires,
 }: {
-  key: LocalKeyType;
+  key: "nonce" | "walletconnect" | "loginMethod" | "address";
   data: any;
   expires: ExpiresType;
 }) => {
@@ -25,7 +20,9 @@ export const setItem = ({
   );
 };
 
-export const getItem = (key: LocalKeyType): any => {
+export const getItem = (
+  key: "nonce" | "walletconnect" | "loginMethod" | "address"
+): any => {
   const item = localStorage.getItem(String(key));
   if (!item) {
     return null;
@@ -52,7 +49,8 @@ export const getItem = (key: LocalKeyType): any => {
   return deserializedItem.data;
 };
 
-export const removeItem = (key: LocalKeyType) =>
-  localStorage.removeItem(String(key));
+export const removeItem = (
+  key: "nonce" | "walletconnect" | "loginMethod" | "address"
+) => localStorage.removeItem(String(key));
 
 export const successDescription = "successDescription";
