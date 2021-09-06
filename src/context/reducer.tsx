@@ -30,20 +30,21 @@ export type ActionType =
 
 export function reducer(state: StateType, action: ActionType): StateType {
   const in1hour = moment().add(1, "hours").unix();
+  const in1day = moment().add(1, "day").unix();
   switch (action.type) {
     case "login": {
       storage.local.removeItem("nonce");
       const { address, loginMethod } = action;
       let loggedIn = address || address !== "" ? true : false;
-      storage.session.setItem({
+      storage.local.setItem({
         key: "loginMethod",
         data: loginMethod,
-        expires: in1hour,
+        expires: in1day,
       });
-      storage.session.setItem({
+      storage.local.setItem({
         key: "address",
         data: address,
-        expires: in1hour,
+        expires: in1day,
       });
       return {
         ...state,
@@ -125,6 +126,8 @@ export function reducer(state: StateType, action: ActionType): StateType {
     case "logout": {
       storage.session.clear();
       storage.local.removeItem("nonce");
+      storage.local.removeItem("address");
+      storage.local.removeItem("loginMethod");
       const { network, walletConnectBridge, walletConnectDeepLink } = state;
       const initialState = createInitialState({
         network,

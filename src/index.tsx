@@ -19,6 +19,7 @@ import {
   RouteType as RouteInterface,
   NetworkType as NetworkInterface,
 } from "./helpers/types";
+import { getItem } from "helpers/storage/local";
 
 export type NetworkType = NetworkInterface;
 export type RouteType = RouteInterface;
@@ -41,6 +42,8 @@ const Authenticate = ({
 };
 
 const Pages = { Unlock, Ledger, WalletConnect };
+
+export const localstorage = { getItem };
 
 export {
   Authenticate,

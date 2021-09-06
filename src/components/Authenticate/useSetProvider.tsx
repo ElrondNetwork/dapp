@@ -28,8 +28,9 @@ export default function useSetProvider() {
   });
 
   React.useEffect(() => {
+    const loginMethod = storage.local.getItem("loginMethod");
     switch (true) {
-      case Boolean(getItem("loginMethod") === "ledger"):
+      case Boolean(loginMethod === "ledger"):
       case Boolean(getItem("ledgerLogin")): {
         const hwWalletP = new HWProvider(dapp.proxy);
         hwWalletP
@@ -47,19 +48,19 @@ export default function useSetProvider() {
         break;
       }
 
-      case Boolean(getItem("loginMethod") === "walletconnect"):
+      case Boolean(loginMethod === "walletconnect"):
       case Boolean(walletConnectLogin): {
         walletConnectInit();
         break;
       }
 
-      case Boolean(getItem("loginMethod") === "wallet"): {
+      case Boolean(loginMethod === "wallet"): {
         const provider = newWalletProvider(network);
         dispatch({ type: "setProvider", provider });
         break;
       }
 
-      case Boolean(getItem("loginMethod") === "extension"):
+      case Boolean(loginMethod === "extension"):
       case Boolean(getItem("extensionLogin")): {
         getAddress()
           .then((address) => {
