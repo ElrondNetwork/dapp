@@ -1,3 +1,5 @@
+import { useContext } from "context";
+import { useGetAccount } from "helpers/accountMethods";
 import * as React from "react";
 
 interface AddressRowType {
@@ -14,6 +16,8 @@ const trimHash = (hash: string, keep = 10) => {
   return `${start}...${end}`;
 };
 
+const noBalance = "...";
+
 const AddressRow = ({
   account,
   index,
@@ -22,6 +26,9 @@ const AddressRow = ({
   setSelectedIndex,
 }: AddressRowType) => {
   const ref = React.useRef(null);
+  const { network } = useContext();
+  const getAccount = useGetAccount();
+  const [balance, setBalance] = React.useState(noBalance);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -33,6 +40,22 @@ const AddressRow = ({
       setSelectedIndex(undefined);
     }
   };
+
+  const fetchBalance = () => {
+    getAccount(account)
+      .then(({ balance }) => {
+        if (ref.current !== null) {
+          const parsedBalance = parseFloat(balance.toDenominated());
+          const formatted = parsedBalance.toLocaleString("en");
+          setBalance(`${formatted} ${network.egldLabel}`);
+        }
+      })
+      .catch((e) => {
+        console.error("Failed getting account ", e);
+      });
+  };
+
+  React.useEffect(fetchBalance, []);
 
   return (
     <tr ref={ref}>
@@ -57,6 +80,7 @@ const AddressRow = ({
           </label>
         </div>
       </td>
+      <td className="text-left">{balance}</td>
       <td className="text-left">{index}</td>
     </tr>
   );

@@ -166,6 +166,7 @@ const AddressTable = ({
                     <thead className="py-2 text-semibold border-bottom">
                       <tr>
                         <th className="text-left border-0">Address</th>
+                        <th className="text-left border-0">Balance</th>
                         <th className="text-left border-0">#</th>
                       </tr>
                     </thead>
