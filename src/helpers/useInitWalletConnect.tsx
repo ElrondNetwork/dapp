@@ -3,6 +3,7 @@ import { WalletConnectProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
+import useLogout from "helpers/useLogout";
 
 interface InitWalletConnectType {
   callbackRoute: string;
@@ -15,6 +16,7 @@ export default function useInitWalletConnect({
 }: InitWalletConnectType) {
   const heartbeatInterval = 15000;
   const { dapp, walletConnectBridge } = useContext();
+  const logout = useLogout();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -116,7 +118,7 @@ export default function useInitWalletConnect({
     if (!!storage.local.getItem("loginMethod")) {
       history.push(logoutRoute);
     }
-    dispatch({ type: "logout" });
+    logout({ callbackUrl: `${window.location.origin}${logoutRoute}` });
   };
 
   const walletConnectInit = () => {
