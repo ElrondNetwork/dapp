@@ -3,7 +3,7 @@ import { WalletConnectProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
-import { useLogout } from "index";
+import useLogout from "helpers/useLogout";
 
 interface InitWalletConnectType {
   callbackRoute: string;
