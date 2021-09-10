@@ -60,7 +60,6 @@ export default function useInitWalletConnect({
       "walletConnector" in provider &&
       provider.walletConnector.connected
     ) {
-      console.log("send hb");
       provider
         .sendCustomMessage({
           method: "heartbeat",
@@ -111,10 +110,9 @@ export default function useInitWalletConnect({
         dispatch({ type: "login", address, loginMethod: "walletconnect" });
 
         provider.walletConnector.on("heartbeat", () => {
-          console.log("receive hb");
           clearInterval(heartbeatDisconnectInterval);
           heartbeatDisconnectInterval = setInterval(() => {
-            console.error("Maiar Wallet Connection Lost");
+            console.log("Maiar Wallet Connection Lost");
             handleOnLogout();
             clearInterval(heartbeatDisconnectInterval);
           }, 60000);
