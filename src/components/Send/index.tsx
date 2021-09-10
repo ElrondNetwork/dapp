@@ -135,8 +135,8 @@ export default function Send() {
                   setNewCallbackRoute(callbackRoute);
                   setShowStatus(true);
                 })
-                .catch((e) => {
-                  showError(e.message);
+                .catch(() => {
+                  handleClose();
                 });
             })
             .catch((e) => {
