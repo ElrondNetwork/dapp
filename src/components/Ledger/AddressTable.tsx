@@ -121,9 +121,11 @@ const AddressTable = ({
     history.push(callbackRoute);
   };
 
-  const loginFaield = (err: any) => {
+  const loginFaield = (err: any, customMessage?: string) => {
     if (err.statusCode in ledgerErrorCodes) {
-      setError((ledgerErrorCodes as any)[err.statusCode].message);
+      setError(
+        (ledgerErrorCodes as any)[err.statusCode].message + customMessage
+      );
       dispatch({
         type: "setLedgerAccount",
         ledgerAccount: undefined,
@@ -169,7 +171,7 @@ const AddressTable = ({
                 });
               })
               .catch((err) => {
-                loginFaield(err);
+                loginFaield(err, ". Update Elrond App to continue.");
               });
           } else {
             hwWalletProvider
