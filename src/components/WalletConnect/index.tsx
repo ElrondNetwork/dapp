@@ -1,5 +1,6 @@
 import React from "react";
 import QRCode from "qrcode";
+import { WalletConnectProvider } from "@elrondnetwork/erdjs";
 // @ts-ignore
 import platform from "platform";
 import { useContext, useDispatch } from "context";
@@ -36,21 +37,16 @@ const WalletConnect = ({
   React.useEffect(() => {
     if (walletConnect) {
       storage.local.removeItem("walletconnect");
-      walletConnect.login().then((walletConectUri) => {
-        if (token) {
-          setWcUri(`${walletConectUri}&token=${token}`);
-          dispatch({
-            type: "setTokenLogin",
-            tokenLogin: {
-              loginToken: token,
-            },
-          });
-        } else {
-          setWcUri(walletConectUri);
-        }
-      });
+      walletConnectLogin(walletConnect);
+      if ("walletConnector" in walletConnect && walletConnect.walletConnector) {
+        walletConnect.walletConnector.on("disconnect", () => {
+          if (ref.current !== null) {
+            walletConnectLogin(walletConnect);
+          }
+        });
+      }
     }
-  }, [walletConnect, token]);
+  }, [walletConnect, token, ref]);
 
   const isMobile =
     platform.os.family === "iOS" || platform.os.family === "Android";
@@ -74,6 +70,22 @@ const WalletConnect = ({
         setQrSvg(svg);
       }
     })();
+  };
+
+  const walletConnectLogin = (walletConnect: WalletConnectProvider) => {
+    walletConnect.login().then((walletConectUri) => {
+      if (token) {
+        setWcUri(`${walletConectUri}&token=${token}`);
+        dispatch({
+          type: "setTokenLogin",
+          tokenLogin: {
+            loginToken: token,
+          },
+        });
+      } else {
+        setWcUri(walletConectUri);
+      }
+    });
   };
 
   React.useEffect(buildQrCode, [wcUri]);
