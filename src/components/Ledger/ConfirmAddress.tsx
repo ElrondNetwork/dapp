@@ -10,11 +10,13 @@ const ConfirmAddress = ({ token }: { token?: string }) => {
         <div className="card-body p-4 mx-lg-4">
           <h4 className="mb-4">Confirm Ledger Address</h4>
           <p>For security, please confirm that your address: </p>
-          <p className="lead">{ledgerAccount ? ledgerAccount.address : ""}</p>
+          <p className="lead border rounded p-2">
+            {ledgerAccount ? ledgerAccount.address : ""}
+          </p>
           {token && (
             <React.Fragment>
               <p>and Auth Token</p>
-              <p className="lead">{`${token}{}`}</p>
+              <p className="lead border rounded p-2">{`${token}{}`}</p>
             </React.Fragment>
           )}
           <p className="m-0">
