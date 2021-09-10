@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useContext } from "context";
 
-const ConfirmAddress = () => {
+const ConfirmAddress = ({ token }: { token?: string }) => {
   const { ledgerAccount } = useContext();
 
   return (
@@ -11,9 +11,18 @@ const ConfirmAddress = () => {
           <h4 className="mb-4">Confirm Ledger Address</h4>
           <p>For security, please confirm that your address: </p>
           <p className="lead">{ledgerAccount ? ledgerAccount.address : ""}</p>
+          {token && (
+            <React.Fragment>
+              <p>and Auth Token</p>
+              <p className="lead">{`${token}{}`}</p>
+            </React.Fragment>
+          )}
           <p className="m-0">
-            is the one shown on your Ledger device screen now.{" "}
+            {token
+              ? "are the one shown on your Ledger device screen now."
+              : "is the one shown on your Ledger device screen now."}
           </p>
+
           <p>Select Approve on your device to confirm.</p>
           <p>
             Or, if it does not match, close this page and{" "}
