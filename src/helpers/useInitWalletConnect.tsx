@@ -115,7 +115,7 @@ export default function useInitWalletConnect({
             console.log("Maiar Wallet Connection Lost");
             handleOnLogout();
             clearInterval(heartbeatDisconnectInterval);
-          }, 60000);
+          }, 150000);
         });
       })
       .catch((e: any) => {
