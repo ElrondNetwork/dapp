@@ -13,7 +13,13 @@ const failedInitializeErrorText =
   "Could not initialise ledger app, make sure Elrond app is open";
 const ledgerWaitingText = "Waiting for device";
 
-const Ledger = ({ callbackRoute }: { callbackRoute: string }) => {
+const Ledger = ({
+  callbackRoute,
+  token,
+}: {
+  callbackRoute: string;
+  token?: string;
+}) => {
   const { dapp } = useContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -67,7 +73,7 @@ const Ledger = ({ callbackRoute }: { callbackRoute: string }) => {
         />
       );
     case ledgerAccount !== undefined && !error:
-      return <ConfirmAddress />;
+      return <ConfirmAddress token={token} />;
     case showAddressTable && !error:
       return (
         <AddressTable
@@ -76,6 +82,7 @@ const Ledger = ({ callbackRoute }: { callbackRoute: string }) => {
           callbackRoute={callbackRoute}
           erdAppErrorText={ledgerAppErrorText}
           failedInitializeErrorText={failedInitializeErrorText}
+          token={token}
         />
       );
     case error !== "":
