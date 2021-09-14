@@ -31,6 +31,7 @@ export default function useInitWalletConnect({
   const provider: any = dapp.provider;
 
   React.useEffect(() => {
+    heartbeat();
     const interval = setInterval(() => {
       heartbeat();
     }, heartbeatInterval);
