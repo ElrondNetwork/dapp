@@ -1,12 +1,18 @@
 import * as React from "react";
 import { useContext } from "context";
 
-const ConfirmAddress = ({ token }: { token?: string }) => {
+const ConfirmAddress = ({
+  token,
+  noBorder,
+}: {
+  token?: string;
+  noBorder?: boolean;
+}) => {
   const { ledgerAccount } = useContext();
 
   return (
     <div className="m-auto">
-      <div className="card my-4 text-center">
+      <div className={`card my-4 text-center ${noBorder ? "border-0" : ""}`}>
         <div className="card-body p-4 mx-lg-4">
           <h4 className="mb-4">Confirm Ledger Address</h4>
           <p>For security, please confirm that your address: </p>
