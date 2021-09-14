@@ -41,7 +41,7 @@ export default function useSetProvider() {
         case Boolean(loginMethod === "ledger"):
         case Boolean(getItem("ledgerLogin")): {
           const hwWalletP = new HWProvider(dapp.proxy);
-          setShowLedgerProviderModal(true);
+
           hwWalletP
             .init()
             .then((success: any) => {
@@ -50,19 +50,24 @@ export default function useSetProvider() {
                 console.warn("Could not initialise ledger app");
                 return;
               }
-              hwWalletP
-                .login({ addressIndex: getItem("ledgerLogin").index || 0 })
-                .then(() => {
-                  dispatch({ type: "setProvider", provider: hwWalletP });
-                  setShowLedgerProviderModal(false);
-                })
-                .catch((err) => {
-                  setShowLedgerProviderModal(false);
-                  dispatch({ type: "setProvider", provider: hwWalletP });
-                  logout({ callbackUrl: window.location.href });
-
-                  console.error("Could not log into ledger provider", err);
-                });
+              const addressIndex = getItem("ledgerLogin").index || 0;
+              if (addressIndex !== 0) {
+                setShowLedgerProviderModal(true);
+                hwWalletP
+                  .login({ addressIndex: getItem("ledgerLogin").index || 0 })
+                  .then(() => {
+                    dispatch({ type: "setProvider", provider: hwWalletP });
+                    setShowLedgerProviderModal(false);
+                  })
+                  .catch((err) => {
+                    setShowLedgerProviderModal(false);
+                    dispatch({ type: "setProvider", provider: hwWalletP });
+                    logout({ callbackUrl: window.location.href });
+                    console.error("Could not log into ledger provider", err);
+                  });
+              } else {
+                dispatch({ type: "setProvider", provider: hwWalletP });
+              }
             })
             .catch((err) => {
               setShowLedgerProviderModal(false);
