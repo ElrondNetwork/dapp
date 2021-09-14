@@ -9,6 +9,7 @@ import { useContext, useDispatch } from "context";
 import useInitWalletConnect from "helpers/useInitWalletConnect";
 import { useGetAddress } from "helpers/accountMethods";
 import getProviderType, { newWalletProvider } from "helpers/provider";
+import useLogout from "helpers/useLogout";
 
 export default function useSetProvider() {
   const { network, dapp } = useContext();
@@ -18,6 +19,7 @@ export default function useSetProvider() {
   const [showLedgerProviderModal, setShowLedgerProviderModal] = React.useState(
     false
   );
+  const logout = useLogout();
 
   const walletConnectLogin = getItem("walletConnectLogin");
 
@@ -56,6 +58,9 @@ export default function useSetProvider() {
                 })
                 .catch((err) => {
                   setShowLedgerProviderModal(false);
+                  dispatch({ type: "setProvider", provider: hwWalletP });
+                  logout({ callbackUrl: window.location.href });
+
                   console.error("Could not log into ledger provider", err);
                 });
             })

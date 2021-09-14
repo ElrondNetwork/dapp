@@ -151,7 +151,7 @@ const Authenticate = ({
   return (
     <React.Fragment>
       {children}
-      <LedgerProviderModal show={showLedgerProviderModal} />
+      {showLedgerProviderModal && <LedgerProviderModal />}
     </React.Fragment>
   );
 };
