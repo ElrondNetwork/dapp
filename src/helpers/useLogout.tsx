@@ -21,6 +21,8 @@ export default function useLogout() {
         .catch((e) => {
           console.error("Unable to perform logout", e);
         });
+    } else {
+      dispatch({ type: "logout" });
     }
   };
 }
