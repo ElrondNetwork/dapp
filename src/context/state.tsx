@@ -113,8 +113,8 @@ export const createInitialState = ({
     chainId: new ChainID("-1"),
     dapp: {
       provider: emptyProvider, // will be checked in useSetProvider
-      proxy: new ProxyProvider(gatewayAddress, { timeout: 4000 }),
-      apiProvider: new ApiProvider(apiAddress, { timeout: 4000 }),
+      proxy: new ProxyProvider(gatewayAddress, { timeout: 10000 }), // 4000
+      apiProvider: new ApiProvider(apiAddress, { timeout: 10000 }), // 4000
     },
     error: "",
     loggedIn: !!storage.local.getItem("loginMethod"),
