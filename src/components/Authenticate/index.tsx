@@ -13,6 +13,7 @@ import {
 } from "helpers/accountMethods";
 import useSetProvider from "./useSetProvider";
 import { newWalletProvider } from "helpers/provider";
+import LedgerProviderModal from "./LedgerProviderModal";
 
 const Authenticate = ({
   children,
@@ -40,7 +41,7 @@ const Authenticate = ({
   const getAccount = useGetAccount();
   const getAddress = useGetAddress();
   const getNetworkConfig = useGetNetworkConfig();
-  useSetProvider();
+  const showLedgerProviderModal = useSetProvider();
 
   const { getItem, removeItem } = storage.session;
 
@@ -147,7 +148,12 @@ const Authenticate = ({
     return <Loader />;
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return (
+    <React.Fragment>
+      {children}
+      <LedgerProviderModal show={showLedgerProviderModal} />
+    </React.Fragment>
+  );
 };
 
 export default Authenticate;
