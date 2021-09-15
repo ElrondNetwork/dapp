@@ -51,25 +51,27 @@ const Authenticate = ({
       const provider = newWalletProvider(network);
       getAddress()
         .then((address) => {
-          removeItem("walletLogin");
-          dispatch({ type: "setProvider", provider });
-          dispatch({ type: "login", address, loginMethod: "wallet" });
-          getAccount(address)
-            .then((account) => {
-              dispatch({
-                type: "setAccount",
-                account: {
-                  balance: account.balance.toString(),
-                  address,
-                  nonce: getLatestNonce(account),
-                },
+          if (address) {
+            removeItem("walletLogin");
+            dispatch({ type: "setProvider", provider });
+            dispatch({ type: "login", address, loginMethod: "wallet" });
+            getAccount(address)
+              .then((account) => {
+                dispatch({
+                  type: "setAccount",
+                  account: {
+                    balance: account.balance.toString(),
+                    address,
+                    nonce: getLatestNonce(account),
+                  },
+                });
+                setLoading(false);
+              })
+              .catch((e) => {
+                console.error("Failed getting account ", e);
+                setLoading(false);
               });
-              setLoading(false);
-            })
-            .catch((e) => {
-              console.error("Failed getting account ", e);
-              setLoading(false);
-            });
+          }
         })
         .catch((e) => {
           console.error("Failed getting address ", e);
