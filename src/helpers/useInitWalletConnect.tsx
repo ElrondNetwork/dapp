@@ -10,6 +10,11 @@ interface InitWalletConnectType {
   logoutRoute: string;
 }
 
+const ua = window.navigator.userAgent;
+const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+const webkit = !!ua.match(/WebKit/i);
+const iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
+
 export default function useInitWalletConnect({
   callbackRoute,
   logoutRoute,
@@ -59,7 +64,8 @@ export default function useInitWalletConnect({
     if (
       provider &&
       "walletConnector" in provider &&
-      provider.walletConnector.connected
+      provider.walletConnector.connected &&
+      !iOSSafari
     ) {
       provider
         .sendCustomMessage({
