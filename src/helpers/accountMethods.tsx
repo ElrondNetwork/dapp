@@ -107,6 +107,7 @@ export function useRefreshAccount() {
               },
             });
             dispatch({ type: "setAccountLoading", accountLoading: false });
+            dispatch({ type: "setAccountError", accountError: undefined });
           })
           .catch((e) => {
             dispatch({ type: "setAccountLoading", accountLoading: false });
