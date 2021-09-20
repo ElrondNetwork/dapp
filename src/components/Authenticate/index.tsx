@@ -109,6 +109,7 @@ const Authenticate = ({
 
   const fetchAccount = () => {
     if (address && loggedIn) {
+      dispatch({ type: "setAccountLoading", accountLoading: true });
       dapp.proxy
         .getAccount(new Address(address))
         .then((account) => {
@@ -120,8 +121,11 @@ const Authenticate = ({
               nonce: getLatestNonce(account),
             },
           });
+          dispatch({ type: "setAccountLoading", accountLoading: false });
         })
         .catch((e) => {
+          dispatch({ type: "setAccountError", accountError: e });
+          dispatch({ type: "setAccountLoading", accountLoading: false });
           console.error("Failed getting account ", e);
           setLoading(false);
         });
