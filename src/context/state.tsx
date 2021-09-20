@@ -64,6 +64,8 @@ export interface StateType {
   address: string;
   shard?: number;
   account: AccountType;
+  accountLoading: boolean;
+  accountError?: Error;
   explorerAddress: string;
   egldLabel: string;
   ledgerAccount?: {
@@ -123,6 +125,8 @@ export const createInitialState = ({
     walletConnectLogin: getItem("walletConnectLogin"),
     address: storage.local.getItem("address"),
     account: emptyAccount,
+    accountLoading: false,
+    accountError: undefined,
     shard: undefined,
     explorerAddress: sessionNetwork.explorerAddress || defaultExplorerAddress,
     egldLabel: network ? network.egldLabel : defaultNetwork.egldLabel,

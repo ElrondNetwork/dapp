@@ -93,6 +93,7 @@ export function useRefreshAccount() {
   const dispatch = useDispatch();
 
   const setAccount = () => {
+    dispatch({ type: "setAccountLoading", accountLoading: true });
     getAddress()
       .then((address) => {
         getAccount(address)
@@ -105,12 +106,17 @@ export function useRefreshAccount() {
                 nonce: getLatestNonce(account),
               },
             });
+            dispatch({ type: "setAccountLoading", accountLoading: false });
           })
           .catch((e) => {
+            dispatch({ type: "setAccountLoading", accountLoading: false });
+            dispatch({ type: "setAccountError", accountError: e });
             console.error("Failed getting account ", e);
           });
       })
       .catch((e) => {
+        dispatch({ type: "setAccountLoading", accountLoading: false });
+        dispatch({ type: "setAccountError", accountError: e });
         console.error("Failed getting address ", e);
       });
   };

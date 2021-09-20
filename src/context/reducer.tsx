@@ -15,6 +15,8 @@ export type ActionType =
   | { type: "logout" }
   | { type: "setProvider"; provider: StateType["dapp"]["provider"] }
   | { type: "setAccount"; account: StateType["account"] }
+  | { type: "setAccountLoading"; accountLoading: StateType["accountLoading"] }
+  | { type: "setAccountError"; accountError: StateType["accountError"] }
   | { type: "setAccountNonce"; nonce: number }
   | { type: "setAccountShard"; shard: StateType["shard"] }
   | { type: "setChainId"; chainId: StateType["chainId"] }
@@ -74,6 +76,14 @@ export function reducer(state: StateType, action: ActionType): StateType {
 
     case "setAccount": {
       return { ...state, account: action.account };
+    }
+
+    case "setAccountLoading": {
+      return { ...state, accountLoading: action.accountLoading };
+    }
+
+    case "setAccountError": {
+      return { ...state, accountError: action.accountError };
     }
 
     case "setAccountNonce": {
