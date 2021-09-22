@@ -58,10 +58,10 @@ export function reducer(state: StateType, action: ActionType): StateType {
     case "ledgerLogin": {
       storage.local.removeItem("nonce");
       if (action.ledgerLogin) {
-        storage.session.setItem({
+        storage.local.setItem({
           key: "ledgerLogin",
           data: action.ledgerLogin,
-          expires: in1hour,
+          expires: in1day,
         });
       }
       return { ...state, ledgerLogin: action.ledgerLogin };

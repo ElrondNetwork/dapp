@@ -54,7 +54,6 @@ export interface StateType {
   loginMethod: ProviderType;
   ledgerLogin?: {
     index: number;
-    loginType: string;
   };
   walletConnectLogin?: {
     loginType: string;
@@ -121,7 +120,7 @@ export const createInitialState = ({
     error: "",
     loggedIn: !!storage.local.getItem("loginMethod"),
     loginMethod: storage.local.getItem("loginMethod"),
-    ledgerLogin: getItem("ledgerLogin"),
+    ledgerLogin: storage.local.getItem("ledgerLogin"),
     walletConnectLogin: getItem("walletConnectLogin"),
     address: storage.local.getItem("address"),
     account: emptyAccount,
@@ -131,9 +130,9 @@ export const createInitialState = ({
     explorerAddress: sessionNetwork.explorerAddress || defaultExplorerAddress,
     egldLabel: network ? network.egldLabel : defaultNetwork.egldLabel,
     ledgerAccount:
-      getItem("ledgerAccountIndex") && storage.local.getItem("address")
+      storage.local.getItem("ledgerLogin") && storage.local.getItem("address")
         ? {
-            index: getItem("ledgerAccountIndex"),
+            index: storage.local.getItem("ledgerLogin").index,
             address: storage.local.getItem("address"),
           }
         : undefined,

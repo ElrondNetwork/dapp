@@ -105,7 +105,7 @@ const AddressTable = ({
 
     dispatch({
       type: "ledgerLogin",
-      ledgerLogin: { index, loginType: "ledger" },
+      ledgerLogin: { index },
     });
 
     if (signature) {

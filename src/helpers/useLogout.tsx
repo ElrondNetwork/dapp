@@ -12,6 +12,7 @@ export default function useLogout() {
     storage.local.removeItem("nonce");
     storage.local.removeItem("address");
     storage.local.removeItem("loginMethod");
+    storage.local.removeItem("ledgerLogin");
     if (Boolean(providerType)) {
       dapp.provider
         .logout({ callbackUrl })

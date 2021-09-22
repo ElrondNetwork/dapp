@@ -2,9 +2,7 @@ import moment from "moment";
 
 export type SessionKeyType =
   | "walletLogin"
-  | "ledgerLogin"
   | "walletConnectLogin"
-  | "ledgerAccountIndex"
   | "extensionLogin"
   | "tokenLogin";
 type ExpiresType = number | false;

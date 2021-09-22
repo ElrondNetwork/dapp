@@ -12,7 +12,7 @@ import getProviderType, { newWalletProvider } from "helpers/provider";
 import useLogout from "helpers/useLogout";
 
 export default function useSetProvider() {
-  const { network, dapp } = useContext();
+  const { network, dapp, address } = useContext();
   const dispatch = useDispatch();
   const { getItem } = storage.session;
   const getAddress = useGetAddress();
@@ -34,45 +34,57 @@ export default function useSetProvider() {
 
   React.useEffect(() => {
     const loginMethod = storage.local.getItem("loginMethod");
+    const ledgerLogin = storage.local.getItem("ledgerLogin");
     const providerType = getProviderType(dapp.provider);
 
     if (!providerType) {
       switch (true) {
         case Boolean(loginMethod === "ledger"):
-        case Boolean(getItem("ledgerLogin")): {
+        case Boolean(ledgerLogin): {
           const hwWalletP = new HWProvider(dapp.proxy);
 
-          hwWalletP
-            .init()
-            .then((success: any) => {
-              if (!success) {
-                setShowLedgerProviderModal(false);
-                console.warn("Could not initialise ledger app");
-                return;
-              }
-              const addressIndex = getItem("ledgerLogin").index || 0;
-              if (addressIndex !== 0) {
-                setShowLedgerProviderModal(true);
-                hwWalletP
-                  .login({ addressIndex: getItem("ledgerLogin").index || 0 })
-                  .then(() => {
-                    dispatch({ type: "setProvider", provider: hwWalletP });
-                    setShowLedgerProviderModal(false);
-                  })
-                  .catch((err) => {
-                    setShowLedgerProviderModal(false);
-                    dispatch({ type: "setProvider", provider: hwWalletP });
-                    logout({ callbackUrl: window.location.href });
-                    console.error("Could not log into ledger provider", err);
-                  });
-              } else {
-                dispatch({ type: "setProvider", provider: hwWalletP });
-              }
-            })
-            .catch((err) => {
-              setShowLedgerProviderModal(false);
-              console.error("Could not initialise ledger app", err);
-            });
+          const onError = (message: string, err?: any) => {
+            setShowLedgerProviderModal(false);
+            dispatch({ type: "setProvider", provider: hwWalletP });
+            logout({ callbackUrl: window.location.href });
+            console.error(message, err);
+            return;
+          };
+
+          hwWalletP.init().then((success: any) => {
+            if (!success || !ledgerLogin) {
+              onError("Could not initialise ledger app");
+            }
+
+            const storageIndex = parseInt(ledgerLogin.index);
+            hwWalletP.hwApp
+              ?.getAddress(0, storageIndex)
+              .then((config) => {
+                if (config.address !== address) {
+                  setShowLedgerProviderModal(true);
+                  hwWalletP
+                    .login({ addressIndex: storageIndex })
+                    .then((resultingAddress) => {
+                      if (resultingAddress === address) {
+                        dispatch({
+                          type: "setProvider",
+                          provider: hwWalletP,
+                        });
+                        setShowLedgerProviderModal(false);
+                      }
+                    })
+                    .catch((err) => {
+                      onError("Could not log into ledger provider", err);
+                    });
+                } else {
+                  dispatch({ type: "setProvider", provider: hwWalletP });
+                }
+              })
+              .catch((err) => {
+                onError("Could not get ledger configuration", err);
+              });
+          });
+
           break;
         }
 
