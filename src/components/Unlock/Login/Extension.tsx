@@ -37,13 +37,12 @@ export const useExtensionLogin = ({
 
           dispatch({ type: "setProvider", provider });
 
-          const address = await provider.getAddress();
-          const account = provider.account;
+          const { signature, address } = provider.account;
           const url = new URL(`${window.location.origin}${callbackRoute}`);
 
           const { nextUrlParams } = buildUrlParams(url.search, {
-            address: account.address,
-            ...(account.signature ? { signature: account.signature } : {}),
+            address,
+            ...(signature ? { signature } : {}),
             ...(token ? { loginToken: token } : {}),
           });
 
