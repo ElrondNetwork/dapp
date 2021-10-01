@@ -4,6 +4,7 @@ import { ExtensionProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
+import { buildUrlParams } from "helpers/buildUrlParams";
 
 export const useExtensionLogin = ({
   callbackRoute,
@@ -38,17 +39,14 @@ export const useExtensionLogin = ({
 
           const address = await provider.getAddress();
           const account = provider.account;
+          const url = new URL(`${window.location.origin}${callbackRoute}`);
+          const routeParams = buildUrlParams(url.search, {
+            address: account.address,
+            signature: account.signature ? account.signature : "",
+            loginToken: token ? token : "",
+          });
 
-          const addressParam = `address=${account.address}`;
-          const signatureParam = `signature=${account.signature}`;
-          const loginTokenParam = `loginToken=${token}`;
-          history.push(
-            `${callbackRoute.split("?")[0]}?${
-              callbackRoute.split("?")[1]
-                ? `${callbackRoute.split("?")[1]}&`
-                : ""
-            }${addressParam}&${signatureParam}&${loginTokenParam}`
-          );
+          history.push(`${url.pathname}?${routeParams.nextUrlParams}`);
           dispatch({ type: "login", address, loginMethod: "extension" });
         } else {
           console.warn(
