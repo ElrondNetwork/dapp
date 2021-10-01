@@ -4,7 +4,7 @@ export function buildUrlParams(
     [key: string]: string;
   }
 ) {
-  const urlSearchParams: any = new URLSearchParams(search);
+  const urlSearchParams = new URLSearchParams(search);
   const params = Object.fromEntries(urlSearchParams);
   const nextUrlParams = new URLSearchParams({
     ...params,

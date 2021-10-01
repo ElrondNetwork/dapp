@@ -40,13 +40,14 @@ export const useExtensionLogin = ({
           const address = await provider.getAddress();
           const account = provider.account;
           const url = new URL(`${window.location.origin}${callbackRoute}`);
-          const routeParams = buildUrlParams(url.search, {
+
+          const { nextUrlParams } = buildUrlParams(url.search, {
             address: account.address,
-            signature: account.signature ? account.signature : "",
-            loginToken: token ? token : "",
+            ...(account.signature ? { signature: account.signature } : {}),
+            ...(token ? { loginToken: token } : {}),
           });
 
-          history.push(`${url.pathname}?${routeParams.nextUrlParams}`);
+          history.push(`${url.pathname}?${nextUrlParams}`);
           dispatch({ type: "login", address, loginMethod: "extension" });
         } else {
           console.warn(
