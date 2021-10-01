@@ -4,7 +4,7 @@ import { ExtensionProvider } from "@elrondnetwork/erdjs";
 import { useHistory } from "react-router-dom";
 import { useContext, useDispatch } from "context";
 import storage from "helpers/storage";
-import { buildUrlParams } from "helpers/buildUrlParams";
+import buildUrlParams from "helpers/buildUrlParams";
 
 export const useExtensionLogin = ({
   callbackRoute,

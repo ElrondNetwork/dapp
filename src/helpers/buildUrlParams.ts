@@ -1,4 +1,4 @@
-export function buildUrlParams(
+export default function buildUrlParams(
   search: string,
   urlParams: {
     [key: string]: string;
