@@ -42,12 +42,6 @@ export const useExtensionLogin = ({
           const addressParam = `address=${account.address}`;
           const signatureParam = `signature=${account.signature}`;
           const loginTokenParam = `loginToken=${token}`;
-          console.log(
-            "the link is:",
-            `${
-              callbackRoute.split("?")[0]
-            }?${addressParam}&${signatureParam}&${loginTokenParam}`
-          );
           history.push(
             `${callbackRoute.split("?")[0]}?${
               callbackRoute.split("?")[1]
