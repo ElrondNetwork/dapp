@@ -10,11 +10,6 @@ interface InitWalletConnectType {
   logoutRoute: string;
 }
 
-const ua = window.navigator.userAgent;
-const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-const webkit = !!ua.match(/WebKit/i);
-const iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
-
 export default function useInitWalletConnect({
   callbackRoute,
   logoutRoute,
@@ -64,19 +59,24 @@ export default function useInitWalletConnect({
     if (
       provider &&
       "walletConnector" in provider &&
-      provider.walletConnector.connected &&
-      !iOSSafari
+      provider.walletConnector.connected
     ) {
-      provider
-        .sendCustomMessage({
-          method: "heartbeat",
-          params: {},
-        })
-        .then(() => {})
-        .catch((e: any) => {
-          console.error("Connection lost", e);
-          handleOnLogout();
-        });
+      if (
+        !provider.walletConnector.peerMeta.description.match(
+          /(iPad|iPhone|iPod)/g
+        )
+      ) {
+        provider
+          .sendCustomMessage({
+            method: "heartbeat",
+            params: {},
+          })
+          .then(() => {})
+          .catch((e: any) => {
+            console.error("Connection lost", e);
+            handleOnLogout();
+          });
+      }
     }
   };
 
