@@ -7,14 +7,30 @@ export default function useLogout() {
   const dispatch = useDispatch();
   const providerType = getProviderType(dapp.provider);
 
-  return ({ callbackUrl }: { callbackUrl: string }) => {
+  return ({
+    callbackUrl,
+    callbackRoute,
+  }:
+    | {
+        callbackUrl: string;
+        callbackRoute?: never;
+      }
+    | {
+        callbackUrl?: never;
+        callbackRoute: string;
+      }) => {
     storage.session.clear();
     storage.local.removeItem("nonce");
     storage.local.removeItem("address");
     storage.local.removeItem("loginMethod");
+
+    const url = callbackRoute
+      ? `${window.location.origin}${callbackRoute}`
+      : callbackUrl;
+
     if (Boolean(providerType)) {
       dapp.provider
-        .logout({ callbackUrl })
+        .logout({ callbackUrl: url })
         .then(() => {
           dispatch({ type: "logout" });
         })
