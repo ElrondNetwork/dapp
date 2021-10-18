@@ -63,6 +63,9 @@ const Authenticate = ({
                     balance: account.balance.toString(),
                     address,
                     nonce: getLatestNonce(account),
+                    ...(account.userName !== ""
+                      ? { userName: account.userName }
+                      : {}),
                   },
                 });
                 setLoading(false);
@@ -119,6 +122,9 @@ const Authenticate = ({
               balance: account.balance.toString(),
               address,
               nonce: getLatestNonce(account),
+              ...(account.userName !== ""
+                ? { userName: account.userName }
+                : {}),
             },
           });
           dispatch({ type: "setAccountLoading", accountLoading: false });
