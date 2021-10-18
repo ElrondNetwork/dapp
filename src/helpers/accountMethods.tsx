@@ -43,10 +43,11 @@ export const useSetNonce = () => {
       data: nonce,
       expires: moment().add(1, "hours").unix(),
     });
+
     dispatch({
       type: "setAccount",
       account: {
-        balance: account.balance.toString(),
+        ...account,
         address,
         nonce: new Nonce(nonce),
       },
@@ -104,6 +105,9 @@ export function useRefreshAccount() {
                 balance: account.balance.toString(),
                 address,
                 nonce: getLatestNonce(account),
+                ...(account.userName !== ""
+                  ? { userName: account.userName }
+                  : {}),
               },
             });
             dispatch({ type: "setAccountLoading", accountLoading: false });
