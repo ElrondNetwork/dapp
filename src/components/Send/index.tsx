@@ -41,9 +41,11 @@ export default function Send() {
     setShowSendModal(false);
   };
 
-  const send = (e: CustomEvent) => {
-    if (e.detail && "transaction" in e.detail && "callbackRoute" in e.detail) {
-      const { transaction, callbackRoute } = e.detail;
+  const send = (e: Event) => {
+    const { detail } = e as CustomEvent;
+
+    if (detail && "transaction" in detail && "callbackRoute" in detail) {
+      const { transaction, callbackRoute } = detail;
       sendTransaction({ transaction, callbackRoute });
     }
   };
