@@ -112,14 +112,18 @@ const WalletConnect = ({
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
-                <Lightning
-                  className="mr-2"
-                  style={{
-                    width: "0.7rem",
-                    height: "0.7rem",
-                  }}
-                />
-                {title}
+                <div className="d-flex align-items-center">
+                  <span
+                    className="mr-2 d-flex"
+                    style={{
+                      width: "1rem",
+                      height: "1rem",
+                    }}
+                  >
+                    <Lightning />
+                  </span>
+                  {title}
+                </div>
               </a>
             </React.Fragment>
           ) : (
