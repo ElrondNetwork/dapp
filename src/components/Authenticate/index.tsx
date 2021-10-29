@@ -52,9 +52,9 @@ const Authenticate = ({
       getAddress()
         .then((address) => {
           if (address) {
+            dispatch({ type: "login", address, loginMethod: "wallet" });
             removeItem("walletLogin");
             dispatch({ type: "setProvider", provider });
-            dispatch({ type: "login", address, loginMethod: "wallet" });
             getAccount(address)
               .then((account) => {
                 dispatch({
@@ -72,16 +72,20 @@ const Authenticate = ({
               })
               .catch((e) => {
                 console.error("Failed getting account ", e);
+                removeItem("walletLogin");
                 setLoading(false);
               });
+          } else {
+            removeItem("walletLogin");
           }
         })
         .catch((e) => {
           console.error("Failed getting address ", e);
+          removeItem("walletLogin");
           setLoading(false);
         });
     }
-  }, [dapp.provider, dapp.proxy]);
+  }, [dapp.proxy]);
 
   const privateRoute = autehnitcatedRoutes.some(
     ({ path }) =>
@@ -111,7 +115,7 @@ const Authenticate = ({
   }, [chainId.valueOf()]);
 
   const fetchAccount = () => {
-    if (address && loggedIn) {
+    if (address && loggedIn && !getItem("walletLogin")) {
       dispatch({ type: "setAccountLoading", accountLoading: true });
       dapp.proxy
         .getAccount(new Address(address))
