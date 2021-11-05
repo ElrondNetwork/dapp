@@ -104,17 +104,27 @@ export default function useInitWalletConnect({
                 signature,
               },
             });
+            dispatch({
+              type: "setWalletConnectLogin",
+              walletConnectLogin: {
+                loginType: "walletConnect",
+                callbackRoute,
+                logoutRoute,
+              },
+            });
+            dispatch({ type: "login", address, loginMethod: "walletconnect" });
+          } else {
+            dispatch({
+              type: "setWalletConnectLogin",
+              walletConnectLogin: {
+                loginType: "walletConnect",
+                callbackRoute,
+                logoutRoute,
+              },
+            });
+            dispatch({ type: "login", address, loginMethod: "walletconnect" });
           }
         });
-        dispatch({
-          type: "setWalletConnectLogin",
-          walletConnectLogin: {
-            loginType: "walletConnect",
-            callbackRoute,
-            logoutRoute,
-          },
-        });
-        dispatch({ type: "login", address, loginMethod: "walletconnect" });
 
         provider.walletConnector.on("heartbeat", () => {
           clearInterval(heartbeatDisconnectInterval);
