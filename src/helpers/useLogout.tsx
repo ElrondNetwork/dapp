@@ -23,6 +23,7 @@ export default function useLogout() {
     storage.local.removeItem("nonce");
     storage.local.removeItem("address");
     storage.local.removeItem("loginMethod");
+    storage.local.removeItem("ledgerLogin");
 
     const url = callbackRoute
       ? `${window.location.origin}${callbackRoute}`

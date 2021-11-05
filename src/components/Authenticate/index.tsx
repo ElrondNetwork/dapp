@@ -140,8 +140,8 @@ const Authenticate = ({
           setLoading(false);
         });
 
-      if (getItem("ledgerLogin") && !ledgerAccount) {
-        const ledgerLogin = getItem("ledgerLogin");
+      if (storage.local.getItem("ledgerLogin") && !ledgerAccount) {
+        const ledgerLogin = storage.local.getItem("ledgerLogin");
         dispatch({
           type: "setLedgerAccount",
           ledgerAccount: {

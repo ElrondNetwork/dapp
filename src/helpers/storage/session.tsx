@@ -2,7 +2,6 @@ import moment from "moment";
 
 export type SessionKeyType =
   | "walletLogin"
-  | "ledgerLogin"
   | "walletConnectLogin"
   | "ledgerAccountIndex"
   | "extensionLogin"
