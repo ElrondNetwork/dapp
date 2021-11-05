@@ -7,7 +7,7 @@ export const setItem = ({
   data,
   expires,
 }: {
-  key: "nonce" | "walletconnect" | "loginMethod" | "address";
+  key: "nonce" | "walletconnect" | "loginMethod" | "address" | "ledgerLogin";
   data: any;
   expires: ExpiresType;
 }) => {
@@ -21,7 +21,7 @@ export const setItem = ({
 };
 
 export const getItem = (
-  key: "nonce" | "walletconnect" | "loginMethod" | "address"
+  key: "nonce" | "walletconnect" | "loginMethod" | "address" | "ledgerLogin"
 ): any => {
   const item = localStorage.getItem(String(key));
   if (!item) {
@@ -50,7 +50,7 @@ export const getItem = (
 };
 
 export const removeItem = (
-  key: "nonce" | "walletconnect" | "loginMethod" | "address"
+  key: "nonce" | "walletconnect" | "loginMethod" | "address" | "ledgerLogin"
 ) => localStorage.removeItem(String(key));
 
 export const successDescription = "successDescription";

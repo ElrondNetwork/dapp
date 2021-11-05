@@ -122,7 +122,7 @@ export const createInitialState = ({
     error: "",
     loggedIn: !!storage.local.getItem("loginMethod"),
     loginMethod: storage.local.getItem("loginMethod"),
-    ledgerLogin: getItem("ledgerLogin"),
+    ledgerLogin: storage.local.getItem("ledgerLogin"),
     walletConnectLogin: getItem("walletConnectLogin"),
     address: storage.local.getItem("address"),
     account: emptyAccount,

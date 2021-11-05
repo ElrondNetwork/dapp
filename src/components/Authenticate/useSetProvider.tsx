@@ -39,9 +39,8 @@ export default function useSetProvider() {
     if (!providerType) {
       switch (true) {
         case Boolean(loginMethod === "ledger"):
-        case Boolean(getItem("ledgerLogin")): {
+        case Boolean(storage.local.getItem("ledgerLogin")): {
           const hwWalletP = new HWProvider(dapp.proxy);
-
           hwWalletP
             .init()
             .then((success: any) => {
@@ -50,11 +49,15 @@ export default function useSetProvider() {
                 console.warn("Could not initialise ledger app");
                 return;
               }
-              const addressIndex = getItem("ledgerLogin").index || 0;
+              const addressIndex =
+                storage.local.getItem("ledgerLogin").index || 0;
               if (addressIndex !== 0) {
                 setShowLedgerProviderModal(true);
                 hwWalletP
-                  .login({ addressIndex: getItem("ledgerLogin").index || 0 })
+                  .login({
+                    addressIndex:
+                      storage.local.getItem("ledgerLogin").index || 0,
+                  })
                   .then(() => {
                     dispatch({ type: "setProvider", provider: hwWalletP });
                     setShowLedgerProviderModal(false);
