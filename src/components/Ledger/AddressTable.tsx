@@ -101,7 +101,6 @@ const AddressTable = ({
     signature?: string;
   }) => {
     dispatch({ type: "setProvider", provider });
-    dispatch({ type: "login", address, loginMethod: "ledger" });
 
     dispatch({
       type: "ledgerLogin",
@@ -117,6 +116,7 @@ const AddressTable = ({
         },
       });
     }
+    dispatch({ type: "login", address, loginMethod: "ledger" });
 
     history.push(callbackRoute);
   };
