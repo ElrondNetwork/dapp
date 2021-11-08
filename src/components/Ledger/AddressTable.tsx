@@ -12,7 +12,7 @@ import ledgerErrorCodes from "helpers/ledgerErrorCodes";
 import { useContext, useDispatch } from "context";
 import AddressRow from "./AddressRow";
 
-const addressesPerPage = 5;
+const addressesPerPage = 10;
 
 const AddressTable = ({
   setShowAddressTable,
