@@ -17,7 +17,7 @@ export const useWebWalletLogin = ({
     storage.session.setItem({
       key: "walletLogin",
       data: {},
-      expires: moment().add(1, "minutes").unix(),
+      expires: moment().add(3, "minutes").unix(),
     });
     provider.login({
       callbackUrl: encodeURIComponent(
