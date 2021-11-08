@@ -52,9 +52,7 @@ const Authenticate = ({
       getAddress()
         .then((address) => {
           if (address) {
-            dispatch({ type: "login", address, loginMethod: "wallet" });
             removeItem("walletLogin");
-            dispatch({ type: "setProvider", provider });
             getAccount(address)
               .then((account) => {
                 dispatch({
@@ -68,6 +66,8 @@ const Authenticate = ({
                       : {}),
                   },
                 });
+                dispatch({ type: "setProvider", provider });
+                dispatch({ type: "login", address, loginMethod: "wallet" });
                 setLoading(false);
               })
               .catch((e) => {
