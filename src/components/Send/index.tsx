@@ -130,15 +130,25 @@ export default function Send() {
             .then((account) => {
               transaction.setNonce(getLatestNonce(account));
               provider
-                .sendTransaction(transaction)
-                .then((transaction) => {
-                  refreshAccount();
-                  setTxHash(transaction.getHash());
-                  setNewCallbackRoute(callbackRoute);
-                  setShowStatus(true);
+                .init()
+                .then((initialised) => {
+                  if (!initialised) {
+                    console.error("Failed initializing provider");
+                  }
+                  provider
+                    .sendTransaction(transaction)
+                    .then((transaction) => {
+                      refreshAccount();
+                      setTxHash(transaction.getHash());
+                      setNewCallbackRoute(callbackRoute);
+                      setShowStatus(true);
+                    })
+                    .catch(() => {
+                      handleClose();
+                    });
                 })
-                .catch(() => {
-                  handleClose();
+                .catch((e) => {
+                  console.error("Failed initializing provider", e);
                 });
             })
             .catch((e) => {
