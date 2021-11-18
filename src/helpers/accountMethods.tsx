@@ -16,10 +16,10 @@ export function useGetAddress(): () => Promise<string> {
   const { dapp, address, loggedIn } = useContext();
   const providerType = getProviderType(dapp.provider);
 
-  return () =>
-    providerType && providerType !== "wallet"
-      ? dapp.provider.getAddress()
-      : new Promise((resolve) => {
+  return () => {
+    switch (true) {
+      case providerType === "wallet":
+        return new Promise((resolve) => {
           if (storage.session.getItem("walletLogin")) {
             const urlSearchParams = new URLSearchParams(search);
             const params = Object.fromEntries(urlSearchParams as any);
@@ -32,6 +32,19 @@ export function useGetAddress(): () => Promise<string> {
           }
           resolve("");
         });
+      case providerType === "ledger":
+        return loggedIn
+          ? new Promise((resolve) => {
+              if (loggedIn) {
+                resolve(address);
+              }
+            })
+          : dapp.provider.getAddress();
+
+      default:
+        return dapp.provider.getAddress();
+    }
+  };
 }
 
 export const useSetNonce = () => {
