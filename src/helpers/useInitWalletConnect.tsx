@@ -55,45 +55,6 @@ export default function useInitWalletConnect({
     };
   });
 
-  React.useEffect(() => {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        providerInit();
-      }
-    });
-    return () => {
-      document.removeEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          providerInit();
-        }
-      });
-    };
-  }, [provider]);
-
-  const providerInit = () => {
-    if (
-      document.visibilityState === "visible" &&
-      provider &&
-      "walletConnector" in provider &&
-      provider.walletConnector.connected
-    ) {
-      provider
-        .init()
-        .then((success: any) => {
-          if (success) {
-            dispatch({ type: "setProvider", provider });
-          } else {
-            console.error(
-              "Could not initialise extension, make sure Elrond wallet extension is installed."
-            );
-          }
-        })
-        .catch((err: any) => {
-          console.error("Unable to login to ExtensionProvider", err);
-        });
-    }
-  };
-
   const heartbeat = () => {
     if (
       provider &&
