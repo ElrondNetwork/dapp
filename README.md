@@ -1,7 +1,7 @@
 # @elrondnetwork/dapp
 
 The npm package of the **Elrond Dapp** core components, built using [React.js](https://reactjs.org/) and [Typescript](https://www.typescriptlang.org/).
-This library will help you authenticate users and provide a straight foreward way to execute transactions on the Elrond blockchain.
+This library will help you authenticate users and provide a straightforward way to execute transactions on the Elrond blockchain.
 
 See [Dapp template](https://dapp-template.elrond.com/) for live demo or checkout usage in the [Github repo](https://github.com/ElrondNetwork/dapp-template)
 
