@@ -13,7 +13,7 @@ export function useGetAccount() {
 
 export function useGetAddress(): () => Promise<string> {
   const { search } = useLocation();
-  const { dapp, address, loggedIn } = useContext();
+  const { dapp, address, loggedIn, loginMethod } = useContext();
   const providerType = getProviderType(dapp.provider);
 
   return () => {
@@ -32,6 +32,7 @@ export function useGetAddress(): () => Promise<string> {
           }
           resolve("");
         });
+      case loginMethod === "extension":
       case providerType === "ledger":
         return loggedIn
           ? new Promise((resolve) => {
