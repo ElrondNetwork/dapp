@@ -9,6 +9,7 @@ import {
 import useLastTxStatus from "./useFetchTxStatus";
 import StatusTxDetails from "./StatusTxDetails";
 import PageState from "components/PageState";
+import buildUrlParams from "helpers/buildUrlParams";
 
 export interface TransactionStatusType {
   txHash: TransactionHash;
@@ -56,8 +57,15 @@ const TransactionStatus = ({
     if (!lastTxStatus.isPending()) {
       setTimeout(() => {
         handleClose();
+        const url = new URL(`${window.location.origin}${callbackRoute}`);
+
+        const { nextUrlParams } = buildUrlParams(url.search, {
+          status: lastTxStatus.status.toString(),
+          txHash: txHash.toString(),
+        });
+        
         history.push(
-          `${callbackRoute}?status=${lastTxStatus.status.toString()}&txHash=${txHash}`
+          `${callbackRoute}?${nextUrlParams}`
         );
       }, 1000);
     }
