@@ -17,33 +17,29 @@ export function useGetAddress(): () => Promise<string> {
   const providerType = getProviderType(dapp.provider);
 
   return () => {
-    switch (true) {
-      case providerType === "wallet":
-        return new Promise((resolve) => {
-          if (storage.session.getItem("walletLogin")) {
-            const urlSearchParams = new URLSearchParams(search);
-            const params = Object.fromEntries(urlSearchParams as any);
-            if (addressIsValid(params.address)) {
-              resolve(params.address);
-            }
+    // ledger logged in
+    if (providerType && providerType === "ledger" && loggedIn) {
+      return new Promise((resolve) => {
+        resolve(address);
+      });
+      // all providers
+    } else if (providerType && providerType !== "wallet") {
+      return dapp.provider.getAddress();
+    } else {
+      // wallet
+      return new Promise((resolve) => {
+        if (storage.session.getItem("walletLogin")) {
+          const urlSearchParams = new URLSearchParams(search);
+          const params = Object.fromEntries(urlSearchParams as any);
+          if (addressIsValid(params.address)) {
+            resolve(params.address);
           }
-          if (loggedIn) {
-            resolve(address);
-          }
-          resolve("");
-        });
-      case loginMethod === "extension":
-      case providerType === "ledger":
-        return loggedIn
-          ? new Promise((resolve) => {
-              if (loggedIn) {
-                resolve(address);
-              }
-            })
-          : dapp.provider.getAddress();
-
-      default:
-        return dapp.provider.getAddress();
+        }
+        if (loggedIn) {
+          resolve(address);
+        }
+        resolve("");
+      });
     }
   };
 }
