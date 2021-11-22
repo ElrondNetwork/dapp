@@ -63,10 +63,12 @@ const TransactionStatus = ({
           status: lastTxStatus.status.toString(),
           txHash: txHash.toString(),
         });
-        
-        history.push(
-          `${callbackRoute}?${nextUrlParams}`
-        );
+
+        const callbackRoutePathname = url.search
+          ? callbackRoute.replace(url.search, "")
+          : callbackRoute;
+
+        history.push(`${callbackRoutePathname}?${nextUrlParams}`);
       }, 1000);
     }
   }, [lastTxStatus]);
