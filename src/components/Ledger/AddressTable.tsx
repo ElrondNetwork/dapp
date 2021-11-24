@@ -241,7 +241,7 @@ const AddressTable = ({
                 <div className="d-flex justify-content-center pager mt-2">
                   <button
                     type="button"
-                    className="btn btn-link px-2"
+                    className="btn btn-link mx-2"
                     onClick={goToPrev}
                     data-testid="prevBtn"
                     disabled={startIndex === 0}
@@ -250,7 +250,7 @@ const AddressTable = ({
                   </button>
                   <button
                     type="button"
-                    className="btn btn-link px-2"
+                    className="btn btn-link mx-2"
                     onClick={goToNext}
                     data-testid="nextBtn"
                   >
