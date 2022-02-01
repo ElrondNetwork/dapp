@@ -1,4 +1,5 @@
 import moment from "moment";
+import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { AccountOnNetwork, Address, Nonce } from "@elrondnetwork/erdjs";
 import { useContext, useDispatch } from "context";
@@ -81,9 +82,9 @@ export function useGetAccountShard() {
   return (): Promise<number | undefined> =>
     new Promise((resolve) => {
       if (shard === undefined) {
-        fetch(`${network.apiAddress}/accounts/${address}`)
-          .then((response) => response.json())
-          .then(({ shard }) => {
+        axios
+          .get(`${network.apiAddress}/accounts/${address}`)
+          .then(({ data: shard }) => {
             dispatch({ type: "setAccountShard", shard });
             resolve(shard);
           })
