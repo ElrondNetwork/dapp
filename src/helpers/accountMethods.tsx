@@ -84,9 +84,9 @@ export function useGetAccountShard() {
       if (shard === undefined) {
         axios
           .get(`${network.apiAddress}/accounts/${address}`)
-          .then(({ data: shard }) => {
-            dispatch({ type: "setAccountShard", shard });
-            resolve(shard);
+          .then(({ data }) => {
+            dispatch({ type: "setAccountShard", shard: data.shard });
+            resolve(data.shard);
           })
           .catch((err) => {
             console.error(err);
