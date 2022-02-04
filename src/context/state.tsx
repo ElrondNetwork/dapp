@@ -28,7 +28,7 @@ interface AccountType {
   balance: string;
   nonce: Nonce;
   code?: string;
-  username?: string;
+  userName?: string;
 }
 
 export interface DappState {
